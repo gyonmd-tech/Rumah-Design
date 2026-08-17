@@ -6,6 +6,20 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   ssr: true,
+  nitro: {
+    // Vercel runs Nitro as ESM. Bundle this CommonJS sanitizer and its parser
+    // chain so it never tries to require the ESM-only htmlparser2 at runtime.
+    externals: {
+      inline: [
+        /sanitize-html/,
+        /htmlparser2/,
+        /domhandler/,
+        /domutils/,
+        /dom-serializer/,
+        /entities/,
+      ],
+    },
+  },
   modules: [
     '@nuxtjs/supabase',
     '@nuxtjs/seo',
