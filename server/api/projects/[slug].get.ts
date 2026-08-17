@@ -21,5 +21,5 @@ export default defineEventHandler(async (event) => {
   if (!data) throw createError({ statusCode: 404, statusMessage: 'Project tidak ditemukan' })
 
   const project = data as Project
-  return { ...project, description_html: renderSafeMarkdown(project.description) }
+  return { ...project, description_html: await renderSafeMarkdown(project.description) }
 })
