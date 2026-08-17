@@ -4,11 +4,11 @@ Roadmap implementasi bertahap. Tiap fase idealnya bisa di-deploy & diuji sebelum
 
 ## Fase 0 — Setup Awal
 - [x] Inisialisasi project Nuxt 3 (`npx nuxi init rumah-design`)
-- [ ] Setup Supabase project (buat project baru di dashboard Supabase)
+- [x] Setup Supabase project (buat project baru di dashboard Supabase)
 - [x] Install & konfigurasi `@nuxtjs/supabase`, `@nuxtjs/seo`, Tailwind CSS
 - [x] Buat tabel `projects` + RLS policy (lihat `ARCHITECTURE.md`)
-- [ ] Setup environment variables lokal (`.env`) & di Vercel/Netlify
-- [ ] Deploy skeleton kosong ke Vercel/Netlify untuk memastikan pipeline jalan
+- [x] Setup environment variables lokal (`.env`) & di Vercel
+- [x] Deploy production ke Vercel untuk memastikan pipeline jalan
 
 ## Fase 1 — Halaman Publik (MVP)
 - [x] Komponen `ProjectCard`
