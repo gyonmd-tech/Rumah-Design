@@ -10,5 +10,11 @@ export interface ProjectFormPayload {
   styleTags: string[]
   techStack: string[]
   status: ProjectStatus
+  previewMediaUrl?: string
+  seoTitle?: string
+  seoDescription?: string
+  focusKeyword?: string
   thumbnailFile: File | null
 }
+
+

@@ -14,7 +14,16 @@ export type Project = {
   thumbnail_url: string
   preview_media_url: string | null
   status: ProjectStatus
+  seo_title?: string | null
+  seo_description?: string | null
+  focus_keyword?: string | null
   created_at: string
+  updated_at: string
+}
+
+export type SiteSetting = {
+  key: string
+  value: Record<string, any>
   updated_at: string
 }
 
@@ -39,6 +48,12 @@ export interface Database {
         }
         Relationships: []
       }
+      site_settings: {
+        Row: SiteSetting
+        Insert: { key: string, value: Record<string, any>, updated_at?: string }
+        Update: { key?: string, value?: Record<string, any>, updated_at?: string }
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: {
@@ -51,3 +66,4 @@ export interface Database {
     CompositeTypes: Record<string, never>
   }
 }
+

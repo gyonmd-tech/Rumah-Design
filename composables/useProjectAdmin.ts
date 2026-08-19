@@ -1,7 +1,7 @@
-import type { Database, Project } from '~/types/database.types'
+import type { Database, Project, ProjectStatus } from '~/types/database.types'
 import type { ProjectFormPayload } from '~/types/project-form'
 
-const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024
 
 export function useProjectAdmin() {
@@ -9,7 +9,7 @@ export function useProjectAdmin() {
   const user = useSupabaseUser()
 
   async function uploadThumbnail(file: File) {
-    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) throw new Error('Gunakan gambar JPG, PNG, atau WebP.')
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) throw new Error('Gunakan gambar JPG, PNG, WebP, atau GIF.')
     if (file.size > MAX_IMAGE_SIZE) throw new Error('Ukuran thumbnail maksimal 10 MB.')
     if (!user.value?.sub) throw new Error('Sesi admin tidak ditemukan.')
 
@@ -39,9 +39,13 @@ export function useProjectAdmin() {
       style_tags: payload.styleTags,
       tech_stack: payload.techStack,
       thumbnail_url: thumbnailUrl,
-      preview_media_url: existing?.preview_media_url ?? null,
+      preview_media_url: payload.previewMediaUrl?.trim() || existing?.preview_media_url || null,
       status: payload.status,
+      seo_title: payload.seoTitle?.trim() || null,
+      seo_description: payload.seoDescription?.trim() || null,
+      focus_keyword: payload.focusKeyword?.trim() || null,
     }
+
 
     if (existing) {
       const { data, error } = await client.from('projects').update(values).eq('id', existing.id).select().single()
@@ -54,10 +58,17 @@ export function useProjectAdmin() {
     return data as Project
   }
 
+  async function toggleProjectStatus(id: string, newStatus: ProjectStatus) {
+    const { data, error } = await client.from('projects').update({ status: newStatus }).eq('id', id).select().single()
+    if (error) throw error
+    return data as Project
+  }
+
   async function deleteProject(id: string) {
     const { error } = await client.from('projects').delete().eq('id', id)
     if (error) throw error
   }
 
-  return { saveProject, deleteProject }
+  return { saveProject, toggleProjectStatus, deleteProject, uploadThumbnail }
 }
+

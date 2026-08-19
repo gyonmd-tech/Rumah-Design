@@ -2,7 +2,7 @@
 import type { Database } from '~/types/database.types'
 
 definePageMeta({ layout: false })
-useSeoMeta({ title: 'Admin login — Rumah Design', robots: 'noindex, nofollow' })
+useSeoMeta({ title: 'Admin Login — Rumah Design', robots: 'noindex, nofollow' })
 
 const route = useRoute()
 const client = useSupabaseClient<Database>()
@@ -37,25 +37,96 @@ async function login() {
 </script>
 
 <template>
-  <main class="grid min-h-screen bg-canvas lg:grid-cols-2">
-    <section class="hidden border-r border-ink/20 p-10 lg:flex lg:flex-col lg:justify-between">
-      <NuxtLink to="/" class="eyebrow">Rumah Design</NuxtLink>
-      <p class="max-w-[9ch] text-[clamp(4rem,8vw,8rem)] font-medium leading-[0.84] tracking-[-0.07em]">Rawat karya dalam satu rumah.</p>
-      <p class="eyebrow text-muted">Private workspace</p>
+  <main class="grid min-h-screen bg-paper text-ink lg:grid-cols-2">
+    <!-- Left Visual Panel -->
+    <section class="hidden border-r border-ink/10 bg-void p-12 text-paper lg:flex lg:flex-col lg:justify-between">
+      <NuxtLink to="/" class="inline-flex items-center gap-3">
+        <SiteLogo :dark="true" />
+      </NuxtLink>
+      <div class="space-y-4">
+        <div class="inline-flex items-center gap-2 rounded-full bg-signal/15 px-3 py-1 font-mono text-xs font-semibold text-signal uppercase tracking-[0.14em]">
+          <span class="size-1.5 rounded-full bg-signal" />
+          <span>Private Workspace</span>
+        </div>
+        <p class="font-display text-display-l text-paper max-w-[12ch] leading-tight">
+          Rawat karya dalam satu rumah.
+        </p>
+      </div>
+      <p class="font-mono text-xs text-paper/50">
+        Rumah Design Content Studio v2
+      </p>
     </section>
-    <section class="grid place-items-center px-5 py-12">
-      <form class="w-full max-w-md" @submit.prevent="login">
-        <NuxtLink to="/" class="eyebrow lg:hidden">Rumah Design</NuxtLink>
-        <p class="eyebrow mt-12 text-muted lg:mt-0">Admin</p>
-        <h1 class="mt-3 text-5xl font-medium tracking-[-0.055em]">Masuk</h1>
-        <p class="mt-3 text-muted">Kelola project, case study, dan status publikasi.</p>
-        <p v-if="message" role="alert" class="mt-6 border border-red-700/30 bg-red-50 p-4 text-sm text-red-900">{{ message }}</p>
-        <fieldset :disabled="busy" class="mt-8 space-y-5 disabled:opacity-60">
-          <label class="block space-y-2"><span class="eyebrow text-muted">Email</span><input v-model="email" type="email" autocomplete="email" class="field" required></label>
-          <label class="block space-y-2"><span class="eyebrow text-muted">Password</span><input v-model="password" type="password" autocomplete="current-password" class="field" required></label>
-          <button type="submit" class="button-primary w-full cursor-pointer">{{ busy ? 'Memeriksa…' : 'Masuk ke admin' }}</button>
-        </fieldset>
-      </form>
+
+    <!-- Right Login Form -->
+    <section class="grid place-items-center px-6 py-16">
+      <div class="w-full max-w-md space-y-8 rounded-3xl bg-white/80 p-8 sm:p-10 border border-ink/10 shadow-lg">
+        <div class="lg:hidden">
+          <NuxtLink to="/" class="inline-flex items-center gap-2">
+            <SiteLogo />
+          </NuxtLink>
+        </div>
+
+        <div>
+          <div class="inline-flex items-center gap-2 rounded-full bg-ink/5 px-3 py-1 font-mono text-[0.7rem] font-bold text-mute uppercase tracking-widest">
+            <span class="size-1.5 rounded-full bg-signal" />
+            <span>Admin Access</span>
+          </div>
+          <h1 class="mt-3 font-display text-3xl font-bold text-ink">
+            Masuk Portal
+          </h1>
+          <p class="mt-2 font-body text-sm text-mute">
+            Kelola project, case study, dan status publikasi portofolio.
+          </p>
+        </div>
+
+        <div v-if="message" role="alert" class="border border-signal/40 bg-signal/5 p-4 text-xs font-mono text-signal rounded-2xl">
+          {{ message }}
+        </div>
+
+        <form class="space-y-5" @submit.prevent="login">
+          <fieldset :disabled="busy" class="space-y-5 disabled:opacity-60">
+            <div class="space-y-2">
+              <label for="admin-email" class="block font-mono text-xs font-bold text-ink uppercase tracking-wider">
+                Email
+              </label>
+              <input
+                id="admin-email"
+                v-model="email"
+                type="email"
+                autocomplete="email"
+                placeholder="admin@rumahdesign.id"
+                class="field"
+                required
+              >
+            </div>
+
+            <div class="space-y-2">
+              <label for="admin-password" class="block font-mono text-xs font-bold text-ink uppercase tracking-wider">
+                Password
+              </label>
+              <input
+                id="admin-password"
+                v-model="password"
+                type="password"
+                autocomplete="current-password"
+                placeholder="••••••••"
+                class="field"
+                required
+              >
+            </div>
+
+            <button type="submit" class="button-primary w-full cursor-pointer mt-2">
+              {{ busy ? 'Memeriksa Akses…' : 'Masuk ke Admin ↗' }}
+            </button>
+          </fieldset>
+        </form>
+
+        <div class="border-t border-ink/10 pt-6 text-center">
+          <NuxtLink to="/" class="font-mono text-xs text-mute hover:text-signal transition-colors">
+            ← Kembali ke Beranda
+          </NuxtLink>
+        </div>
+      </div>
     </section>
   </main>
 </template>
