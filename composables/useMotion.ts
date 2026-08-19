@@ -7,12 +7,7 @@ export const useMotion = () => {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches
   }
 
-  const isTouchScreen = () => {
-    if (typeof window === 'undefined') return false
-    return window.matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window) || window.innerWidth < 768
-  }
-
-  // Optimized Motion tokens (Fast & Silky)
+  // Refined Motion tokens (Silky & Responsive)
   const tokens = {
     ease: {
       reveal: 'power3.out',
@@ -20,13 +15,13 @@ export const useMotion = () => {
       smooth: 'power2.inOut',
     },
     duration: {
-      fast: 0.25,
-      base: 0.5,
-      slow: 0.8,
+      fast: 0.28,
+      base: 0.55,
+      slow: 0.9,
     },
     stagger: {
-      tight: 0.03,
-      base: 0.06,
+      tight: 0.04,
+      base: 0.07,
     },
   }
 
@@ -76,7 +71,7 @@ export const useMotion = () => {
     if (options.eyebrow) {
       tl.fromTo(
         options.eyebrow,
-        { y: 15, opacity: 0 },
+        { y: 18, opacity: 0 },
         { y: 0, opacity: 1, duration: tokens.duration.base }
       )
     }
@@ -84,41 +79,41 @@ export const useMotion = () => {
     if (options.headlineLines && options.headlineLines.length) {
       tl.fromTo(
         options.headlineLines,
-        { y: 60, opacity: 0 },
+        { y: 70, opacity: 0 },
         {
           y: 0,
           opacity: 1,
           duration: tokens.duration.slow,
           stagger: tokens.stagger.base,
         },
-        options.eyebrow ? '-=0.3' : '0'
+        options.eyebrow ? '-=0.35' : '0'
       )
     }
 
     if (options.intro) {
       tl.fromTo(
         options.intro,
-        { y: 20, opacity: 0 },
+        { y: 25, opacity: 0 },
         { y: 0, opacity: 1, duration: tokens.duration.base },
-        '-=0.5'
+        '-=0.55'
       )
     }
 
     if (options.stats) {
       tl.fromTo(
         options.stats,
-        { y: 15, opacity: 0 },
+        { y: 18, opacity: 0 },
         { y: 0, opacity: 1, duration: tokens.duration.base },
-        '-=0.3'
+        '-=0.35'
       )
     }
 
     if (options.scrollCue) {
       tl.fromTo(
         options.scrollCue,
-        { opacity: 0, y: -8 },
+        { opacity: 0, y: -10 },
         { opacity: 1, y: 0, duration: tokens.duration.base },
-        '-=0.2'
+        '-=0.25'
       )
     }
 
@@ -126,10 +121,10 @@ export const useMotion = () => {
   }
 
   /**
-   * Smooth Hero Parallax on Scroll (Desktop only to guarantee 60-120fps on mobile)
+   * Smooth & Lightweight Hero Parallax on Scroll
    */
   const setupHeroParallax = (heroEl: HTMLElement, contentEl: HTMLElement) => {
-    if (isReducedMotion() || isTouchScreen()) return null
+    if (isReducedMotion()) return null
 
     const trigger = ScrollTrigger.create({
       trigger: heroEl,
@@ -150,10 +145,34 @@ export const useMotion = () => {
   }
 
   /**
-   * Lightweight Cards Stagger
+   * Hide nav on scroll down, show on scroll up
+   */
+  const setupNavScroll = (navEl: HTMLElement) => {
+    if (isReducedMotion()) return null
+
+    let lastScroll = 0
+    const trigger = ScrollTrigger.create({
+      start: 160,
+      onUpdate: (self) => {
+        const currentScroll = self.scroll()
+        if (currentScroll > 160 && self.direction === 1 && currentScroll > lastScroll + 4) {
+          gsap.to(navEl, { y: -130, duration: tokens.duration.fast, ease: 'power2.out', overwrite: 'auto' })
+        } else if (self.direction === -1 || currentScroll <= 60) {
+          gsap.to(navEl, { y: 0, duration: tokens.duration.fast, ease: 'power2.out', overwrite: 'auto' })
+        }
+        lastScroll = currentScroll
+      },
+    })
+
+    registerTrigger(trigger)
+    return trigger
+  }
+
+  /**
+   * Cards Scroll Batch Reveal (Smooth staggered slide-up)
    */
   const setupCardsBatch = (containerEl: HTMLElement, cardSelector = '.project-card-item') => {
-    if (isReducedMotion() || isTouchScreen()) {
+    if (isReducedMotion()) {
       const cards = containerEl.querySelectorAll(cardSelector)
       gsap.set(cards, { opacity: 1, y: 0 })
       return null
@@ -165,7 +184,7 @@ export const useMotion = () => {
     const ctx = gsap.context(() => {
       gsap.fromTo(
         cards,
-        { opacity: 0, y: 25 },
+        { opacity: 0, y: 32 },
         {
           opacity: 1,
           y: 0,
@@ -174,7 +193,7 @@ export const useMotion = () => {
           ease: tokens.ease.reveal,
           scrollTrigger: {
             trigger: containerEl,
-            start: 'top 90%',
+            start: 'top 88%',
             once: true,
           },
         }
@@ -185,14 +204,14 @@ export const useMotion = () => {
   }
 
   /**
-   * Horizontal Gallery for Project Detail (Desktop only; mobile uses native snap-scroll)
+   * Horizontal Gallery for Project Detail
    */
   const setupHorizontalGallery = (options: {
     sectionEl: HTMLElement
     trackEl: HTMLElement
     onIndexUpdate?: (current: number, total: number) => void
   }) => {
-    if (isReducedMotion() || isTouchScreen() || window.innerWidth < 1024) return null
+    if (isReducedMotion() || window.innerWidth < 1024) return null
 
     const totalWidth = options.trackEl.scrollWidth - options.sectionEl.clientWidth
     if (totalWidth <= 0) return null
@@ -200,9 +219,9 @@ export const useMotion = () => {
     const trigger = ScrollTrigger.create({
       trigger: options.sectionEl,
       start: 'top top',
-      end: () => `+=${totalWidth + 300}`,
+      end: () => `+=${totalWidth + 350}`,
       pin: true,
-      scrub: 0.6,
+      scrub: 0.7,
       anticipatePin: 1,
       animation: gsap.to(options.trackEl, {
         x: () => -totalWidth,
@@ -226,19 +245,19 @@ export const useMotion = () => {
    * Scroll Reveal Helper
    */
   const revealOnScroll = (element: HTMLElement, options?: { y?: number; delay?: number }) => {
-    if (isReducedMotion() || isTouchScreen()) {
+    if (isReducedMotion()) {
       gsap.set(element, { opacity: 1, y: 0 })
       return
     }
 
     const trigger = ScrollTrigger.create({
       trigger: element,
-      start: 'top 92%',
+      start: 'top 90%',
       once: true,
       onEnter: () => {
         gsap.fromTo(
           element,
-          { opacity: 0, y: options?.y ?? 20 },
+          { opacity: 0, y: options?.y ?? 25 },
           {
             opacity: 1,
             y: 0,
@@ -254,14 +273,39 @@ export const useMotion = () => {
     return trigger
   }
 
+  /**
+   * Footer Curtain Uncover Parallax
+   */
+  const setupFooterUncover = (footerEl: HTMLElement, innerContentEl: HTMLElement) => {
+    if (isReducedMotion()) return null
+
+    const trigger = ScrollTrigger.create({
+      trigger: footerEl,
+      start: 'top bottom',
+      end: 'bottom bottom',
+      scrub: 0.4,
+      onUpdate: (self) => {
+        const p = self.progress
+        gsap.set(innerContentEl, {
+          y: (1 - p) * 45,
+          opacity: 0.6 + p * 0.4,
+        })
+      },
+    })
+
+    registerTrigger(trigger)
+    return trigger
+  }
+
   return {
     tokens,
     isReducedMotion,
-    isTouchScreen,
     animateHeroReveal,
     setupHeroParallax,
+    setupNavScroll,
     setupCardsBatch,
     setupHorizontalGallery,
+    setupFooterUncover,
     revealOnScroll,
     cleanup,
     registerTrigger,

@@ -9,33 +9,27 @@ export default defineNuxtPlugin((nuxtApp) => {
   let lenis: Lenis | null = null
 
   if (typeof window !== 'undefined') {
-    // Only enable Lenis smooth wheel on desktop (non-touch / fine pointer) devices.
-    // Touch devices (phones & tablets) have native hardware-accelerated 60/120Hz inertia scrolling;
-    // intercepting touch with JS causes lag, stutter ("patah-patah"), and rubberbanding fighting.
-    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window) || navigator.maxTouchPoints > 0
-    const isSmallScreen = window.innerWidth < 1024
+    // Silky Smooth Lenis instance synced with GSAP ScrollTrigger
+    lenis = new Lenis({
+      duration: 1.0,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      smoothWheel: true,
+      syncTouch: false, // Use native touch momentum on touch screens to ensure 120fps hardware response
+    })
 
-    if (!isTouchDevice && !isSmallScreen) {
-      lenis = new Lenis({
-        duration: 0.85,
-        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        orientation: 'vertical',
-        smoothWheel: true,
-        syncTouch: false,
-      })
+    // Synchronize Lenis scroll events with ScrollTrigger
+    lenis.on('scroll', ScrollTrigger.update)
 
-      // Sync Lenis scroll with ScrollTrigger
-      lenis.on('scroll', ScrollTrigger.update)
+    gsap.ticker.add((time) => {
+      lenis?.raf(time * 1000)
+    })
 
-      gsap.ticker.add((time) => {
-        lenis?.raf(time * 1000)
-      })
-
-      gsap.ticker.lagSmoothing(0)
-    }
+    // GSAP default lag smoothing allows fluid recovery on minor frame drops without sudden jumps
+    gsap.ticker.lagSmoothing(500, 33)
   }
 
-  // Route hooks for clean scroll management
+  // Route hooks for clean scroll and trigger cleanup
   nuxtApp.hook('page:start', () => {
     ScrollTrigger.getAll().forEach((trigger) => {
       try {
