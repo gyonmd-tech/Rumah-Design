@@ -8,24 +8,29 @@ defineProps<{ html: string }>()
 </template>
 
 <style scoped>
+.case-study-content {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
 .case-study-content :deep(h2) {
   font-family: var(--font-display);
-  margin-top: 2.5em;
-  margin-bottom: 0.75em;
-  font-size: clamp(1.8rem, 2.5vw, 2.75rem);
+  margin-top: 2em;
+  margin-bottom: 0.6em;
+  font-size: clamp(1.4rem, 2vw + 0.8rem, 2.5rem);
   font-weight: 600;
-  line-height: 1.05;
+  line-height: 1.1;
   letter-spacing: -0.03em;
   color: var(--color-ink);
 }
 
 .case-study-content :deep(h3) {
   font-family: var(--font-display);
-  margin-top: 2em;
-  margin-bottom: 0.5em;
-  font-size: clamp(1.35rem, 1.8vw, 1.9rem);
+  margin-top: 1.6em;
+  margin-bottom: 0.45em;
+  font-size: clamp(1.15rem, 1.4vw + 0.75rem, 1.8rem);
   font-weight: 600;
-  line-height: 1.15;
+  line-height: 1.2;
   letter-spacing: -0.02em;
   color: var(--color-ink);
 }
@@ -33,30 +38,33 @@ defineProps<{ html: string }>()
 .case-study-content :deep(p),
 .case-study-content :deep(li) {
   font-family: var(--font-sans);
-  font-size: clamp(1.05rem, 0.4vw + 0.95rem, 1.2rem);
-  line-height: 1.75;
+  font-size: clamp(0.95rem, 0.35vw + 0.85rem, 1.15rem);
+  line-height: 1.7;
   color: var(--color-ink);
 }
 
 .case-study-content :deep(p) {
-  margin-block: 1.4em;
+  margin-block: 1.2em;
 }
 
 .case-study-content :deep(ul),
 .case-study-content :deep(ol) {
-  margin: 1.5em 0;
-  padding-left: 1.5em;
+  margin: 1.2em 0;
+  padding-left: 1.25em;
 }
 
 .case-study-content :deep(ul) { list-style: square; }
 .case-study-content :deep(ol) { list-style: decimal; }
 
 .case-study-content :deep(blockquote) {
-  margin: 2.25em 0;
+  margin: 1.8em 0;
   border-left: 3px solid var(--color-signal);
-  padding-left: 1.5em;
+  padding-left: 1.2em;
   color: var(--color-mute);
   font-style: italic;
+  background: rgba(20, 18, 15, 0.02);
+  padding-block: 0.6em;
+  border-radius: 0 0.5rem 0.5rem 0;
 }
 
 .case-study-content :deep(a) {
@@ -64,27 +72,52 @@ defineProps<{ html: string }>()
   text-decoration: underline;
   text-underline-offset: 0.25em;
   font-weight: 500;
+  word-break: break-all;
 }
 
 .case-study-content :deep(code) {
   font-family: var(--font-mono);
   background: rgba(20, 18, 15, 0.07);
   padding: 0.15em 0.4em;
-  font-size: 0.88em;
-  border-radius: 3px;
+  font-size: 0.85em;
+  border-radius: 4px;
+  word-break: break-word;
 }
 
 .case-study-content :deep(pre) {
   overflow-x: auto;
   background: var(--color-void);
   color: var(--color-paper);
-  padding: 1.25rem;
-  border-radius: 4px;
-  margin: 1.5em 0;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  margin: 1.4em 0;
+  max-width: 100%;
+}
+
+.case-study-content :deep(pre code) {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font-size: 0.85rem;
+}
+
+.case-study-content :deep(img) {
+  max-width: 100%;
+  height: auto;
+  border-radius: 1rem;
+  margin-block: 1.5rem;
+}
+
+.case-study-content :deep(table) {
+  width: 100%;
+  overflow-x: auto;
+  display: block;
+  border-collapse: collapse;
+  margin-block: 1.5rem;
 }
 
 .case-study-content :deep(hr) {
-  margin: 3.5rem 0;
+  margin: 2.5rem 0;
   border: 0;
   border-top: 1px solid var(--color-line-light);
 }

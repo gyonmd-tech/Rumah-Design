@@ -77,8 +77,10 @@ useSeoMeta({
   twitterCard: 'summary_large_image',
 })
 
+const siteConfig = useSiteConfig()
+
 useHead(() => ({
-  link: project.value ? [{ rel: 'canonical', href: `/project/${project.value.slug}` }] : [],
+  link: project.value ? [{ rel: 'canonical', href: `${siteConfig.url}/project/${project.value.slug}` }] : [],
   script: project.value ? [{
     type: 'application/ld+json',
     innerHTML: JSON.stringify({
@@ -87,7 +89,7 @@ useHead(() => ({
       name: project.value.seo_title || project.value.title,
       description: project.value.seo_description || excerpt(project.value.description),
       image: project.value.thumbnail_url,
-      url: project.value.live_url,
+      url: `${siteConfig.url}/project/${project.value.slug}`,
     }),
   }] : [],
 }))
@@ -95,14 +97,14 @@ useHead(() => ({
 </script>
 
 <template>
-  <div v-if="project" class="min-h-screen bg-paper text-ink pt-32 pb-28 relative z-20 shadow-[0_30px_90px_rgba(0,0,0,0.45)]">
+  <div v-if="project" class="min-h-screen bg-paper text-ink pt-28 sm:pt-32 pb-20 sm:pb-28 relative z-20 shadow-[0_30px_90px_rgba(0,0,0,0.45)]">
     <!-- Project Hero Header -->
     <article class="page-shell">
-      <div class="grid gap-8 border-b border-ink/12 pb-12 lg:grid-cols-[1fr_2.2fr] lg:items-end">
-        <div class="space-y-4">
+      <div class="grid gap-6 sm:gap-8 border-b border-ink/12 pb-8 sm:pb-12 lg:grid-cols-[1fr_2.2fr] lg:items-end">
+        <div class="space-y-3 sm:space-y-4">
           <div class="inline-flex items-center gap-2 rounded-full bg-ink/5 border border-ink/10 px-3.5 py-1.5">
             <span class="size-1.5 rounded-full bg-signal" />
-            <span class="font-mono text-xs font-semibold text-mute uppercase tracking-[0.14em]">
+            <span class="font-mono text-[0.7rem] sm:text-xs font-semibold text-mute uppercase tracking-[0.14em]">
               {{ categoryLabel(project.category) }}
             </span>
           </div>
@@ -115,12 +117,12 @@ useHead(() => ({
           <h1 class="font-display text-display-l text-ink tracking-tight font-bold">
             {{ project.title }}
           </h1>
-          <div class="mt-8 flex flex-wrap items-center gap-3">
+          <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <a
               :href="project.live_url"
               target="_blank"
               rel="noopener noreferrer"
-              class="button-primary"
+              class="button-primary text-center"
             >
               Buka Live Demo ↗
             </a>
@@ -129,7 +131,7 @@ useHead(() => ({
               :href="project.repo_url"
               target="_blank"
               rel="noopener noreferrer"
-              class="button-secondary"
+              class="button-secondary text-center"
             >
               Lihat Repository ↗
             </a>
@@ -138,8 +140,8 @@ useHead(() => ({
       </div>
 
       <!-- Main Showcase Frame with Rounded-3xl -->
-      <div class="my-12">
-        <div class="relative aspect-[16/10] overflow-hidden rounded-3xl bg-[#e5e2db] shadow-md border border-ink/10">
+      <div class="my-8 sm:my-12">
+        <div class="relative aspect-[16/10] overflow-hidden rounded-2xl sm:rounded-3xl bg-[#e5e2db] shadow-md border border-ink/10">
           <img
             :src="project.thumbnail_url"
             :alt="`Tampilan utama ${project.title}`"
@@ -150,11 +152,11 @@ useHead(() => ({
         </div>
       </div>
 
-      <!-- Horizontal Gallery (Pinned if multiple images) -->
+      <!-- Horizontal Gallery -->
       <div
         v-if="galleryItems.length > 1"
         ref="gallerySectionRef"
-        class="my-16 overflow-hidden rounded-3xl bg-ink p-8 sm:p-10 text-paper shadow-xl"
+        class="my-10 sm:my-16 overflow-hidden rounded-2xl sm:rounded-3xl bg-ink p-5 sm:p-10 text-paper shadow-xl"
       >
         <div class="flex items-center justify-between border-b border-paper/15 pb-4">
           <p class="font-mono text-xs text-paper/70 uppercase tracking-widest">
@@ -164,11 +166,14 @@ useHead(() => ({
             {{ String(galleryCurrentIndex).padStart(2, '0') }} / {{ String(galleryItems.length).padStart(2, '0') }}
           </p>
         </div>
-        <div ref="galleryTrackRef" class="mt-8 flex gap-8">
+        <div
+          ref="galleryTrackRef"
+          class="mt-6 sm:mt-8 flex gap-4 sm:gap-8 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory"
+        >
           <div
             v-for="(item, i) in galleryItems"
             :key="i"
-            class="relative aspect-[16/10] w-[80vw] max-w-[1000px] shrink-0 overflow-hidden rounded-2xl bg-[#1f1d1a] border border-white/10"
+            class="relative aspect-[16/10] w-[88vw] sm:w-[80vw] max-w-[1000px] shrink-0 snap-center overflow-hidden rounded-xl sm:rounded-2xl bg-[#1f1d1a] border border-white/10"
           >
             <img
               :src="item.url"
@@ -176,7 +181,7 @@ useHead(() => ({
               class="h-full w-full object-cover"
               loading="lazy"
             >
-            <span class="absolute bottom-4 left-4 rounded-full bg-void/80 px-4 py-1.5 font-mono text-[0.7rem] uppercase tracking-wider text-paper backdrop-blur-md">
+            <span class="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 rounded-full bg-void/80 px-3 sm:px-4 py-1 sm:py-1.5 font-mono text-[0.65rem] sm:text-[0.7rem] uppercase tracking-wider text-paper backdrop-blur-md">
               {{ item.title }}
             </span>
           </div>
@@ -184,25 +189,25 @@ useHead(() => ({
       </div>
 
       <!-- Tech Stack & Case Study Content -->
-      <div class="grid gap-12 border-b border-ink/12 py-14 lg:grid-cols-[1fr_2.2fr] lg:py-20">
+      <div class="grid gap-8 sm:gap-12 border-b border-ink/12 py-10 sm:py-16 lg:grid-cols-[1fr_2.2fr] lg:py-20">
         <!-- Sidebar Metadata -->
-        <aside class="space-y-8">
-          <div class="rounded-3xl bg-white/70 p-6 border border-ink/10 shadow-xs space-y-3">
+        <aside class="space-y-6 sm:space-y-8">
+          <div class="rounded-2xl sm:rounded-3xl bg-white/70 p-5 sm:p-6 border border-ink/10 shadow-xs space-y-3">
             <p class="font-mono text-xs font-semibold text-mute uppercase tracking-[0.14em]">
               Teknologi
             </p>
-            <ul class="flex flex-wrap gap-2" aria-label="Teknologi yang digunakan">
+            <ul class="flex flex-wrap gap-1.5 sm:gap-2" aria-label="Teknologi yang digunakan">
               <li
                 v-for="tech in project.tech_stack"
                 :key="tech"
-                class="rounded-full bg-ink/5 border border-ink/10 px-3.5 py-1.5 font-mono text-xs font-semibold text-ink/90"
+                class="rounded-full bg-ink/5 border border-ink/10 px-3 py-1 font-mono text-[0.72rem] sm:text-xs font-semibold text-ink/90"
               >
                 {{ tech }}
               </li>
             </ul>
           </div>
 
-          <div class="rounded-3xl bg-white/70 p-6 border border-ink/10 shadow-xs space-y-2">
+          <div class="rounded-2xl sm:rounded-3xl bg-white/70 p-5 sm:p-6 border border-ink/10 shadow-xs space-y-2">
             <p class="font-mono text-xs font-semibold text-mute uppercase tracking-[0.14em]">
               Kategori & Gaya
             </p>
@@ -213,31 +218,31 @@ useHead(() => ({
         </aside>
 
         <!-- Case Study Article -->
-        <section aria-labelledby="case-study-heading" class="max-w-3xl">
+        <section aria-labelledby="case-study-heading" class="max-w-3xl min-w-0">
           <div class="inline-flex items-center gap-2 rounded-full bg-ink/5 px-3 py-1 font-mono text-[0.7rem] font-bold text-mute uppercase tracking-widest">
             <span class="size-1.5 rounded-full bg-signal" />
             <span>Case Study</span>
           </div>
-          <div class="mt-6">
+          <div class="mt-4 sm:mt-6">
             <CaseStudyBlock :html="project.description_html" />
           </div>
         </section>
       </div>
 
       <!-- Next Project & Return Navigation Card -->
-      <div class="my-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-center rounded-3xl bg-white/70 p-6 sm:p-8 border border-ink/10 shadow-xs">
-        <NuxtLink to="/#work" class="button-secondary">
+      <div class="my-8 sm:my-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-center rounded-2xl sm:rounded-3xl bg-white/70 p-5 sm:p-8 border border-ink/10 shadow-xs">
+        <NuxtLink to="/#work" class="button-secondary text-center">
           ← Semua Project
         </NuxtLink>
 
         <NuxtLink
           v-if="nextProject"
           :to="`/project/${nextProject.slug}`"
-          class="group flex items-center gap-4 text-right"
+          class="group flex items-center justify-between sm:justify-end gap-4 text-left sm:text-right"
         >
           <div>
-            <p class="font-mono text-[0.7rem] text-mute uppercase tracking-widest">Project Selanjutnya</p>
-            <p class="font-display text-xl font-bold text-ink group-hover:text-signal transition-colors">
+            <p class="font-mono text-[0.68rem] sm:text-[0.7rem] text-mute uppercase tracking-widest">Project Selanjutnya</p>
+            <p class="font-display text-base sm:text-xl font-bold text-ink group-hover:text-signal transition-colors">
               {{ nextProject.title }} →
             </p>
           </div>

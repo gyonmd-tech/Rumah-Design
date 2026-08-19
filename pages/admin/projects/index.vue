@@ -157,39 +157,39 @@ async function confirmDelete() {
 <template>
   <div class="space-y-8">
     <!-- Header & Action Bar -->
-    <div class="flex flex-wrap items-end justify-between gap-5 border-b border-ink/12 pb-6">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-ink/12 pb-5">
       <div>
         <div class="inline-flex items-center gap-2 rounded-full bg-ink/5 px-3 py-1 font-mono text-[0.7rem] font-bold text-mute uppercase tracking-widest">
           <span class="size-1.5 rounded-full bg-signal" />
           <span>Katalog & Editorial</span>
         </div>
-        <h1 class="mt-3 font-display text-4xl font-bold text-ink tracking-tight">Manajemen Project</h1>
+        <h1 class="mt-2 sm:mt-3 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-ink tracking-tight">Manajemen Project</h1>
       </div>
       <div class="flex items-center gap-3">
-        <NuxtLink to="/admin/projects/new" class="button-primary">
+        <NuxtLink to="/admin/projects/new" class="button-primary text-xs w-full sm:w-auto text-center">
           + Tambah Project Baru
         </NuxtLink>
       </div>
     </div>
 
     <!-- Analytics & Stats Cards Grid -->
-    <div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
-      <div class="rounded-3xl bg-white/85 p-5 border border-ink/10 shadow-xs space-y-1">
-        <span class="font-mono text-[0.7rem] font-bold uppercase tracking-wider text-mute">Total Project</span>
-        <p class="font-display text-3xl font-bold text-ink">{{ stats.total }}</p>
+    <div class="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4">
+      <div class="rounded-2xl sm:rounded-3xl bg-white/85 p-4 sm:p-5 border border-ink/10 shadow-xs space-y-1">
+        <span class="font-mono text-[0.68rem] sm:text-[0.7rem] font-bold uppercase tracking-wider text-mute">Total Project</span>
+        <p class="font-display text-2xl sm:text-3xl font-bold text-ink">{{ stats.total }}</p>
       </div>
-      <div class="rounded-3xl bg-white/85 p-5 border border-ink/10 shadow-xs space-y-1">
-        <span class="font-mono text-[0.7rem] font-bold uppercase tracking-wider text-emerald-700">Published</span>
-        <p class="font-display text-3xl font-bold text-emerald-600">{{ stats.published }}</p>
+      <div class="rounded-2xl sm:rounded-3xl bg-white/85 p-4 sm:p-5 border border-ink/10 shadow-xs space-y-1">
+        <span class="font-mono text-[0.68rem] sm:text-[0.7rem] font-bold uppercase tracking-wider text-emerald-700">Published</span>
+        <p class="font-display text-2xl sm:text-3xl font-bold text-emerald-600">{{ stats.published }}</p>
       </div>
-      <div class="rounded-3xl bg-white/85 p-5 border border-ink/10 shadow-xs space-y-1">
-        <span class="font-mono text-[0.7rem] font-bold uppercase tracking-wider text-mute">Draft</span>
-        <p class="font-display text-3xl font-bold text-ink/70">{{ stats.draft }}</p>
+      <div class="rounded-2xl sm:rounded-3xl bg-white/85 p-4 sm:p-5 border border-ink/10 shadow-xs space-y-1">
+        <span class="font-mono text-[0.68rem] sm:text-[0.7rem] font-bold uppercase tracking-wider text-mute">Draft</span>
+        <p class="font-display text-2xl sm:text-3xl font-bold text-ink/70">{{ stats.draft }}</p>
       </div>
-      <div class="rounded-3xl bg-white/85 p-5 border border-ink/10 shadow-xs space-y-1">
-        <span class="font-mono text-[0.7rem] font-bold uppercase tracking-wider text-mute">Rata-rata SEO</span>
+      <div class="rounded-2xl sm:rounded-3xl bg-white/85 p-4 sm:p-5 border border-ink/10 shadow-xs space-y-1">
+        <span class="font-mono text-[0.68rem] sm:text-[0.7rem] font-bold uppercase tracking-wider text-mute">Rata-rata SEO</span>
         <div class="flex items-baseline gap-1">
-          <p class="font-display text-3xl font-bold" :class="stats.avgSeo >= 80 ? 'text-emerald-600' : 'text-amber-600'">
+          <p class="font-display text-2xl sm:text-3xl font-bold" :class="stats.avgSeo >= 80 ? 'text-emerald-600' : 'text-amber-600'">
             {{ stats.avgSeo }}
           </p>
           <span class="font-mono text-xs text-mute">/ 100</span>
@@ -198,34 +198,34 @@ async function confirmDelete() {
     </div>
 
     <!-- Filter & Search Toolbar -->
-    <div class="flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-white/80 p-4 border border-ink/10 shadow-xs">
-      <!-- Search Input without icon -->
-      <div class="relative flex-1 min-w-[240px] max-w-md">
+    <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 sm:gap-4 rounded-2xl sm:rounded-3xl bg-white/80 p-3.5 sm:p-4 border border-ink/10 shadow-xs">
+      <!-- Search Input -->
+      <div class="relative flex-1">
         <input
           v-model="searchQuery"
           type="search"
-          class="field font-sans text-sm"
+          class="field font-sans text-xs sm:text-sm !min-h-10"
           placeholder="Cari judul, slug, teknologi, atau tag..."
         >
       </div>
 
-      <!-- Filters & Sorting Controls -->
-      <div class="flex flex-wrap items-center gap-2.5 font-mono text-xs">
+      <!-- Filters & Sorting Controls (Grid on mobile, flex on tablet/desktop) -->
+      <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 font-mono text-xs">
         <!-- Category Filter -->
-        <select v-model="selectedCategory" class="field !min-h-10 !py-1 !px-3 font-mono cursor-pointer !w-auto">
+        <select v-model="selectedCategory" class="field !min-h-10 !py-1.5 !px-3 font-mono cursor-pointer !w-full sm:!w-auto">
           <option value="all">Semua Kategori</option>
           <option v-for="cat in PROJECT_CATEGORIES" :key="cat.value" :value="cat.value">{{ cat.label }}</option>
         </select>
 
         <!-- Status Filter -->
-        <select v-model="selectedStatus" class="field !min-h-10 !py-1 !px-3 font-mono cursor-pointer !w-auto">
+        <select v-model="selectedStatus" class="field !min-h-10 !py-1.5 !px-3 font-mono cursor-pointer !w-full sm:!w-auto">
           <option value="all">Semua Status</option>
           <option value="published">Published</option>
           <option value="draft">Draft</option>
         </select>
 
         <!-- Sort Filter -->
-        <select v-model="sortBy" class="field !min-h-10 !py-1 !px-3 font-mono cursor-pointer !w-auto">
+        <select v-model="sortBy" class="field !min-h-10 !py-1.5 !px-3 font-mono cursor-pointer col-span-2 sm:col-span-1 !w-full sm:!w-auto">
           <option value="updated_desc">Terbaru Diperbarui</option>
           <option value="updated_asc">Terlama Diperbarui</option>
           <option value="title_asc">Judul (A–Z)</option>
@@ -233,13 +233,14 @@ async function confirmDelete() {
       </div>
     </div>
 
-    <!-- Projects Table & List -->
-    <div v-if="status === 'pending'" class="animate-pulse rounded-3xl bg-white/70 p-12 text-center font-mono text-xs text-mute border border-ink/10">
+    <!-- Loading State -->
+    <div v-if="status === 'pending'" class="animate-pulse rounded-2xl sm:rounded-3xl bg-white/70 p-10 text-center font-mono text-xs text-mute border border-ink/10">
       Memuat daftar project…
     </div>
 
-    <div v-else-if="!filteredProjects.length" class="rounded-3xl border border-ink/10 bg-white/80 p-12 text-center shadow-xs space-y-4">
-      <p class="font-display text-2xl font-bold text-ink">Tidak ada project ditemukan.</p>
+    <!-- Empty State -->
+    <div v-else-if="!filteredProjects.length" class="rounded-2xl sm:rounded-3xl border border-ink/10 bg-white/80 p-8 sm:p-12 text-center shadow-xs space-y-3 sm:space-y-4">
+      <p class="font-display text-xl sm:text-2xl font-bold text-ink">Tidak ada project ditemukan.</p>
       <p class="font-mono text-xs text-mute">Coba ubah kata kunci pencarian atau reset filter.</p>
       <button
         v-if="searchQuery || selectedCategory !== 'all' || selectedStatus !== 'all'"
@@ -251,116 +252,205 @@ async function confirmDelete() {
       </button>
     </div>
 
-    <div v-else class="overflow-hidden rounded-3xl border border-ink/10 bg-white/90 shadow-xs">
-      <div class="overflow-x-auto">
-        <table class="w-full min-w-[900px] border-collapse text-left font-sans">
-          <thead>
-            <tr class="border-b border-ink/10 font-mono text-xs uppercase tracking-wider text-mute bg-ink/[0.02]">
-              <th class="p-4 pl-6">Project & Visual</th>
-              <th class="p-4">Kategori & Tags</th>
-              <th class="p-4 text-center">Skor SEO</th>
-              <th class="p-4">Status</th>
-              <th class="p-4">Pembaruan</th>
-              <th class="p-4 pr-6 text-right">Aksi</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-ink/10 text-sm">
-            <tr v-for="project in filteredProjects" :key="project.id" class="hover:bg-ink/[0.02] transition-colors">
-              <!-- Title & Thumbnail -->
-              <td class="p-4 pl-6">
-                <div class="flex items-center gap-4">
-                  <div class="relative aspect-[16/10] w-24 shrink-0 overflow-hidden rounded-2xl border border-ink/10 bg-ink/10 shadow-xs">
-                    <img :src="project.thumbnail_url" alt="" class="h-full w-full object-cover">
-                  </div>
-                  <div class="min-w-0">
-                    <NuxtLink
-                      :to="`/admin/projects/${project.id}/edit`"
-                      class="font-display font-bold text-ink hover:text-signal transition-colors text-base block truncate max-w-xs sm:max-w-sm"
-                    >
-                      {{ project.title }}
-                    </NuxtLink>
-                    <div class="flex items-center gap-2 mt-1">
-                      <span class="font-mono text-xs text-mute">/{{ project.slug }}</span>
-                      <button
-                        type="button"
-                        class="text-[0.68rem] font-mono text-signal hover:underline cursor-pointer"
-                        title="Salin Link Publik"
-                        @click="copyPublicLink(project)"
-                      >
-                        Salin URL
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </td>
+    <!-- Responsive Projects Presentation: Mobile Card View (< md) + Desktop Table (>= md) -->
+    <div v-else class="space-y-4">
+      <!-- 1. MOBILE CARD VIEW (< md) -->
+      <div class="md:hidden space-y-3">
+        <div
+          v-for="project in filteredProjects"
+          :key="project.id"
+          class="rounded-2xl border border-ink/10 bg-white/95 p-4 shadow-xs space-y-3"
+        >
+          <!-- Top Row: Thumbnail + Title + Category -->
+          <div class="flex items-start gap-3">
+            <div class="relative aspect-[16/10] w-20 shrink-0 overflow-hidden rounded-xl border border-ink/10 bg-ink/10 shadow-xs">
+              <img :src="project.thumbnail_url" alt="" class="h-full w-full object-cover">
+            </div>
 
-              <!-- Category & Tags -->
-              <td class="p-4">
-                <div class="space-y-1">
-                  <span class="inline-block rounded-full bg-ink/5 px-2.5 py-0.5 font-mono text-xs font-semibold text-ink">
-                    {{ categoryLabel(project.category) }}
-                  </span>
-                  <p class="font-mono text-[0.68rem] text-mute truncate max-w-[160px]">
-                    {{ project.style_tags.join(', ') || 'No tags' }}
-                  </p>
-                </div>
-              </td>
-
-              <!-- Realtime SEO Score Badge -->
-              <td class="p-4 text-center">
-                <div class="inline-flex flex-col items-center gap-0.5">
-                  <span
-                    class="rounded-full px-2.5 py-0.5 font-mono text-xs font-bold border"
-                    :class="getProjectSeoScore(project).colorClass"
-                  >
-                    {{ getProjectSeoScore(project).score }} / 100
-                  </span>
-                  <span class="font-mono text-[0.65rem] text-mute uppercase">
-                    Grade {{ getProjectSeoScore(project).grade }}
-                  </span>
-                </div>
-              </td>
-
-              <!-- Status Switcher Button -->
-              <td class="p-4">
+            <div class="min-w-0 flex-1 space-y-1">
+              <NuxtLink
+                :to="`/admin/projects/${project.id}/edit`"
+                class="font-display font-bold text-ink hover:text-signal text-base block leading-tight truncate"
+              >
+                {{ project.title }}
+              </NuxtLink>
+              <div class="flex items-center gap-2">
+                <span class="font-mono text-[0.68rem] text-mute truncate">/{{ project.slug }}</span>
                 <button
                   type="button"
-                  class="group inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-mono text-[0.7rem] font-bold uppercase tracking-wider transition-all cursor-pointer"
-                  :class="project.status === 'published' ? 'bg-emerald-100 text-emerald-900 hover:bg-emerald-200' : 'bg-ink/10 text-mute hover:bg-ink/15'"
-                  title="Klik untuk mengubah status"
-                  @click="quickToggleStatus(project)"
+                  class="text-[0.65rem] font-mono text-signal hover:underline cursor-pointer shrink-0"
+                  @click="copyPublicLink(project)"
                 >
-                  <span class="size-1.5 rounded-full" :class="project.status === 'published' ? 'bg-emerald-600' : 'bg-mute'" />
-                  <span>{{ project.status }}</span>
+                  Salin
                 </button>
-              </td>
+              </div>
+              <span class="inline-block rounded-full bg-ink/5 px-2 py-0.5 font-mono text-[0.65rem] font-semibold text-ink">
+                {{ categoryLabel(project.category) }}
+              </span>
+            </div>
+          </div>
 
-              <!-- Updated Time -->
-              <td class="p-4 font-mono text-xs text-mute whitespace-nowrap">
-                {{ new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium' }).format(new Date(project.updated_at)) }}
-              </td>
+          <!-- Middle Row: SEO Score + Status Badge -->
+          <div class="flex items-center justify-between border-t border-b border-ink/5 py-2.5 font-mono text-xs">
+            <div class="flex items-center gap-1.5">
+              <span class="text-[0.68rem] text-mute uppercase">SEO:</span>
+              <span
+                class="rounded-full px-2 py-0.5 text-[0.68rem] font-bold border"
+                :class="getProjectSeoScore(project).colorClass"
+              >
+                {{ getProjectSeoScore(project).score }}/100 ({{ getProjectSeoScore(project).grade }})
+              </span>
+            </div>
 
-              <!-- Action Menu -->
-              <td class="p-4 pr-6 text-right whitespace-nowrap">
-                <div class="flex justify-end items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider">
-                  <NuxtLink
-                    :to="`/admin/projects/${project.id}/edit`"
-                    class="rounded-full bg-ink/5 hover:bg-ink hover:text-paper px-3.5 py-1.5 text-ink transition-all"
-                  >
-                    Edit ↗
-                  </NuxtLink>
+            <!-- Quick Status Switcher -->
+            <button
+              type="button"
+              class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[0.68rem] font-bold uppercase tracking-wider cursor-pointer"
+              :class="project.status === 'published' ? 'bg-emerald-100 text-emerald-900' : 'bg-ink/10 text-mute'"
+              @click="quickToggleStatus(project)"
+            >
+              <span class="size-1.5 rounded-full" :class="project.status === 'published' ? 'bg-emerald-600' : 'bg-mute'" />
+              <span>{{ project.status }}</span>
+            </button>
+          </div>
+
+          <!-- Bottom Action Buttons -->
+          <div class="flex items-center justify-between pt-1">
+            <span class="font-mono text-[0.68rem] text-mute">
+              {{ new Intl.DateTimeFormat('id-ID', { dateStyle: 'short' }).format(new Date(project.updated_at)) }}
+            </span>
+
+            <div class="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider">
+              <NuxtLink
+                :to="`/admin/projects/${project.id}/edit`"
+                class="rounded-full bg-ink/5 hover:bg-ink hover:text-paper px-3 py-1 text-ink transition-all text-[0.72rem]"
+              >
+                Edit ↗
+              </NuxtLink>
+              <button
+                type="button"
+                class="cursor-pointer rounded-full bg-signal/10 hover:bg-signal hover:text-white px-3 py-1 text-signal transition-all text-[0.72rem]"
+                @click="promptDelete(project)"
+              >
+                Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. DESKTOP TABLE VIEW (>= md) -->
+      <div class="hidden md:block overflow-hidden rounded-3xl border border-ink/10 bg-white/90 shadow-xs">
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[850px] border-collapse text-left font-sans">
+            <thead>
+              <tr class="border-b border-ink/10 font-mono text-xs uppercase tracking-wider text-mute bg-ink/[0.02]">
+                <th class="p-4 pl-6">Project & Visual</th>
+                <th class="p-4">Kategori & Tags</th>
+                <th class="p-4 text-center">Skor SEO</th>
+                <th class="p-4">Status</th>
+                <th class="p-4">Pembaruan</th>
+                <th class="p-4 pr-6 text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-ink/10 text-sm">
+              <tr v-for="project in filteredProjects" :key="project.id" class="hover:bg-ink/[0.02] transition-colors">
+                <!-- Title & Thumbnail -->
+                <td class="p-4 pl-6">
+                  <div class="flex items-center gap-4">
+                    <div class="relative aspect-[16/10] w-24 shrink-0 overflow-hidden rounded-2xl border border-ink/10 bg-ink/10 shadow-xs">
+                      <img :src="project.thumbnail_url" alt="" class="h-full w-full object-cover">
+                    </div>
+                    <div class="min-w-0">
+                      <NuxtLink
+                        :to="`/admin/projects/${project.id}/edit`"
+                        class="font-display font-bold text-ink hover:text-signal transition-colors text-base block truncate max-w-xs sm:max-w-sm"
+                      >
+                        {{ project.title }}
+                      </NuxtLink>
+                      <div class="flex items-center gap-2 mt-1">
+                        <span class="font-mono text-xs text-mute">/{{ project.slug }}</span>
+                        <button
+                          type="button"
+                          class="text-[0.68rem] font-mono text-signal hover:underline cursor-pointer"
+                          title="Salin Link Publik"
+                          @click="copyPublicLink(project)"
+                        >
+                          Salin URL
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Category & Tags -->
+                <td class="p-4">
+                  <div class="space-y-1">
+                    <span class="inline-block rounded-full bg-ink/5 px-2.5 py-0.5 font-mono text-xs font-semibold text-ink">
+                      {{ categoryLabel(project.category) }}
+                    </span>
+                    <p class="font-mono text-[0.68rem] text-mute truncate max-w-[160px]">
+                      {{ project.style_tags.join(', ') || 'No tags' }}
+                    </p>
+                  </div>
+                </td>
+
+                <!-- Realtime SEO Score Badge -->
+                <td class="p-4 text-center">
+                  <div class="inline-flex flex-col items-center gap-0.5">
+                    <span
+                      class="rounded-full px-2.5 py-0.5 font-mono text-xs font-bold border"
+                      :class="getProjectSeoScore(project).colorClass"
+                    >
+                      {{ getProjectSeoScore(project).score }} / 100
+                    </span>
+                    <span class="font-mono text-[0.65rem] text-mute uppercase">
+                      Grade {{ getProjectSeoScore(project).grade }}
+                    </span>
+                  </div>
+                </td>
+
+                <!-- Status Switcher Button -->
+                <td class="p-4">
                   <button
                     type="button"
-                    class="cursor-pointer rounded-full bg-signal/10 hover:bg-signal hover:text-white px-3.5 py-1.5 text-signal transition-all"
-                    @click="promptDelete(project)"
+                    class="group inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-mono text-[0.7rem] font-bold uppercase tracking-wider transition-all cursor-pointer"
+                    :class="project.status === 'published' ? 'bg-emerald-100 text-emerald-900 hover:bg-emerald-200' : 'bg-ink/10 text-mute hover:bg-ink/15'"
+                    title="Klik untuk mengubah status"
+                    @click="quickToggleStatus(project)"
                   >
-                    Hapus
+                    <span class="size-1.5 rounded-full" :class="project.status === 'published' ? 'bg-emerald-600' : 'bg-mute'" />
+                    <span>{{ project.status }}</span>
                   </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                </td>
+
+                <!-- Updated Time -->
+                <td class="p-4 font-mono text-xs text-mute whitespace-nowrap">
+                  {{ new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium' }).format(new Date(project.updated_at)) }}
+                </td>
+
+                <!-- Action Menu -->
+                <td class="p-4 pr-6 text-right whitespace-nowrap">
+                  <div class="flex justify-end items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider">
+                    <NuxtLink
+                      :to="`/admin/projects/${project.id}/edit`"
+                      class="rounded-full bg-ink/5 hover:bg-ink hover:text-paper px-3.5 py-1.5 text-ink transition-all"
+                    >
+                      Edit ↗
+                    </NuxtLink>
+                    <button
+                      type="button"
+                      class="cursor-pointer rounded-full bg-signal/10 hover:bg-signal hover:text-white px-3.5 py-1.5 text-signal transition-all"
+                      @click="promptDelete(project)"
+                    >
+                      Hapus
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 

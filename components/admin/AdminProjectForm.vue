@@ -103,7 +103,6 @@ function appendTag(type: 'style' | 'tech', tag: string) {
 function insertMarkdown(syntax: string, placeholder = '') {
   const textarea = document.getElementById('case-study-textarea') as HTMLTextAreaElement | null
   if (!textarea) return
-
   const start = textarea.selectionStart
   const end = textarea.selectionEnd
   const selected = form.description.substring(start, end) || placeholder
@@ -213,46 +212,48 @@ function submit() {
     </div>
 
     <!-- Header Navigation Tabs & Quick SEO Pill -->
-    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-ink/12 pb-4">
-      <div class="flex items-center gap-2 rounded-2xl bg-white/70 p-1.5 border border-ink/10 shadow-xs font-mono text-xs font-semibold">
-        <button
-          type="button"
-          class="cursor-pointer rounded-xl px-4 py-2 transition-all"
-          :class="activeTab === 'content' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
-          @click="activeTab = 'content'"
-        >
-          1. Konten & Narasi
-        </button>
-        <button
-          type="button"
-          class="cursor-pointer rounded-xl px-4 py-2 transition-all"
-          :class="activeTab === 'media' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
-          @click="activeTab = 'media'"
-        >
-          2. Media & Visual
-        </button>
-        <button
-          type="button"
-          class="cursor-pointer rounded-xl px-4 py-2 transition-all flex items-center gap-2"
-          :class="activeTab === 'seo' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
-          @click="activeTab = 'seo'"
-        >
-          <span>3. SEO & Social</span>
-          <span
-            class="rounded-full px-2 py-0.5 text-[0.65rem] font-bold uppercase"
-            :class="seoAnalysis.score >= 80 ? 'bg-emerald-500 text-white' : seoAnalysis.score >= 50 ? 'bg-amber-500 text-ink' : 'bg-rose-500 text-white'"
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-ink/12 pb-4">
+      <div class="overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory rounded-2xl bg-white/70 p-1.5 border border-ink/10 shadow-xs font-mono text-xs font-semibold">
+        <div class="flex items-center gap-1.5 min-w-max sm:min-w-0">
+          <button
+            type="button"
+            class="snap-start cursor-pointer rounded-xl px-3 sm:px-4 py-2 transition-all whitespace-nowrap"
+            :class="activeTab === 'content' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
+            @click="activeTab = 'content'"
           >
-            {{ seoAnalysis.score }}
-          </span>
-        </button>
+            1. Konten
+          </button>
+          <button
+            type="button"
+            class="snap-start cursor-pointer rounded-xl px-3 sm:px-4 py-2 transition-all whitespace-nowrap"
+            :class="activeTab === 'media' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
+            @click="activeTab = 'media'"
+          >
+            2. Media
+          </button>
+          <button
+            type="button"
+            class="snap-start cursor-pointer rounded-xl px-3 sm:px-4 py-2 transition-all flex items-center gap-1.5 whitespace-nowrap"
+            :class="activeTab === 'seo' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
+            @click="activeTab = 'seo'"
+          >
+            <span>3. SEO</span>
+            <span
+              class="rounded-full px-1.5 py-0.5 text-[0.62rem] font-bold uppercase"
+              :class="seoAnalysis.score >= 80 ? 'bg-emerald-500 text-white' : seoAnalysis.score >= 50 ? 'bg-amber-500 text-ink' : 'bg-rose-500 text-white'"
+            >
+              {{ seoAnalysis.score }}
+            </span>
+          </button>
+        </div>
       </div>
 
       <!-- Live SEO Score Overview Badge -->
-      <div class="flex items-center gap-3">
-        <div class="flex items-center gap-2 rounded-2xl bg-white/80 border border-ink/10 px-3.5 py-1.5 shadow-xs">
-          <span class="font-mono text-xs text-mute uppercase tracking-wider">Skor SEO:</span>
+      <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 rounded-2xl bg-white/80 border border-ink/10 px-3 py-1.5 shadow-xs">
+          <span class="font-mono text-[0.68rem] sm:text-xs text-mute uppercase tracking-wider">SEO:</span>
           <span
-            class="font-mono text-xs font-bold rounded-full px-2.5 py-0.5 border"
+            class="font-mono text-[0.68rem] sm:text-xs font-bold rounded-full px-2 py-0.5 border"
             :class="seoAnalysis.colorClass"
           >
             {{ seoAnalysis.score }} / 100 (Grade {{ seoAnalysis.grade }})
@@ -459,11 +460,11 @@ function submit() {
             </div>
           </div>
 
-          <!-- Markdown Toolbar (Clean Textual Buttons) -->
-          <div class="flex flex-wrap items-center gap-1 rounded-2xl bg-ink/[0.03] p-1.5 border border-ink/10 font-mono text-xs">
+          <!-- Markdown Toolbar (Clean Textual Buttons with Mobile Horizontal Scroll) -->
+          <div class="overflow-x-auto no-scrollbar scroll-smooth flex items-center gap-1 rounded-2xl bg-ink/[0.03] p-1.5 border border-ink/10 font-mono text-xs">
             <button
               type="button"
-              class="rounded-lg px-2.5 py-1 hover:bg-white hover:shadow-xs text-ink font-bold cursor-pointer transition-all"
+              class="shrink-0 rounded-lg px-2.5 py-1 hover:bg-white hover:shadow-xs text-ink font-bold cursor-pointer transition-all"
               title="Heading 2"
               @click="insertMarkdown('h2')"
             >
@@ -471,16 +472,16 @@ function submit() {
             </button>
             <button
               type="button"
-              class="rounded-lg px-2.5 py-1 hover:bg-white hover:shadow-xs text-ink font-bold cursor-pointer transition-all"
+              class="shrink-0 rounded-lg px-2.5 py-1 hover:bg-white hover:shadow-xs text-ink font-bold cursor-pointer transition-all"
               title="Heading 3"
               @click="insertMarkdown('h3')"
             >
               H3
             </button>
-            <span class="h-4 w-px bg-ink/15 mx-1" />
+            <span class="shrink-0 h-4 w-px bg-ink/15 mx-1" />
             <button
               type="button"
-              class="rounded-lg px-2.5 py-1 hover:bg-white hover:shadow-xs text-ink font-bold cursor-pointer transition-all"
+              class="shrink-0 rounded-lg px-2.5 py-1 hover:bg-white hover:shadow-xs text-ink font-bold cursor-pointer transition-all"
               title="Tebal (Bold)"
               @click="insertMarkdown('bold')"
             >
@@ -488,7 +489,7 @@ function submit() {
             </button>
             <button
               type="button"
-              class="rounded-lg px-2.5 py-1 hover:bg-white hover:shadow-xs text-ink italic cursor-pointer transition-all"
+              class="shrink-0 rounded-lg px-2.5 py-1 hover:bg-white hover:shadow-xs text-ink italic cursor-pointer transition-all"
               title="Miring (Italic)"
               @click="insertMarkdown('italic')"
             >
@@ -496,16 +497,16 @@ function submit() {
             </button>
             <button
               type="button"
-              class="rounded-lg px-2.5 py-1 hover:bg-white hover:shadow-xs text-ink cursor-pointer transition-all"
+              class="shrink-0 rounded-lg px-2.5 py-1 hover:bg-white hover:shadow-xs text-ink cursor-pointer transition-all"
               title="Kode Inline"
               @click="insertMarkdown('code')"
             >
               Code
             </button>
-            <span class="h-4 w-px bg-ink/15 mx-1" />
+            <span class="shrink-0 h-4 w-px bg-ink/15 mx-1" />
             <button
               type="button"
-              class="rounded-lg px-2.5 py-1 hover:bg-white hover:shadow-xs text-ink cursor-pointer transition-all"
+              class="shrink-0 rounded-lg px-2.5 py-1 hover:bg-white hover:shadow-xs text-ink cursor-pointer transition-all"
               title="Daftar (List)"
               @click="insertMarkdown('list')"
             >
@@ -513,7 +514,7 @@ function submit() {
             </button>
             <button
               type="button"
-              class="rounded-lg px-2.5 py-1 hover:bg-white hover:shadow-xs text-ink cursor-pointer transition-all"
+              class="shrink-0 rounded-lg px-2.5 py-1 hover:bg-white hover:shadow-xs text-ink cursor-pointer transition-all"
               title="Kutipan (Quote)"
               @click="insertMarkdown('quote')"
             >
@@ -521,7 +522,7 @@ function submit() {
             </button>
             <button
               type="button"
-              class="rounded-lg px-2.5 py-1 hover:bg-white hover:shadow-xs text-ink cursor-pointer transition-all"
+              class="shrink-0 rounded-lg px-2.5 py-1 hover:bg-white hover:shadow-xs text-ink cursor-pointer transition-all"
               title="Tautan (Link)"
               @click="insertMarkdown('link')"
             >
@@ -790,7 +791,6 @@ function submit() {
           <h3 class="font-display text-xl font-bold text-ink">Simulator Kartu Berbagi Sosial (Open Graph)</h3>
           <p class="text-xs text-mute font-sans">Tampilan preview saat link dibagikan di Twitter/X, LinkedIn, WhatsApp, atau Slack.</p>
         </div>
-
         <div class="max-w-lg overflow-hidden rounded-2xl border border-ink/15 bg-white shadow-md">
           <div class="relative aspect-[16/9] w-full bg-[#121110]/5 overflow-hidden">
             <img
@@ -817,27 +817,27 @@ function submit() {
     </div>
 
     <!-- Sticky Bottom Submit Actions Bar -->
-    <div class="sticky bottom-4 z-30 flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-paper/95 backdrop-blur-md p-4 sm:p-5 border border-ink/15 shadow-xl">
-      <div class="flex items-center gap-3">
+    <div class="sticky bottom-3 sm:bottom-4 z-30 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 rounded-2xl sm:rounded-3xl bg-paper/95 backdrop-blur-md p-3.5 sm:p-5 border border-ink/15 shadow-xl">
+      <div class="flex items-center gap-2.5">
         <span
-          class="size-2.5 rounded-full"
+          class="size-2.5 rounded-full shrink-0"
           :class="form.status === 'published' ? 'bg-emerald-500' : 'bg-amber-500'"
         />
-        <span class="font-mono text-xs font-bold uppercase tracking-wider text-ink">
+        <span class="font-mono text-xs font-bold uppercase tracking-wider text-ink truncate">
           Status: {{ form.status === 'published' ? 'Siap Dipublikasikan' : 'Draft Tersimpan' }}
         </span>
       </div>
 
-      <div class="flex items-center gap-3">
-        <NuxtLink to="/admin/projects" class="button-secondary text-xs">
+      <div class="flex items-center justify-end gap-2.5">
+        <NuxtLink to="/admin/projects" class="button-secondary text-xs flex-1 sm:flex-none text-center">
           Batal
         </NuxtLink>
         <button
           type="submit"
-          class="button-primary text-xs cursor-pointer"
+          class="button-primary text-xs cursor-pointer flex-1 sm:flex-none text-center"
           :disabled="busy"
         >
-          {{ busy ? 'Menyimpan…' : props.project ? 'Perbarui Project ↗' : 'Terbitkan Project ↗' }}
+          {{ busy ? 'Menyimpan…' : props.project ? 'Perbarui ↗' : 'Terbitkan ↗' }}
         </button>
       </div>
     </div>

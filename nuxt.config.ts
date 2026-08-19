@@ -28,6 +28,10 @@ export default defineNuxtConfig({
   },
   seo: {
     treeShakeUseSeoMeta: false,
+    fallbackTitle: false,
+  },
+  robots: {
+    disallow: ['/admin', '/admin/*'],
   },
   supabase: {
     redirect: false,
@@ -42,9 +46,15 @@ export default defineNuxtConfig({
         { rel: 'preconnect', href: 'https://api.fontshare.com', crossorigin: '' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-        { rel: 'stylesheet', href: 'https://api.fontshare.com/v2/css?f[]=general-sans@500,600,700&display=swap' },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap' },
+        { rel: 'preload', as: 'style', href: 'https://api.fontshare.com/v2/css?f[]=general-sans@500,600,700&display=swap' },
+        { rel: 'preload', as: 'style', href: 'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap' },
+        { rel: 'stylesheet', href: 'https://api.fontshare.com/v2/css?f[]=general-sans@500,600,700&display=swap', media: 'print', onload: "this.media='all'" },
+        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap', media: 'print', onload: "this.media='all'" },
       ],
+      noscript: [
+        { innerHTML: '<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@500,600,700&display=swap">' },
+        { innerHTML: '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">' }
+      ]
     },
   },
   routeRules: {

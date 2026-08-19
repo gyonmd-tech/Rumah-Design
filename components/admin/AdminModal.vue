@@ -49,41 +49,40 @@ onUnmounted(() => {
     >
       <div
         v-if="show"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-void/70 backdrop-blur-xs font-sans"
+        class="fixed inset-0 z-50 flex items-center justify-center p-3.5 sm:p-4 bg-void/70 backdrop-blur-xs font-sans"
         role="dialog"
         aria-modal="true"
       >
         <div
-          class="w-full max-w-md overflow-hidden rounded-3xl bg-paper p-7 text-ink shadow-2xl border border-ink/15 space-y-5 transform transition-all"
+          class="w-full max-w-md overflow-hidden rounded-2xl sm:rounded-3xl bg-paper p-5 sm:p-7 text-ink shadow-2xl border border-ink/15 space-y-4 sm:space-y-5 transform transition-all"
         >
-          <div class="flex items-start gap-4">
+          <div class="flex items-start gap-3 sm:gap-4">
             <div
               v-if="danger"
-              class="flex size-9 shrink-0 items-center justify-center rounded-2xl bg-signal/15 text-signal text-xs font-bold font-mono"
+              class="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-signal/15 text-signal text-xs font-bold font-mono"
             >
               DEL
             </div>
             <div
               v-else
-              class="flex size-9 shrink-0 items-center justify-center rounded-2xl bg-ink/5 text-ink text-xs font-bold font-mono"
+              class="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-ink/5 text-ink text-xs font-bold font-mono"
             >
               ACT
             </div>
-            <div class="space-y-1">
-              <h3 class="font-display text-xl font-bold text-ink">
+            <div class="space-y-1 min-w-0">
+              <h3 class="font-display text-lg sm:text-xl font-bold text-ink leading-snug">
                 {{ title }}
               </h3>
-              <p class="text-sm text-mute leading-relaxed font-sans">
+              <p class="text-xs sm:text-sm text-mute leading-relaxed font-sans">
                 {{ message }}
               </p>
             </div>
           </div>
 
-
-          <div class="flex items-center justify-end gap-3 pt-4 border-t border-ink/10">
+          <div class="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 pt-3.5 sm:pt-4 border-t border-ink/10">
             <button
               type="button"
-              class="button-secondary text-xs cursor-pointer"
+              class="button-secondary text-xs cursor-pointer text-center"
               :disabled="busy"
               @click="emit('cancel')"
             >
@@ -91,7 +90,7 @@ onUnmounted(() => {
             </button>
             <button
               type="button"
-              class="text-xs font-mono font-bold uppercase tracking-wider px-5 py-2.5 rounded-full cursor-pointer transition-all disabled:opacity-50"
+              class="text-xs font-mono font-bold uppercase tracking-wider px-5 py-2.5 rounded-full cursor-pointer transition-all disabled:opacity-50 text-center"
               :class="danger ? 'bg-signal text-white hover:bg-[#e63d10] shadow-md shadow-signal/20' : 'bg-ink text-paper hover:bg-black'"
               :disabled="busy"
               @click="emit('confirm')"

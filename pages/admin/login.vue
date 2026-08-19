@@ -58,8 +58,8 @@ async function login() {
     </section>
 
     <!-- Right Login Form -->
-    <section class="grid place-items-center px-6 py-16">
-      <div class="w-full max-w-md space-y-8 rounded-3xl bg-white/80 p-8 sm:p-10 border border-ink/10 shadow-lg">
+    <section class="grid place-items-center px-4 sm:px-6 py-8 sm:py-16">
+      <div class="w-full max-w-md space-y-6 sm:space-y-8 rounded-2xl sm:rounded-3xl bg-white/80 p-6 sm:p-10 border border-ink/10 shadow-lg">
         <div class="lg:hidden">
           <NuxtLink to="/" class="inline-flex items-center gap-2">
             <SiteLogo />
@@ -67,25 +67,25 @@ async function login() {
         </div>
 
         <div>
-          <div class="inline-flex items-center gap-2 rounded-full bg-ink/5 px-3 py-1 font-mono text-[0.7rem] font-bold text-mute uppercase tracking-widest">
+          <div class="inline-flex items-center gap-2 rounded-full bg-ink/5 px-3 py-1 font-mono text-[0.68rem] sm:text-[0.7rem] font-bold text-mute uppercase tracking-widest">
             <span class="size-1.5 rounded-full bg-signal" />
             <span>Admin Access</span>
           </div>
-          <h1 class="mt-3 font-display text-3xl font-bold text-ink">
+          <h1 class="mt-2 sm:mt-3 font-display text-2xl sm:text-3xl font-bold text-ink">
             Masuk Portal
           </h1>
-          <p class="mt-2 font-body text-sm text-mute">
+          <p class="mt-1 sm:mt-2 font-body text-xs sm:text-sm text-mute">
             Kelola project, case study, dan status publikasi portofolio.
           </p>
         </div>
 
-        <div v-if="message" role="alert" class="border border-signal/40 bg-signal/5 p-4 text-xs font-mono text-signal rounded-2xl">
+        <div v-if="message" role="alert" class="border border-signal/40 bg-signal/5 p-3.5 sm:p-4 text-xs font-mono text-signal rounded-2xl">
           {{ message }}
         </div>
 
-        <form class="space-y-5" @submit.prevent="login">
-          <fieldset :disabled="busy" class="space-y-5 disabled:opacity-60">
-            <div class="space-y-2">
+        <form class="space-y-4 sm:space-y-5" @submit.prevent="login">
+          <fieldset :disabled="busy" class="space-y-4 sm:space-y-5 disabled:opacity-60">
+            <div class="space-y-1.5 sm:space-y-2">
               <label for="admin-email" class="block font-mono text-xs font-bold text-ink uppercase tracking-wider">
                 Email
               </label>
@@ -95,12 +95,12 @@ async function login() {
                 type="email"
                 autocomplete="email"
                 placeholder="admin@rumahdesign.id"
-                class="field"
+                class="field font-sans text-sm"
                 required
               >
             </div>
 
-            <div class="space-y-2">
+            <div class="space-y-1.5 sm:space-y-2">
               <label for="admin-password" class="block font-mono text-xs font-bold text-ink uppercase tracking-wider">
                 Password
               </label>
@@ -110,19 +110,19 @@ async function login() {
                 type="password"
                 autocomplete="current-password"
                 placeholder="••••••••"
-                class="field"
+                class="field font-sans text-sm"
                 required
               >
             </div>
 
-            <button type="submit" class="button-primary w-full cursor-pointer mt-2">
+            <button type="submit" class="button-primary w-full cursor-pointer mt-2 text-xs py-3">
               {{ busy ? 'Memeriksa Akses…' : 'Masuk ke Admin ↗' }}
             </button>
           </fieldset>
         </form>
 
-        <div class="border-t border-ink/10 pt-6 text-center">
-          <NuxtLink to="/" class="font-mono text-xs text-mute hover:text-signal transition-colors">
+        <div class="border-t border-ink/10 pt-5 sm:pt-6 text-center">
+          <NuxtLink to="/" class="font-mono text-xs text-mute hover:text-signal transition-colors py-1 inline-block">
             ← Kembali ke Beranda
           </NuxtLink>
         </div>

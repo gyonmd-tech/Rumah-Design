@@ -105,8 +105,8 @@ async function logout() {
       </div>
     </aside>
 
-    <!-- Mobile Header -->
-    <header class="lg:hidden sticky top-0 z-40 border-b border-ink/10 bg-paper/95 backdrop-blur-md px-4 py-3">
+    <!-- Mobile Header & Navigation Drawer -->
+    <header class="lg:hidden sticky top-0 z-40 border-b border-ink/10 bg-paper/95 backdrop-blur-md px-4 py-3 shadow-xs">
       <div class="flex items-center justify-between">
         <NuxtLink to="/admin/projects" class="flex items-center gap-2">
           <SiteLogo />
@@ -117,61 +117,81 @@ async function logout() {
 
         <button
           type="button"
-          class="rounded-xl bg-ink/5 px-3 py-1.5 font-mono text-xs font-bold uppercase text-ink cursor-pointer"
+          class="flex items-center gap-1.5 rounded-full bg-ink/5 hover:bg-ink/10 px-3.5 py-1.5 font-mono text-xs font-bold uppercase text-ink transition-all cursor-pointer active:scale-95"
           @click="mobileMenuOpen = !mobileMenuOpen"
         >
-          {{ mobileMenuOpen ? 'Tutup' : 'Menu' }}
+          <span>{{ mobileMenuOpen ? '✕' : '☰' }}</span>
+          <span>{{ mobileMenuOpen ? 'Tutup' : 'Menu' }}</span>
         </button>
       </div>
 
-      <!-- Mobile Dropdown Menu -->
-      <div v-show="mobileMenuOpen" class="mt-3 pt-3 border-t border-ink/10 space-y-2 font-mono text-xs uppercase tracking-wider">
-        <NuxtLink
-          to="/admin/projects"
-          class="block rounded-xl px-3 py-2 text-mute hover:text-ink"
-          active-class="!bg-ink !text-paper !font-bold"
-          @click="mobileMenuOpen = false"
-        >
-          Projects
-        </NuxtLink>
-        <NuxtLink
-          to="/admin/seo"
-          class="block rounded-xl px-3 py-2 text-mute hover:text-ink"
-          active-class="!bg-ink !text-paper !font-bold"
-          @click="mobileMenuOpen = false"
-        >
-          SEO Center
-        </NuxtLink>
-        <NuxtLink
-          to="/admin/media"
-          class="block rounded-xl px-3 py-2 text-mute hover:text-ink"
-          active-class="!bg-ink !text-paper !font-bold"
-          @click="mobileMenuOpen = false"
-        >
-          Media Library
-        </NuxtLink>
-        <NuxtLink
-          to="/admin/settings"
-          class="block rounded-xl px-3 py-2 text-mute hover:text-ink"
-          active-class="!bg-ink !text-paper !font-bold"
-          @click="mobileMenuOpen = false"
-        >
-          Pengaturan
-        </NuxtLink>
-        <div class="pt-2 border-t border-ink/10 flex items-center justify-between">
-          <NuxtLink to="/" target="_blank" class="text-signal py-1">
-            Lihat Web ↗
+      <!-- Mobile Dropdown Menu Drawer -->
+      <Transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="opacity-0 -translate-y-2"
+        enter-to-class="opacity-100 translate-y-0"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 -translate-y-2"
+      >
+        <div v-show="mobileMenuOpen" class="mt-3 pt-3 border-t border-ink/10 space-y-1.5 font-mono text-xs uppercase tracking-wider">
+          <NuxtLink
+            to="/admin/projects"
+            class="flex items-center justify-between rounded-xl px-3.5 py-2.5 text-mute hover:bg-ink/5 hover:text-ink font-semibold"
+            active-class="!bg-ink !text-paper !font-bold"
+            @click="mobileMenuOpen = false"
+          >
+            <span>Projects</span>
+            <span class="size-1.5 rounded-full bg-signal" />
           </NuxtLink>
-          <button type="button" class="text-mute hover:text-signal" @click="logout">
-            Keluar ↗
-          </button>
+          <NuxtLink
+            to="/admin/seo"
+            class="flex items-center justify-between rounded-xl px-3.5 py-2.5 text-mute hover:bg-ink/5 hover:text-ink font-semibold"
+            active-class="!bg-ink !text-paper !font-bold"
+            @click="mobileMenuOpen = false"
+          >
+            <span>SEO Center</span>
+          </NuxtLink>
+          <NuxtLink
+            to="/admin/media"
+            class="flex items-center justify-between rounded-xl px-3.5 py-2.5 text-mute hover:bg-ink/5 hover:text-ink font-semibold"
+            active-class="!bg-ink !text-paper !font-bold"
+            @click="mobileMenuOpen = false"
+          >
+            <span>Media Library</span>
+          </NuxtLink>
+          <NuxtLink
+            to="/admin/settings"
+            class="flex items-center justify-between rounded-xl px-3.5 py-2.5 text-mute hover:bg-ink/5 hover:text-ink font-semibold"
+            active-class="!bg-ink !text-paper !font-bold"
+            @click="mobileMenuOpen = false"
+          >
+            <span>Pengaturan</span>
+          </NuxtLink>
+
+          <!-- User session info in mobile menu -->
+          <div class="pt-3 pb-1 border-t border-ink/10 space-y-2">
+            <div class="flex items-center justify-between text-[0.72rem] text-mute px-1">
+              <span class="truncate max-w-[200px]">{{ user?.email }}</span>
+              <span class="size-1.5 rounded-full bg-emerald-500" />
+            </div>
+
+            <div class="flex items-center justify-between pt-1 font-bold">
+              <NuxtLink to="/" target="_blank" class="rounded-full bg-ink/5 hover:bg-signal/15 hover:text-signal px-3 py-1 text-signal text-[0.72rem]">
+                Lihat Web ↗
+              </NuxtLink>
+              <button type="button" class="rounded-full bg-signal/10 text-signal hover:bg-signal hover:text-white px-3 py-1 text-[0.72rem] cursor-pointer transition-colors" @click="logout">
+                Keluar ↗
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      </Transition>
     </header>
 
     <!-- Main Content Area -->
     <div class="flex-1 lg:pl-72 flex flex-col min-w-0">
-      <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-8 sm:py-10">
+      <main class="w-full max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-10 py-6 sm:py-10">
         <slot />
       </main>
     </div>

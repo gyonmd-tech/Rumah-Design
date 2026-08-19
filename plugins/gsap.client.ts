@@ -1,15 +1,16 @@
 import { defineNuxtPlugin } from '#app'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Flip } from 'gsap/Flip'
 import Lenis from 'lenis'
 
 export default defineNuxtPlugin((nuxtApp) => {
-  gsap.registerPlugin(ScrollTrigger, Flip)
+  // Register only what we use — Flip removed (unused, saves ~34KB)
+  gsap.registerPlugin(ScrollTrigger)
 
   // Initialize Lenis smooth scroll
+  // duration 0.75 — snappier than 1.0, still silky (was 1.0 which felt unresponsive)
   const lenis = new Lenis({
-    duration: 1.0,
+    duration: 0.75,
     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
     orientation: 'vertical',
     smoothWheel: true,
@@ -22,8 +23,8 @@ export default defineNuxtPlugin((nuxtApp) => {
     lenis.raf(time * 1000)
   })
 
-  // Keep stable frame pacing (prevents snapping/stuttering during CPU spikes)
-  gsap.ticker.lagSmoothing(500, 33)
+  // lagSmoothing(0) prevents GSAP from compensating on tab re-focus (avoids jump)
+  gsap.ticker.lagSmoothing(0)
 
   // Route hooks for clean scroll management
   nuxtApp.hook('page:start', () => {
@@ -54,9 +55,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     provide: {
       gsap,
       ScrollTrigger,
-      Flip,
       lenis,
     },
   }
 })
-

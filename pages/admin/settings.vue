@@ -132,40 +132,42 @@ async function testDatabaseConnection() {
       </div>
     </div>
 
-    <!-- Navigation Tabs -->
-    <div class="flex flex-wrap items-center gap-2 rounded-2xl bg-white/70 p-1.5 border border-ink/10 shadow-xs font-mono text-xs font-semibold">
-      <button
-        type="button"
-        class="cursor-pointer rounded-xl px-4 py-2 transition-all"
-        :class="activeTab === 'general' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
-        @click="activeTab = 'general'"
-      >
-        Situs & Identitas
-      </button>
-      <button
-        type="button"
-        class="cursor-pointer rounded-xl px-4 py-2 transition-all"
-        :class="activeTab === 'seo' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
-        @click="activeTab = 'seo'"
-      >
-        SEO & Metadata
-      </button>
-      <button
-        type="button"
-        class="cursor-pointer rounded-xl px-4 py-2 transition-all"
-        :class="activeTab === 'socials' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
-        @click="activeTab = 'socials'"
-      >
-        Tautan Sosial
-      </button>
-      <button
-        type="button"
-        class="cursor-pointer rounded-xl px-4 py-2 transition-all"
-        :class="activeTab === 'system' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
-        @click="activeTab = 'system'"
-      >
-        Sistem & Diagnostik
-      </button>
+    <!-- Navigation Tabs (Horizontal swipeable on mobile) -->
+    <div class="overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory rounded-2xl bg-white/70 p-1.5 border border-ink/10 shadow-xs font-mono text-xs font-semibold">
+      <div class="flex items-center gap-1.5 min-w-max sm:min-w-0 sm:flex-wrap">
+        <button
+          type="button"
+          class="snap-start cursor-pointer rounded-xl px-3.5 sm:px-4 py-2 transition-all whitespace-nowrap"
+          :class="activeTab === 'general' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
+          @click="activeTab = 'general'"
+        >
+          Situs & Identitas
+        </button>
+        <button
+          type="button"
+          class="snap-start cursor-pointer rounded-xl px-3.5 sm:px-4 py-2 transition-all whitespace-nowrap"
+          :class="activeTab === 'seo' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
+          @click="activeTab = 'seo'"
+        >
+          SEO & Metadata
+        </button>
+        <button
+          type="button"
+          class="snap-start cursor-pointer rounded-xl px-3.5 sm:px-4 py-2 transition-all whitespace-nowrap"
+          :class="activeTab === 'socials' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
+          @click="activeTab = 'socials'"
+        >
+          Tautan Sosial
+        </button>
+        <button
+          type="button"
+          class="snap-start cursor-pointer rounded-xl px-3.5 sm:px-4 py-2 transition-all whitespace-nowrap"
+          :class="activeTab === 'system' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
+          @click="activeTab = 'system'"
+        >
+          Sistem & Diagnostik
+        </button>
+      </div>
     </div>
 
     <!-- TAB 1: SITUS & IDENTITAS -->

@@ -1,6 +1,5 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { Flip } from 'gsap/Flip'
 
 export const useMotion = () => {
   const isReducedMotion = () => {
@@ -172,33 +171,39 @@ export const useMotion = () => {
 
   /**
    * Lightweight Cards Stagger (Lag-free 60fps)
+   * Returns a gsap.Context that can be reverted to avoid ScrollTrigger accumulation.
    */
   const setupCardsBatch = (containerEl: HTMLElement, cardSelector = '.project-card-item') => {
     if (isReducedMotion()) {
       const cards = containerEl.querySelectorAll(cardSelector)
       gsap.set(cards, { opacity: 1, y: 0 })
-      return
+      return null
     }
 
     const cards = containerEl.querySelectorAll(cardSelector)
-    if (!cards.length) return
+    if (!cards.length) return null
 
-    gsap.fromTo(
-      cards,
-      { opacity: 0, y: 30 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: tokens.duration.base,
-        stagger: tokens.stagger.tight,
-        ease: tokens.ease.reveal,
-        scrollTrigger: {
-          trigger: containerEl,
-          start: 'top 88%',
-          once: true,
-        },
-      }
-    )
+    // Use gsap.context so all animations + ScrollTriggers inside can be cleanly reverted
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        cards,
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: tokens.duration.base,
+          stagger: tokens.stagger.tight,
+          ease: tokens.ease.reveal,
+          scrollTrigger: {
+            trigger: containerEl,
+            start: 'top 88%',
+            once: true,
+          },
+        }
+      )
+    }, containerEl)
+
+    return ctx
   }
 
   /**

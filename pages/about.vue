@@ -33,18 +33,18 @@ useSeoMeta({
 </script>
 
 <template>
-  <div class="min-h-screen bg-paper text-ink pt-32 pb-28 relative z-20 shadow-[0_30px_90px_rgba(0,0,0,0.45)]">
-    <div class="page-shell space-y-16">
+  <div class="min-h-screen bg-paper text-ink pt-28 sm:pt-32 pb-20 sm:pb-28 relative z-20 shadow-[0_30px_90px_rgba(0,0,0,0.45)]">
+    <div class="page-shell space-y-12 sm:space-y-16">
       <!-- About Hero -->
-      <section class="border-b border-ink/12 pb-16">
+      <section class="border-b border-ink/12 pb-10 sm:pb-16">
         <div ref="eyebrowRef" class="inline-flex items-center gap-2 rounded-full bg-ink/5 border border-ink/10 px-3.5 py-1.5">
           <span class="size-1.5 rounded-full bg-signal" />
-          <span class="font-mono text-xs font-semibold text-mute uppercase tracking-[0.14em]">
+          <span class="font-mono text-[0.7rem] sm:text-xs font-semibold text-mute uppercase tracking-[0.14em]">
             Tentang Rumah Design
           </span>
         </div>
 
-        <h1 class="mt-6 font-display text-display-l text-ink max-w-[16ch] tracking-tight">
+        <h1 class="mt-4 sm:mt-6 font-display text-display-l text-ink max-w-[16ch] tracking-tight">
           <span class="block overflow-hidden">
             <span ref="headlineLine1" class="inline-block will-change-transform">Desain yang tidak berhenti</span>
           </span>
@@ -53,7 +53,7 @@ useSeoMeta({
           </span>
         </h1>
 
-        <div ref="introRef" class="mt-10 max-w-3xl space-y-6 text-body-l text-ink/90">
+        <div ref="introRef" class="mt-6 sm:mt-10 max-w-3xl space-y-4 sm:space-y-6 text-body-l text-ink/90">
           <p>
             Rumah Design adalah studio independen dan arsip karya digital seorang product designer yang juga mendalami rekayasa frontend. Saya percaya bahwa pengalaman digital terbaik lahir saat batasan antara perancangan konsep dan implementasi kode ditiadakan.
           </p>
@@ -64,56 +64,56 @@ useSeoMeta({
       </section>
 
       <!-- 4-Step Work Process Cards -->
-      <section class="border-b border-ink/12 pb-16">
+      <section class="border-b border-ink/12 pb-10 sm:pb-16">
         <div class="inline-flex items-center gap-2 rounded-full bg-ink/5 px-3 py-1 font-mono text-[0.7rem] font-bold text-mute uppercase tracking-widest">
           <span class="size-1.5 rounded-full bg-signal" />
           <span>Proses Kerja</span>
         </div>
-        <h2 class="mt-3 font-display text-display-m text-ink">
+        <h2 class="mt-2 sm:mt-3 font-display text-display-m text-ink">
           Bagaimana ide diubah menjadi produk nyata
         </h2>
 
-        <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <div class="space-y-4 rounded-3xl bg-white/70 p-6 border border-ink/10 shadow-xs hover:shadow-md transition-all">
+        <div class="mt-8 sm:mt-10 grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="space-y-3 sm:space-y-4 rounded-2xl sm:rounded-3xl bg-white/70 p-5 sm:p-6 border border-ink/10 shadow-xs hover:shadow-md transition-all">
             <div class="flex items-center justify-between">
-              <span class="font-mono text-2xl font-bold text-signal">01</span>
+              <span class="font-mono text-xl sm:text-2xl font-bold text-signal">01</span>
               <span class="rounded-full bg-signal/10 px-2.5 py-0.5 font-mono text-[0.65rem] font-bold text-signal uppercase">Tahap 1</span>
             </div>
-            <h3 class="font-display text-lg font-bold text-ink">Problem Framing</h3>
-            <p class="text-sm text-mute leading-relaxed">
+            <h3 class="font-display text-base sm:text-lg font-bold text-ink">Problem Framing</h3>
+            <p class="text-xs sm:text-sm text-mute leading-relaxed">
               Memahami masalah inti pengguna dan mendefinisikan batasan produk sebelum mulai menggambar antarmuka.
             </p>
           </div>
 
-          <div class="space-y-4 rounded-3xl bg-white/70 p-6 border border-ink/10 shadow-xs hover:shadow-md transition-all">
+          <div class="space-y-3 sm:space-y-4 rounded-2xl sm:rounded-3xl bg-white/70 p-5 sm:p-6 border border-ink/10 shadow-xs hover:shadow-md transition-all">
             <div class="flex items-center justify-between">
-              <span class="font-mono text-2xl font-bold text-signal">02</span>
+              <span class="font-mono text-xl sm:text-2xl font-bold text-signal">02</span>
               <span class="rounded-full bg-signal/10 px-2.5 py-0.5 font-mono text-[0.65rem] font-bold text-signal uppercase">Tahap 2</span>
             </div>
-            <h3 class="font-display text-lg font-bold text-ink">Interactive Prototyping</h3>
-            <p class="text-sm text-mute leading-relaxed">
+            <h3 class="font-display text-base sm:text-lg font-bold text-ink">Interactive Prototyping</h3>
+            <p class="text-xs sm:text-sm text-mute leading-relaxed">
               Merancang sistem desain editorial, hierarki tipografi kontras tinggi, dan tata letak mikro-interaksi.
             </p>
           </div>
 
-          <div class="space-y-4 rounded-3xl bg-white/70 p-6 border border-ink/10 shadow-xs hover:shadow-md transition-all">
+          <div class="space-y-3 sm:space-y-4 rounded-2xl sm:rounded-3xl bg-white/70 p-5 sm:p-6 border border-ink/10 shadow-xs hover:shadow-md transition-all">
             <div class="flex items-center justify-between">
-              <span class="font-mono text-2xl font-bold text-signal">03</span>
+              <span class="font-mono text-xl sm:text-2xl font-bold text-signal">03</span>
               <span class="rounded-full bg-signal/10 px-2.5 py-0.5 font-mono text-[0.65rem] font-bold text-signal uppercase">Tahap 3</span>
             </div>
-            <h3 class="font-display text-lg font-bold text-ink">Frontend Engineering</h3>
-            <p class="text-sm text-mute leading-relaxed">
+            <h3 class="font-display text-base sm:text-lg font-bold text-ink">Frontend Engineering</h3>
+            <p class="text-xs sm:text-sm text-mute leading-relaxed">
               Membangun komponen modular dengan Nuxt 3, Vue, TypeScript, Tailwind, dan GSAP scroll orchestration.
             </p>
           </div>
 
-          <div class="space-y-4 rounded-3xl bg-white/70 p-6 border border-ink/10 shadow-xs hover:shadow-md transition-all">
+          <div class="space-y-3 sm:space-y-4 rounded-2xl sm:rounded-3xl bg-white/70 p-5 sm:p-6 border border-ink/10 shadow-xs hover:shadow-md transition-all">
             <div class="flex items-center justify-between">
-              <span class="font-mono text-2xl font-bold text-signal">04</span>
+              <span class="font-mono text-xl sm:text-2xl font-bold text-signal">04</span>
               <span class="rounded-full bg-signal/10 px-2.5 py-0.5 font-mono text-[0.65rem] font-bold text-signal uppercase">Tahap 4</span>
             </div>
-            <h3 class="font-display text-lg font-bold text-ink">Production Polish</h3>
-            <p class="text-sm text-mute leading-relaxed">
+            <h3 class="font-display text-base sm:text-lg font-bold text-ink">Production Polish</h3>
+            <p class="text-xs sm:text-sm text-mute leading-relaxed">
               Audit performa, skor aksesibilitas, reduced motion fallback, SEO metadata, dan deployment SSR.
             </p>
           </div>
@@ -121,22 +121,22 @@ useSeoMeta({
       </section>
 
       <!-- Tech Stack & Tools -->
-      <section class="pt-4">
-        <div class="grid gap-10 lg:grid-cols-[1fr_2fr]">
+      <section class="pt-2 sm:pt-4">
+        <div class="grid gap-6 sm:gap-10 lg:grid-cols-[1fr_2fr]">
           <div>
             <div class="inline-flex items-center gap-2 rounded-full bg-ink/5 px-3 py-1 font-mono text-[0.7rem] font-bold text-mute uppercase tracking-widest">
               <span class="size-1.5 rounded-full bg-signal" />
               <span>Toolkit</span>
             </div>
-            <h2 class="mt-3 font-display text-2xl font-bold text-ink">
+            <h2 class="mt-2 sm:mt-3 font-display text-xl sm:text-2xl font-bold text-ink">
               Teknologi yang biasa digunakan
             </h2>
           </div>
 
-          <div class="grid gap-6 sm:grid-cols-2">
-            <div class="space-y-3 rounded-3xl bg-white/70 p-6 border border-ink/10 shadow-xs">
+          <div class="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2">
+            <div class="space-y-3 rounded-2xl sm:rounded-3xl bg-white/70 p-5 sm:p-6 border border-ink/10 shadow-xs">
               <h3 class="font-mono text-xs font-bold text-signal uppercase tracking-widest">Frontend & Framework</h3>
-              <ul class="space-y-2 font-mono text-sm text-ink/90">
+              <ul class="space-y-2 font-mono text-xs sm:text-sm text-ink/90">
                 <li class="flex items-center gap-2"><span class="size-1.5 rounded-full bg-signal" />Nuxt 3 / Vue 3 (Composition API)</li>
                 <li class="flex items-center gap-2"><span class="size-1.5 rounded-full bg-signal" />TypeScript & Modern JS</li>
                 <li class="flex items-center gap-2"><span class="size-1.5 rounded-full bg-signal" />Tailwind CSS & Design Tokens</li>
@@ -144,9 +144,9 @@ useSeoMeta({
               </ul>
             </div>
 
-            <div class="space-y-3 rounded-3xl bg-white/70 p-6 border border-ink/10 shadow-xs">
+            <div class="space-y-3 rounded-2xl sm:rounded-3xl bg-white/70 p-5 sm:p-6 border border-ink/10 shadow-xs">
               <h3 class="font-mono text-xs font-bold text-signal uppercase tracking-widest">Backend & Infra</h3>
-              <ul class="space-y-2 font-mono text-sm text-ink/90">
+              <ul class="space-y-2 font-mono text-xs sm:text-sm text-ink/90">
                 <li class="flex items-center gap-2"><span class="size-1.5 rounded-full bg-signal" />Supabase (PostgreSQL, Auth, Storage)</li>
                 <li class="flex items-center gap-2"><span class="size-1.5 rounded-full bg-signal" />Nitro Server Routes & API</li>
                 <li class="flex items-center gap-2"><span class="size-1.5 rounded-full bg-signal" />Vercel Edge & Serverless</li>
