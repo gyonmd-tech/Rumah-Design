@@ -9,7 +9,7 @@ defineProps<{
 </script>
 
 <template>
-  <article class="project-card-item group relative flex flex-col">
+  <article class="project-card-item group relative flex flex-col will-change-transform">
     <NuxtLink
       :to="`/project/${project.slug}`"
       class="block focus-visible:ring-2 focus-visible:ring-signal rounded-2xl transition-transform duration-200 active:scale-[0.98]"

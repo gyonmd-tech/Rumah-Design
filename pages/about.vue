@@ -1,10 +1,13 @@
 <script setup lang="ts">
-const { animateHeroReveal } = useMotion()
+const { animateHeroReveal, setupCardsBatch } = useMotion()
 
 const headlineLine1 = ref<HTMLElement | null>(null)
 const headlineLine2 = ref<HTMLElement | null>(null)
 const eyebrowRef = ref<HTMLElement | null>(null)
 const introRef = ref<HTMLElement | null>(null)
+const processContainerRef = ref<HTMLElement | null>(null)
+
+let aboutCtx: ReturnType<typeof setupCardsBatch> | null = null
 
 onMounted(() => {
   document.documentElement.classList.add('light-mode')
@@ -15,11 +18,21 @@ onMounted(() => {
     eyebrow: eyebrowRef.value,
     intro: introRef.value,
   })
+
+  nextTick(() => {
+    if (processContainerRef.value) {
+      aboutCtx = setupCardsBatch(processContainerRef.value, '.process-step-card')
+    }
+  })
 })
 
 onUnmounted(() => {
   if (typeof document !== 'undefined') {
     document.documentElement.classList.remove('light-mode')
+  }
+  if (aboutCtx) {
+    aboutCtx.revert()
+    aboutCtx = null
   }
 })
 
@@ -73,8 +86,8 @@ useSeoMeta({
           Bagaimana ide diubah menjadi produk nyata
         </h2>
 
-        <div class="mt-8 sm:mt-10 grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-          <div class="space-y-3 sm:space-y-4 rounded-2xl sm:rounded-3xl bg-white/70 p-5 sm:p-6 border border-ink/10 shadow-xs hover:shadow-md transition-all">
+        <div ref="processContainerRef" class="mt-8 sm:mt-10 grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="process-step-card will-change-transform space-y-3 sm:space-y-4 rounded-2xl sm:rounded-3xl bg-white/70 p-5 sm:p-6 border border-ink/10 shadow-xs hover:shadow-md transition-all">
             <div class="flex items-center justify-between">
               <span class="font-mono text-xl sm:text-2xl font-bold text-signal">01</span>
               <span class="rounded-full bg-signal/10 px-2.5 py-0.5 font-mono text-[0.65rem] font-bold text-signal uppercase">Tahap 1</span>
@@ -85,7 +98,7 @@ useSeoMeta({
             </p>
           </div>
 
-          <div class="space-y-3 sm:space-y-4 rounded-2xl sm:rounded-3xl bg-white/70 p-5 sm:p-6 border border-ink/10 shadow-xs hover:shadow-md transition-all">
+          <div class="process-step-card will-change-transform space-y-3 sm:space-y-4 rounded-2xl sm:rounded-3xl bg-white/70 p-5 sm:p-6 border border-ink/10 shadow-xs hover:shadow-md transition-all">
             <div class="flex items-center justify-between">
               <span class="font-mono text-xl sm:text-2xl font-bold text-signal">02</span>
               <span class="rounded-full bg-signal/10 px-2.5 py-0.5 font-mono text-[0.65rem] font-bold text-signal uppercase">Tahap 2</span>
@@ -96,7 +109,7 @@ useSeoMeta({
             </p>
           </div>
 
-          <div class="space-y-3 sm:space-y-4 rounded-2xl sm:rounded-3xl bg-white/70 p-5 sm:p-6 border border-ink/10 shadow-xs hover:shadow-md transition-all">
+          <div class="process-step-card will-change-transform space-y-3 sm:space-y-4 rounded-2xl sm:rounded-3xl bg-white/70 p-5 sm:p-6 border border-ink/10 shadow-xs hover:shadow-md transition-all">
             <div class="flex items-center justify-between">
               <span class="font-mono text-xl sm:text-2xl font-bold text-signal">03</span>
               <span class="rounded-full bg-signal/10 px-2.5 py-0.5 font-mono text-[0.65rem] font-bold text-signal uppercase">Tahap 3</span>
@@ -107,7 +120,7 @@ useSeoMeta({
             </p>
           </div>
 
-          <div class="space-y-3 sm:space-y-4 rounded-2xl sm:rounded-3xl bg-white/70 p-5 sm:p-6 border border-ink/10 shadow-xs hover:shadow-md transition-all">
+          <div class="process-step-card will-change-transform space-y-3 sm:space-y-4 rounded-2xl sm:rounded-3xl bg-white/70 p-5 sm:p-6 border border-ink/10 shadow-xs hover:shadow-md transition-all">
             <div class="flex items-center justify-between">
               <span class="font-mono text-xl sm:text-2xl font-bold text-signal">04</span>
               <span class="rounded-full bg-signal/10 px-2.5 py-0.5 font-mono text-[0.65rem] font-bold text-signal uppercase">Tahap 4</span>
