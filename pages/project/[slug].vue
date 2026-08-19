@@ -39,6 +39,16 @@ const galleryItems = computed(() => {
   return items
 })
 
+const onGalleryScroll = () => {
+  if (!galleryTrackRef.value) return
+  const track = galleryTrackRef.value
+  const itemWidth = (track.firstElementChild as HTMLElement)?.clientWidth || track.clientWidth
+  if (itemWidth > 0) {
+    const current = Math.min(galleryItems.value.length, Math.max(1, Math.round(track.scrollLeft / itemWidth) + 1))
+    galleryCurrentIndex.value = current
+  }
+}
+
 onMounted(() => {
   document.documentElement.classList.add('light-mode')
 
@@ -169,6 +179,7 @@ useHead(() => ({
         <div
           ref="galleryTrackRef"
           class="mt-6 sm:mt-8 flex gap-4 sm:gap-8 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory"
+          @scroll.passive="onGalleryScroll"
         >
           <div
             v-for="(item, i) in galleryItems"

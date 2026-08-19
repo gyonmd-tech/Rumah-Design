@@ -178,11 +178,15 @@ const statsRef = ref<HTMLElement | null>(null)
 const scrollCueRef = ref<HTMLElement | null>(null)
 const cardsContainerRef = ref<HTMLElement | null>(null)
 
-const isScrolled = ref(false)
-
+let scrollTicking = false
 const handleScroll = () => {
-  if (typeof window !== 'undefined') {
-    isScrolled.value = window.scrollY > 40
+  if (typeof window === 'undefined') return
+  if (!scrollTicking) {
+    window.requestAnimationFrame(() => {
+      isScrolled.value = window.scrollY > 40
+      scrollTicking = false
+    })
+    scrollTicking = true
   }
 }
 

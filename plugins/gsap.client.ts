@@ -4,27 +4,36 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
 
 export default defineNuxtPlugin((nuxtApp) => {
-  // Register only what we use — Flip removed (unused, saves ~34KB)
   gsap.registerPlugin(ScrollTrigger)
 
-  // Initialize Lenis smooth scroll
-  // duration 0.75 — snappier than 1.0, still silky (was 1.0 which felt unresponsive)
-  const lenis = new Lenis({
-    duration: 0.75,
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    orientation: 'vertical',
-    smoothWheel: true,
-  })
+  let lenis: Lenis | null = null
 
-  // Synchronize Lenis with ScrollTrigger
-  lenis.on('scroll', ScrollTrigger.update)
+  if (typeof window !== 'undefined') {
+    // Only enable Lenis smooth wheel on desktop (non-touch / fine pointer) devices.
+    // Touch devices (phones & tablets) have native hardware-accelerated 60/120Hz inertia scrolling;
+    // intercepting touch with JS causes lag, stutter ("patah-patah"), and rubberbanding fighting.
+    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || ('ontouchstart' in window) || navigator.maxTouchPoints > 0
+    const isSmallScreen = window.innerWidth < 1024
 
-  gsap.ticker.add((time) => {
-    lenis.raf(time * 1000)
-  })
+    if (!isTouchDevice && !isSmallScreen) {
+      lenis = new Lenis({
+        duration: 0.85,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        smoothWheel: true,
+        syncTouch: false,
+      })
 
-  // lagSmoothing(0) prevents GSAP from compensating on tab re-focus (avoids jump)
-  gsap.ticker.lagSmoothing(0)
+      // Sync Lenis scroll with ScrollTrigger
+      lenis.on('scroll', ScrollTrigger.update)
+
+      gsap.ticker.add((time) => {
+        lenis?.raf(time * 1000)
+      })
+
+      gsap.ticker.lagSmoothing(0)
+    }
+  }
 
   // Route hooks for clean scroll management
   nuxtApp.hook('page:start', () => {
@@ -36,15 +45,15 @@ export default defineNuxtPlugin((nuxtApp) => {
       }
     })
     window.scrollTo(0, 0)
-    lenis.scrollTo(0, { immediate: true })
+    lenis?.scrollTo(0, { immediate: true })
   })
 
   nuxtApp.hook('page:finish', () => {
     const route = useRoute()
     if (route.path.startsWith('/admin')) {
-      lenis.stop()
+      lenis?.stop()
     } else {
-      lenis.start()
+      lenis?.start()
       requestAnimationFrame(() => {
         ScrollTrigger.refresh()
       })

@@ -1,11 +1,12 @@
 <script setup lang="ts">
 defineProps<{
   dark?: boolean
+  hideTextOnMobile?: boolean
 }>()
 </script>
 
 <template>
-  <div class="inline-flex items-center gap-2 sm:gap-2.5">
+  <div class="inline-flex items-center gap-1.5 sm:gap-2.5">
     <!-- Geometric Architectural Mark -->
     <svg
       viewBox="0 0 32 32"
@@ -31,7 +32,10 @@ defineProps<{
       />
       <circle cx="16" cy="13" r="2.5" fill="var(--color-signal)" />
     </svg>
-    <span class="font-mono text-xs sm:text-sm font-bold tracking-[0.08em] sm:tracking-[0.12em] uppercase truncate">
+    <span
+      class="font-mono text-xs sm:text-sm font-bold tracking-[0.08em] sm:tracking-[0.12em] uppercase truncate"
+      :class="hideTextOnMobile ? 'hidden sm:inline' : ''"
+    >
       Rumah Design
     </span>
   </div>
