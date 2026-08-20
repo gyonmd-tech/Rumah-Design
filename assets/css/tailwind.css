@@ -180,6 +180,134 @@
     text-transform: uppercase;
   }
 
+  /* ============================================================
+     LIQUID WATER WAVE HOVER EFFECT (GELOMBANG AIR)
+     ============================================================ */
+  .btn-wave,
+  .button-primary,
+  .button-secondary {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Inner content stays elevated above the water wave */
+  .btn-wave > *,
+  .button-primary > *,
+  .button-secondary > * {
+    position: relative;
+    z-index: 2;
+    pointer-events: none;
+    transition: transform 0.25s ease, color 0.25s ease;
+  }
+
+  /* Liquid Wave 1 (Deep Main Wave) */
+  .btn-wave::before,
+  .button-primary::before,
+  .button-secondary::before {
+    content: "";
+    position: absolute;
+    top: 105%;
+    left: 50%;
+    width: 260%;
+    height: 260%;
+    border-radius: 42% 46% 40% 44%;
+    transform: translate(-50%, 0) rotate(0deg);
+    transition: top 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  /* Liquid Wave 2 (Surface Ripple Wave) */
+  .btn-wave::after,
+  .button-primary::after,
+  .button-secondary::after {
+    content: "";
+    position: absolute;
+    top: 105%;
+    left: 50%;
+    width: 270%;
+    height: 270%;
+    border-radius: 46% 40% 45% 41%;
+    transform: translate(-50%, 0) rotate(45deg);
+    transition: top 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  /* Hover State: Wave flows up and continuously ripples */
+  .btn-wave:hover::before,
+  .button-primary:hover::before,
+  .button-secondary:hover::before {
+    top: -65%;
+    opacity: 1;
+    animation: liquidWaterSpin 4s linear infinite;
+  }
+
+  .btn-wave:hover::after,
+  .button-primary:hover::after,
+  .button-secondary:hover::after {
+    top: -70%;
+    opacity: 0.75;
+    animation: liquidWaterSpinReverse 5.5s linear infinite;
+  }
+
+  /* Active press */
+  .btn-wave:active,
+  .button-primary:active,
+  .button-secondary:active {
+    transform: scale(0.96);
+  }
+
+  /* Primary Signal Wave: Vibrant fluid gradient */
+  .btn-wave-primary::before,
+  .button-primary::before {
+    background: linear-gradient(180deg, #ff7a4d 0%, #d82b00 100%);
+  }
+  .btn-wave-primary::after,
+  .button-primary::after {
+    background: rgba(255, 255, 255, 0.25);
+  }
+
+  /* Glass/Dark/Outline Wave: Signal liquid wave fills the button */
+  .btn-wave-glass::before,
+  .button-secondary::before {
+    background: linear-gradient(135deg, #ff4a1c 0%, #ff6b3d 100%);
+  }
+  .btn-wave-glass::after,
+  .button-secondary::after {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  .btn-wave-glass:hover,
+  .button-secondary:hover {
+    color: #ffffff !important;
+    border-color: #ff4a1c !important;
+    box-shadow: 0 0 25px rgba(255, 74, 28, 0.35);
+  }
+
+  /* Keyframe Wave Rotations */
+  @keyframes liquidWaterSpin {
+    0% {
+      transform: translate(-50%, -20%) rotate(0deg);
+    }
+    100% {
+      transform: translate(-50%, -20%) rotate(360deg);
+    }
+  }
+
+  @keyframes liquidWaterSpinReverse {
+    0% {
+      transform: translate(-50%, -25%) rotate(360deg);
+    }
+    100% {
+      transform: translate(-50%, -25%) rotate(0deg);
+    }
+  }
+
   /* Rounded Editorial Buttons */
   .button-primary,
   .button-secondary {
@@ -194,9 +322,7 @@
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    border-radius: 9999px; /* Rounded pill */
-    cursor: pointer;
-    transition: all 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    border-radius: 9999px;
   }
 
   .button-primary {
@@ -207,10 +333,7 @@
   }
 
   .button-primary:hover {
-    background: #e63d10;
-    border-color: #e63d10;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 74, 28, 0.35);
+    box-shadow: 0 6px 22px rgba(255, 74, 28, 0.45);
   }
 
   .button-secondary {
@@ -222,9 +345,6 @@
 
   .button-secondary:hover {
     opacity: 1;
-    border-color: var(--color-signal);
-    color: var(--color-signal);
-    transform: translateY(-2px);
   }
 
   /* Rounded Form Fields */

@@ -78,7 +78,7 @@ const socialChannels = [
         <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
           <NuxtLink
             to="/contact"
-            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-signal px-8 py-3.5 sm:py-4 font-mono text-xs sm:text-sm font-bold uppercase tracking-wider text-white shadow-xl shadow-signal/30 transition-all duration-300 hover:scale-105 hover:bg-[#e63d10] active:scale-95"
+            class="btn-wave btn-wave-primary w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-signal px-8 py-3.5 sm:py-4 font-mono text-xs sm:text-sm font-bold uppercase tracking-wider text-white shadow-xl shadow-signal/30"
           >
             <span>Mulai Diskusi Proyek</span>
             <span class="text-sm">↗</span>
@@ -86,7 +86,7 @@ const socialChannels = [
 
           <button
             type="button"
-            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-white/10 border border-white/15 px-6 py-3.5 sm:py-4 font-mono text-xs sm:text-sm font-semibold uppercase tracking-wider text-paper hover:bg-white/18 hover:border-white/30 transition-all duration-200"
+            class="btn-wave btn-wave-glass w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-white/10 border border-white/15 px-6 py-3.5 sm:py-4 font-mono text-xs sm:text-sm font-semibold uppercase tracking-wider text-paper"
             @click="copyEmail"
           >
             <span>Salin Email</span>
@@ -103,7 +103,7 @@ const socialChannels = [
             rel="noopener noreferrer"
             :aria-label="item.name"
             :title="item.name"
-            class="group relative size-14 sm:size-18 md:size-20 rounded-2xl sm:rounded-3xl bg-white/[0.05] border border-white/12 p-3.5 sm:p-4.5 md:p-5 flex items-center justify-center backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-white/15 hover:border-signal/70 hover:shadow-[0_0_30px_rgba(255,74,28,0.3)] active:scale-95 shadow-md"
+            class="btn-wave btn-wave-glass group relative size-14 sm:size-18 md:size-20 rounded-2xl sm:rounded-3xl bg-white/[0.05] border border-white/12 p-3.5 sm:p-4.5 md:p-5 flex items-center justify-center backdrop-blur-md shadow-md"
           >
             <img
               :src="item.icon"
@@ -132,10 +132,10 @@ const socialChannels = [
           <NuxtLink to="/admin/login" class="hover:text-paper transition-colors py-1">Admin</NuxtLink>
           <button
             type="button"
-            class="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-white/20 px-3.5 py-1 font-mono text-[0.68rem] uppercase tracking-wider text-paper transition-all hover:border-signal hover:bg-signal/20 hover:text-signal"
+            class="btn-wave btn-wave-glass inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-white/20 px-3.5 py-1 font-mono text-[0.68rem] uppercase tracking-wider text-paper"
             @click="scrollToTop"
           >
-            ↑ Ke Atas
+            <span>↑ Ke Atas</span>
           </button>
         </div>
       </div>

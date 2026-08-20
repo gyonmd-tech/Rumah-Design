@@ -71,8 +71,8 @@ onUnmounted(() => {
       <div class="flex items-center shrink-0">
         <NuxtLink
           to="/contact"
-          class="inline-flex items-center gap-1 sm:gap-1.5 rounded-full px-2.5 sm:px-4 md:px-5 py-1.5 font-mono text-[0.68rem] sm:text-xs font-bold uppercase tracking-wider shadow-sm transition-all duration-200 hover:scale-105 active:scale-95"
-          :class="route.path === '/contact' ? 'bg-signal text-white ring-2 ring-signal/40' : 'bg-white text-ink hover:bg-signal hover:text-white'"
+          class="btn-wave inline-flex items-center gap-1 sm:gap-1.5 rounded-full px-3 sm:px-4 md:px-5 py-1.5 font-mono text-[0.68rem] sm:text-xs font-bold uppercase tracking-wider shadow-sm"
+          :class="route.path === '/contact' ? 'btn-wave-primary bg-signal text-white ring-2 ring-signal/40' : 'btn-wave-glass bg-white text-ink'"
         >
           <span>Hubungi</span>
           <span class="text-[0.62rem] sm:text-xs">↗</span>
