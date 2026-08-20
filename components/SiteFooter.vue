@@ -67,12 +67,11 @@ const socialChannels = [
 
     <div ref="footerInnerRef" class="page-shell-wide relative z-10 flex flex-col justify-between grow w-full">
       <!-- Top / Center Hero Content -->
-      <div class="my-auto text-center max-w-4xl mx-auto space-y-8 sm:space-y-10 py-6 sm:py-10">
-        <!-- Big Headline -->
-        <h2 class="font-display text-[clamp(2.5rem,5.5vw,5.5rem)] text-paper tracking-tight font-bold leading-[1.04]">
-          <span>Mari wujudkan ide digital</span>
-          <br class="hidden sm:inline">
-          <span class="text-signal"> berikutnya bersama kami.</span>
+      <div class="my-auto text-center max-w-5xl mx-auto space-y-8 sm:space-y-10 py-6 sm:py-10">
+        <!-- Big Balanced Headline -->
+        <h2 class="font-display text-[clamp(2.25rem,4.5vw,4.5rem)] text-paper tracking-tight font-bold leading-[1.08] text-balance">
+          <span class="block">Mari wujudkan karya digital</span>
+          <span class="block text-signal">berikutnya bersama kami.</span>
         </h2>
 
         <!-- Action Buttons -->
