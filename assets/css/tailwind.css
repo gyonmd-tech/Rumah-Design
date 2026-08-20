@@ -282,60 +282,6 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 
-  /* Interactive Social Logo Tiles */
-  .social-logo-btn {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 1.25rem;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    cursor: pointer;
-    overflow: hidden;
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-                border-color 0.3s ease,
-                background-color 0.3s ease,
-                box-shadow 0.3s ease;
-  }
-
-  .social-logo-btn::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: radial-gradient(circle at center, rgba(255, 74, 28, 0.25) 0%, transparent 70%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-  }
-
-  .social-logo-btn:hover {
-    transform: translateY(-4px) scale(1.08);
-    border-color: var(--color-signal);
-    background: rgba(255, 74, 28, 0.12);
-    box-shadow: 0 12px 28px -4px rgba(255, 74, 28, 0.35), 0 0 16px rgba(255, 74, 28, 0.2);
-  }
-
-  .social-logo-btn:hover::before {
-    opacity: 1;
-  }
-
-  .social-logo-btn:active {
-    transform: translateY(0) scale(0.96);
-  }
-
-  .social-logo-btn img {
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
-  }
-
-  .social-logo-btn:hover img {
-    transform: scale(1.12);
-    filter: drop-shadow(0 0 8px rgba(255, 74, 28, 0.4));
-  }
-
   /* Rounded Form Fields */
   .field {
     width: 100%;
