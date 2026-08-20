@@ -271,18 +271,22 @@ const capabilities = [
           </div>
 
           <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
-            <NuxtLink
+            <RadialRevealButton
               to="/contact"
-              class="button-primary text-center text-xs py-3 px-6 shadow-md"
-            >
-              Buka Halaman Hubungi ↗
-            </NuxtLink>
-            <NuxtLink
+              variant="primary"
+              label="Buka Halaman Hubungi"
+              add-icon
+              :icon="{ symbol: '↗', size: 14, side: 'right' }"
+              padding="0.8rem 1.6rem"
+              custom-class="shadow-md text-xs"
+            />
+            <RadialRevealButton
               to="/#work"
-              class="button-secondary text-center text-xs py-3 px-5"
-            >
-              Lihat Karya Terpilih
-            </NuxtLink>
+              variant="dark"
+              label="Lihat Karya Terpilih"
+              padding="0.8rem 1.4rem"
+              custom-class="text-xs"
+            />
           </div>
         </div>
       </section>

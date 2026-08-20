@@ -79,23 +79,25 @@ const socialChannels = [
           Membangun antarmuka interaktif, design system terstruktur, dan rekayasa frontend siap rilis.
         </p>
 
-        <!-- Action Buttons with Premium Hover -->
+        <!-- Action Buttons with Radial Reveal Hover -->
         <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 pt-1">
-          <NuxtLink
+          <RadialRevealButton
             to="/contact"
-            class="button-primary w-full sm:w-auto text-xs sm:text-sm"
-          >
-            <span>Mulai Diskusi Proyek</span>
-            <span class="text-sm">↗</span>
-          </NuxtLink>
+            variant="primary"
+            label="Mulai Diskusi Proyek"
+            add-icon
+            :icon="{ symbol: '↗', size: 14, side: 'right' }"
+            padding="0.85rem 2rem"
+            custom-class="w-full sm:w-auto shadow-xl shadow-signal/30 text-xs sm:text-sm"
+          />
 
-          <button
-            type="button"
-            class="button-secondary w-full sm:w-auto text-xs sm:text-sm"
+          <RadialRevealButton
+            variant="glass"
+            label="Salin Email"
+            padding="0.85rem 1.8rem"
+            custom-class="w-full sm:w-auto text-xs sm:text-sm"
             @click="copyEmail"
-          >
-            <span>Salin Email</span>
-          </button>
+          />
         </div>
 
         <!-- Prominent Social Media Logos -->
@@ -135,13 +137,13 @@ const socialChannels = [
           <NuxtLink to="/about" class="hover:text-paper transition-colors py-1">Tentang</NuxtLink>
           <NuxtLink to="/contact" class="hover:text-paper transition-colors py-1">Hubungi</NuxtLink>
           <NuxtLink to="/admin/login" class="hover:text-paper transition-colors py-1">Admin</NuxtLink>
-          <button
-            type="button"
-            class="button-secondary inline-flex !min-h-0 !py-1 !px-3.5 text-[0.68rem] tracking-wider"
+          <RadialRevealButton
+            variant="glass"
+            label="↑ Ke Atas"
+            padding="0.25rem 0.85rem"
+            custom-class="!text-[0.68rem] tracking-wider"
             @click="scrollToTop"
-          >
-            <span>↑ Ke Atas</span>
-          </button>
+          />
         </div>
       </div>
     </div>

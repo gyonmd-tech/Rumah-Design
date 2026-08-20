@@ -128,23 +128,23 @@ useHead(() => ({
             {{ project.title }}
           </h1>
           <div class="mt-6 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-            <a
+            <RadialRevealButton
               :href="project.live_url"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="button-primary text-center"
-            >
-              Buka Live Demo ↗
-            </a>
-            <a
+              new-tab
+              variant="primary"
+              label="Buka Live Demo"
+              add-icon
+              :icon="{ symbol: '↗', size: 14, side: 'right' }"
+            />
+            <RadialRevealButton
               v-if="project.repo_url"
               :href="project.repo_url"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="button-secondary text-center"
-            >
-              Lihat Repository ↗
-            </a>
+              new-tab
+              variant="dark"
+              label="Lihat Repository"
+              add-icon
+              :icon="{ symbol: '↗', size: 14, side: 'right' }"
+            />
           </div>
         </div>
       </div>
@@ -242,9 +242,13 @@ useHead(() => ({
 
       <!-- Next Project & Return Navigation Card -->
       <div class="my-8 sm:my-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-center rounded-2xl sm:rounded-3xl bg-white/70 p-5 sm:p-8 border border-ink/10 shadow-xs">
-        <NuxtLink to="/#work" class="button-secondary text-center">
-          ← Semua Project
-        </NuxtLink>
+        <RadialRevealButton
+          to="/#work"
+          variant="dark"
+          label="Semua Project"
+          add-icon
+          :icon="{ symbol: '←', size: 14, side: 'left' }"
+        />
 
         <NuxtLink
           v-if="nextProject"

@@ -314,19 +314,22 @@ const faqs = [
 
           <!-- Actions -->
           <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
-            <a
+            <RadialRevealButton
               :href="mailtoHref"
-              class="button-primary text-center grow py-3 px-6 shadow-md"
-            >
-              Kirim via Email Client ↗
-            </a>
-            <button
-              type="button"
-              class="button-secondary py-3 px-5 text-center text-xs"
+              variant="primary"
+              label="Kirim via Email Client"
+              add-icon
+              :icon="{ symbol: '↗', size: 14, side: 'right' }"
+              padding="0.85rem 1.6rem"
+              custom-class="grow text-center shadow-md text-xs sm:text-sm"
+            />
+            <RadialRevealButton
+              variant="dark"
+              label="Salin Brief"
+              padding="0.85rem 1.4rem"
+              custom-class="text-center text-xs"
               @click="copyBriefSummary"
-            >
-              Salin Brief 📋
-            </button>
+            />
           </div>
         </div>
 

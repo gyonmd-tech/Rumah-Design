@@ -69,14 +69,15 @@ onUnmounted(() => {
 
       <!-- Right Action Pill Button -->
       <div class="flex items-center shrink-0">
-        <NuxtLink
+        <RadialRevealButton
           to="/contact"
-          class="btn-premium !min-h-0 !py-1.5 !px-3 sm:!px-4 md:!px-5 text-[0.68rem] sm:text-xs tracking-wider shadow-sm"
-          :class="route.path === '/contact' ? 'bg-signal text-white ring-2 ring-signal/40' : 'bg-white text-ink hover:bg-signal hover:text-white'"
-        >
-          <span>Hubungi</span>
-          <span class="text-[0.62rem] sm:text-xs">↗</span>
-        </NuxtLink>
+          :variant="route.path === '/contact' ? 'primary' : 'white'"
+          label="Hubungi"
+          add-icon
+          :icon="{ symbol: '↗', size: 12, side: 'right' }"
+          padding="0.4rem 0.9rem"
+          custom-class="!text-[0.68rem] sm:!text-xs tracking-wider shadow-sm"
+        />
       </div>
     </div>
   </header>
