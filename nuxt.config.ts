@@ -61,6 +61,7 @@ export default defineNuxtConfig({
       },
     },
     '/admin/**': { robots: false },
+    '/hubungi': { redirect: '/contact' },
     '/api/__sitemap__/**': { cache: { maxAge: 3600 } },
     '/api/projects/**': { cache: { maxAge: 60 } },
   },

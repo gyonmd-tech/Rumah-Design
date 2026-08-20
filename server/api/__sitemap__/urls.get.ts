@@ -13,7 +13,8 @@ export default defineEventHandler(async (event) => {
 
   return [
     { loc: '/', changefreq: 'weekly', priority: 1 },
-    { loc: '/about', changefreq: 'monthly', priority: 0.6 },
+    { loc: '/about', changefreq: 'monthly', priority: 0.8 },
+    { loc: '/contact', changefreq: 'monthly', priority: 0.8 },
     ...(data ?? []).map(project => ({
       loc: `/project/${project.slug}`,
       lastmod: project.updated_at,

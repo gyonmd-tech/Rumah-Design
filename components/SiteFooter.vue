@@ -1,5 +1,11 @@
 <script setup lang="ts">
+import githubIcon from '~/assets/github.svg'
+import gmailIcon from '~/assets/gmail.svg'
+import instagramIcon from '~/assets/instagram.svg'
+import linkedinIcon from '~/assets/linkedin.svg'
+
 const { setupFooterUncover } = useMotion()
+const { success: showToast } = useToast()
 
 const footerRef = ref<HTMLElement | null>(null)
 const footerInnerRef = ref<HTMLElement | null>(null)
@@ -43,152 +49,193 @@ const scrollToTop = () => {
   }
 }
 
-// Social Media Channels
+const copyEmail = async () => {
+  try {
+    await navigator.clipboard.writeText('hello@rumahdesign.dev')
+    showToast('Alamat email hello@rumahdesign.dev berhasil disalin!')
+  } catch (err) {
+    console.error('Gagal menyalin email:', err)
+  }
+}
+
+// Social Media Channels with provided SVG logos
 const socialChannels = [
   {
     name: 'GitHub',
     handle: '@rumahdesign',
     url: 'https://github.com',
-    desc: 'Kode sumber, template, dan prototype interaktif.',
-    action: 'Follow ↗',
-  },
-  {
-    name: 'X (Twitter)',
-    handle: '@rumahdesign',
-    url: 'https://twitter.com',
-    desc: 'Catatan rekayasa antarmuka dan eksperimen desain.',
-    action: 'Follow ↗',
+    icon: githubIcon,
+    desc: 'Kode sumber terbuka, template arsitektur, & prototype interaktif.',
+    action: 'Explore ↗',
   },
   {
     name: 'LinkedIn',
     handle: 'in/rumah-design',
     url: 'https://linkedin.com',
-    desc: 'Jaringan profesional dan ringkasan studi kasus produk.',
+    icon: linkedinIcon,
+    desc: 'Jaringan profesional, rilis studi kasus produk, & wawasan industri.',
     action: 'Connect ↗',
   },
   {
     name: 'Instagram',
     handle: '@rumahdesign.id',
     url: 'https://instagram.com',
-    desc: 'Arsip visual, micro-interactions, dan render UI.',
+    icon: instagramIcon,
+    desc: 'Arsip eksplorasi visual, render micro-interaction, & desain antarmuka.',
     action: 'Follow ↗',
   },
   {
-    name: 'Figma Community',
-    handle: '@rumahdesign',
-    url: 'https://figma.com',
-    desc: 'Design system, UI components, dan wireframe publik.',
-    action: 'Duplicate ↗',
-  },
-  {
-    name: 'Direct Message',
-    handle: 'contact@rumahdesign.id',
-    url: 'mailto:contact@rumahdesign.id',
-    desc: 'Konsultasi proyek baru, kolaborasi studio, atau demo.',
-    action: 'Kirim Email ↗',
+    name: 'Gmail / Email',
+    handle: 'hello@rumahdesign.dev',
+    url: 'mailto:hello@rumahdesign.dev',
+    icon: gmailIcon,
+    desc: 'Inquiry proyek baru, diskusi estimasi timeline, & kolaborasi studio.',
+    action: 'Tulis Email ↗',
   },
 ]
 </script>
 
 <template>
-  <!-- Adaptive Footer: Relative natural flow on mobile, Sticky Curtain Uncover on desktop -->
+  <!-- Natural Flow Full Editorial Footer -->
   <footer
     ref="footerRef"
-    class="relative md:sticky md:bottom-0 left-0 right-0 z-0 w-full min-h-auto md:min-h-[650px] bg-[#0c0b0a] text-paper pt-16 sm:pt-24 pb-8 sm:pb-10 border-t border-white/10 overflow-hidden flex flex-col justify-between"
+    class="relative z-20 w-full bg-[#0c0b0a] text-paper pt-16 sm:pt-24 pb-8 sm:pb-12 border-t border-white/10 overflow-hidden flex flex-col justify-between shadow-[0_-20px_60px_rgba(0,0,0,0.6)]"
   >
-    <!-- Background Ambient Glow -->
-    <div class="pointer-events-none absolute -bottom-32 left-1/2 -translate-x-1/2 w-[320px] sm:w-[500px] h-[180px] sm:h-[250px] bg-signal/12 rounded-full blur-[80px] sm:blur-[100px]" />
+    <!-- Background Ambient Glow Center Spotlight -->
+    <div class="pointer-events-none absolute -bottom-36 left-1/2 -translate-x-1/2 w-[360px] sm:w-[680px] h-[220px] sm:h-[340px] bg-signal/14 rounded-full blur-[100px] sm:blur-[130px]" />
 
-    <div ref="footerInnerRef" class="page-shell-wide relative z-10 flex flex-col justify-between grow space-y-10 sm:space-y-16 will-change-transform">
-      <!-- Top Live Availability & Clock Strip -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-white/12 pb-6 sm:pb-8 font-mono text-xs">
+    <div ref="footerInnerRef" class="page-shell-wide relative z-10 flex flex-col justify-between grow space-y-12 sm:space-y-18">
+      <!-- 1. Top Live Availability & Clock Strip (Centered Balance) -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 border-b border-white/12 pb-6 sm:pb-8 font-mono text-xs text-center sm:text-left">
         <div class="flex items-center gap-2.5">
           <span class="relative flex size-2.5">
             <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-signal opacity-75" />
             <span class="relative inline-flex size-2.5 rounded-full bg-signal" />
           </span>
           <span class="font-semibold text-paper uppercase tracking-[0.1em] sm:tracking-[0.14em] text-[0.72rem] sm:text-xs">
-            Terbuka Untuk Kolaborasi 2026
+            Terbuka Untuk Kolaborasi Proyek 2026
           </span>
         </div>
 
-        <div class="flex items-center gap-4 sm:gap-6 text-paper/60 uppercase tracking-widest text-[0.68rem] sm:text-[0.72rem]">
+        <div class="flex items-center gap-3 sm:gap-6 text-paper/60 uppercase tracking-widest text-[0.68rem] sm:text-[0.72rem]">
           <span>Jakarta, ID <strong class="text-paper font-semibold">{{ currentTime }} WIB</strong></span>
-          <span class="hidden sm:inline text-white/20">|</span>
-          <span class="hidden sm:inline">Nuxt 3 SSR · GSAP Motion</span>
+          <span class="text-white/20">|</span>
+          <span>Nuxt 3 SSR · GSAP Motion</span>
         </div>
       </div>
 
-      <!-- Main Headline & Quick Action -->
-      <div class="grid gap-6 sm:gap-8 lg:grid-cols-[1.6fr_1fr] lg:items-end">
-        <div>
-          <div class="inline-flex items-center gap-2 font-mono text-[0.7rem] sm:text-xs font-bold text-signal uppercase tracking-widest mb-2 sm:mb-3">
-            <span>{ Connect & Socials }</span>
-          </div>
-          <h2 class="font-display text-display-l text-paper tracking-tight font-bold max-w-2xl">
-            Mari wujudkan ide digital berikutnya.
-          </h2>
+      <!-- 2. BIG CENTER EDITORIAL HERO SECTION -->
+      <div class="text-center max-w-4xl mx-auto space-y-6 sm:space-y-8 py-2 sm:py-6">
+        <!-- Eyebrow Tag -->
+        <div class="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-4 py-1.5 backdrop-blur-md">
+          <span class="size-1.5 rounded-full bg-signal" />
+          <span class="font-mono text-[0.7rem] sm:text-xs font-semibold text-paper/80 uppercase tracking-[0.16em]">
+            { Mulai Proyek Baru }
+          </span>
         </div>
 
-        <div class="space-y-3 sm:space-y-4 lg:text-right">
-          <p class="font-body text-paper/75 text-xs sm:text-sm md:text-base max-w-md ml-auto">
-            Terhubung melalui kanal sosial media atau kirim pesan singkat untuk memulai diskusi proyek.
-          </p>
-          <div class="flex flex-wrap gap-3 lg:justify-end">
-            <a
-              href="mailto:contact@rumahdesign.id"
-              class="w-full sm:w-auto text-center inline-flex items-center justify-center gap-2 rounded-full bg-signal px-6 py-2.5 sm:py-3 font-mono text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-signal/25 transition-all hover:scale-105 hover:bg-[#e63d10] active:scale-95"
-            >
-              <span>Kirim Email Langsung</span>
-              <span>↗</span>
-            </a>
-          </div>
+        <!-- Big Center Headline -->
+        <h2 class="font-display text-display-l text-paper tracking-tight font-bold leading-[1.02]">
+          <span>Mari wujudkan ide digital</span>
+          <br class="hidden sm:inline">
+          <span class="text-signal"> berikutnya bersama kami.</span>
+        </h2>
+
+        <!-- Subheading Pitch -->
+        <p class="font-sans text-body-m text-paper/75 max-w-2xl mx-auto leading-relaxed text-sm sm:text-base">
+          Dari eksplorasi konsep antarmuka, pembuatan design system, hingga rekayasa kode frontend siap rilis. Diskusikan ide dan kebutuhan produk Anda hari ini.
+        </p>
+
+        <!-- Big Centered CTA Action Buttons -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 pt-2">
+          <NuxtLink
+            to="/contact"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-full bg-signal px-8 py-3.5 sm:py-4 font-mono text-xs sm:text-sm font-bold uppercase tracking-wider text-white shadow-xl shadow-signal/30 transition-all duration-300 hover:scale-105 hover:bg-[#e63d10] active:scale-95"
+          >
+            <span>Mulai Diskusi Proyek</span>
+            <span class="text-sm">↗</span>
+          </NuxtLink>
+
+          <button
+            type="button"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-white/10 border border-white/15 px-6 py-3.5 sm:py-4 font-mono text-xs sm:text-sm font-semibold uppercase tracking-wider text-paper hover:bg-white/18 hover:border-white/30 transition-all duration-200"
+            @click="copyEmail"
+          >
+            <span>Salin Email 📋</span>
+          </button>
         </div>
       </div>
 
-      <!-- Editorial Social Media Cards Grid -->
-      <div class="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 pt-2">
-        <a
-          v-for="item in socialChannels"
-          :key="item.name"
-          :href="item.url"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 backdrop-blur-sm transition-all duration-300 hover:border-signal/50 hover:bg-white/[0.07] hover:translate-y-[-2px] active:scale-[0.99] shadow-xs"
-        >
-          <div class="space-y-1.5 sm:space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="font-mono text-xs font-bold text-paper uppercase tracking-wider group-hover:text-signal transition-colors">
-                {{ item.name }}
-              </span>
-              <span class="font-mono text-[0.68rem] text-signal font-semibold opacity-80 sm:opacity-0 -translate-x-1 sm:-translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0">
-                {{ item.action }}
-              </span>
+      <!-- 3. CENTERED EDITORIAL SOCIAL CHANNELS (WITH PROVIDED SVG LOGOS) -->
+      <div class="space-y-4 pt-2">
+        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+          <span class="font-mono text-xs font-bold text-signal uppercase tracking-widest">
+            { Kanal Resmi & Media Sosial }
+          </span>
+          <span class="font-mono text-[0.68rem] text-paper/50 uppercase tracking-wider hidden sm:inline">
+            Terhubung Melalui Platform Pilihan
+          </span>
+        </div>
+
+        <div class="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <a
+            v-for="item in socialChannels"
+            :key="item.name"
+            :href="item.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group relative flex flex-col justify-between rounded-2xl sm:rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-6 backdrop-blur-md transition-all duration-300 hover:border-signal/60 hover:bg-white/[0.08] hover:-translate-y-1 active:scale-[0.99] shadow-xs"
+          >
+            <div class="space-y-4">
+              <!-- Top Row: SVG Logo Box + Action Arrow -->
+              <div class="flex items-center justify-between">
+                <!-- SVG Logo Container -->
+                <div class="size-11 sm:size-12 rounded-2xl bg-white/10 border border-white/12 p-2.5 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-white/20 group-hover:border-signal/50">
+                  <img
+                    :src="item.icon"
+                    :alt="`${item.name} logo`"
+                    class="h-full w-full object-contain filter brightness-100 invert-[0.15]"
+                  >
+                </div>
+
+                <!-- Action Pill -->
+                <span class="font-mono text-[0.7rem] text-signal font-semibold opacity-70 group-hover:opacity-100 transition-opacity">
+                  {{ item.action }}
+                </span>
+              </div>
+
+              <!-- Content Info -->
+              <div class="space-y-1">
+                <h3 class="font-display text-base font-bold text-paper group-hover:text-signal transition-colors">
+                  {{ item.name }}
+                </h3>
+                <p class="font-mono text-xs text-paper/90 font-medium truncate">
+                  {{ item.handle }}
+                </p>
+                <p class="font-sans text-xs text-paper/60 leading-relaxed pt-1">
+                  {{ item.desc }}
+                </p>
+              </div>
             </div>
-            <p class="font-mono text-[0.72rem] sm:text-xs text-paper/90 font-medium">
-              {{ item.handle }}
-            </p>
-            <p class="font-sans text-[0.72rem] sm:text-xs text-paper/60 leading-relaxed">
-              {{ item.desc }}
-            </p>
-          </div>
-        </a>
+          </a>
+        </div>
       </div>
 
-      <!-- Massive Brand Signature Watermark -->
-      <div class="py-2 sm:py-4 text-center select-none pointer-events-none overflow-hidden">
-        <span class="font-display font-bold text-[clamp(2.1rem,9vw,9.5rem)] text-white/[0.06] tracking-tighter leading-none block uppercase truncate">
+      <!-- 4. MASSIVE BRAND SIGNATURE WATERMARK (CENTERED EDITORIAL) -->
+      <div class="py-4 sm:py-8 text-center select-none pointer-events-none overflow-hidden">
+        <span class="font-display font-bold text-[clamp(2.4rem,11.5vw,12rem)] text-white/[0.07] tracking-tighter leading-none block uppercase truncate">
           Rumah Design
         </span>
       </div>
 
-      <!-- Bottom Sitemap & Back to Top Bar -->
+      <!-- 5. BOTTOM SITEMAP & BACK TO TOP BAR -->
       <div class="flex flex-col justify-between gap-4 border-t border-white/10 pt-6 sm:pt-8 sm:flex-row font-mono text-[0.72rem] sm:text-[0.75rem] text-paper/50 items-center text-center sm:text-left">
         <p>© {{ new Date().getFullYear() }} Rumah Design Studio. All rights reserved.</p>
 
         <div class="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
           <NuxtLink to="/#work" class="hover:text-paper transition-colors py-1">Karya</NuxtLink>
           <NuxtLink to="/about" class="hover:text-paper transition-colors py-1">Tentang</NuxtLink>
+          <NuxtLink to="/contact" class="hover:text-paper transition-colors py-1">Hubungi</NuxtLink>
           <NuxtLink to="/admin/login" class="hover:text-paper transition-colors py-1">Admin</NuxtLink>
           <button
             type="button"
@@ -202,3 +249,4 @@ const socialChannels = [
     </div>
   </footer>
 </template>
+

@@ -1,6 +1,5 @@
 import { serverSupabaseClient } from '#supabase/server'
 import type { Database, Project } from '~/types/database.types'
-import { fallbackProjects } from '~/utils/fallbackProjects'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -12,12 +11,12 @@ export default defineEventHandler(async (event) => {
       .order('created_at', { ascending: false })
       .abortSignal(AbortSignal.timeout(5000))
 
-    if (error || !data || data.length === 0) {
-      return fallbackProjects as unknown as Project[]
+    if (error || !data) {
+      return [] as Project[]
     }
     return data as Project[]
   } catch (err) {
-    console.error('Server error in /api/projects, using fallback:', err)
-    return fallbackProjects as unknown as Project[]
+    console.error('Server error in /api/projects:', err)
+    return [] as Project[]
   }
 })

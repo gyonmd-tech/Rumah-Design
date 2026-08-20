@@ -69,13 +69,14 @@ onUnmounted(() => {
 
       <!-- Right Action Pill Button -->
       <div class="flex items-center shrink-0">
-        <a
-          href="mailto:contact@rumahdesign.id"
-          class="inline-flex items-center gap-1 sm:gap-1.5 rounded-full bg-white px-2.5 sm:px-4 md:px-5 py-1.5 font-mono text-[0.68rem] sm:text-xs font-bold text-ink uppercase tracking-wider shadow-sm transition-all duration-200 hover:bg-signal hover:text-white hover:scale-105 active:scale-95"
+        <NuxtLink
+          to="/contact"
+          class="inline-flex items-center gap-1 sm:gap-1.5 rounded-full px-2.5 sm:px-4 md:px-5 py-1.5 font-mono text-[0.68rem] sm:text-xs font-bold uppercase tracking-wider shadow-sm transition-all duration-200 hover:scale-105 active:scale-95"
+          :class="route.path === '/contact' ? 'bg-signal text-white ring-2 ring-signal/40' : 'bg-white text-ink hover:bg-signal hover:text-white'"
         >
           <span>Hubungi</span>
           <span class="text-[0.62rem] sm:text-xs">↗</span>
-        </a>
+        </NuxtLink>
       </div>
     </div>
   </header>

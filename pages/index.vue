@@ -1,29 +1,20 @@
 <script setup lang="ts">
 import type { Project, ProjectCategory } from '~/types/database.types'
-import { fallbackProjects } from '~/utils/fallbackProjects'
 
 const { data: dbProjects, status, error, refresh } = await useAsyncData('published-projects', async () => {
   try {
     return await $fetch<Project[]>('/api/projects')
   } catch (err) {
     console.error('Gagal memuat projects dari server:', err)
-    return fallbackProjects as unknown as Project[]
+    return [] as Project[]
   }
 })
 
-// Merge database projects with full fallback collection if database has fewer items
-const allProjects = computed<Project[]>(() => {
-  const dbList = dbProjects.value ?? []
-  if (dbList.length >= 8) return dbList
-  
-  // Combine db projects with fallback items that are not in db
-  const dbSlugs = new Set(dbList.map(p => p.slug))
-  const remaining = (fallbackProjects as unknown as Project[]).filter(p => !dbSlugs.has(p.slug))
-  return [...dbList, ...remaining]
-})
+const allProjects = computed<Project[]>(() => dbProjects.value ?? [])
 
 const category = ref<ProjectCategory | 'all'>('all')
 const searchQuery = ref('')
+const isScrolled = ref(false)
 
 const filteredProjects = computed(() => allProjects.value.filter((project) => {
   const matchesCategory = category.value === 'all' || project.category === category.value
@@ -216,11 +207,16 @@ useSeoMeta({
           />
         </div>
 
-        <!-- Empty Filter State -->
+        <!-- Empty State -->
         <div v-else class="my-8 sm:my-12 border border-ink/15 p-8 sm:p-12 text-center rounded-3xl bg-white/60">
-          <p class="font-display text-lg sm:text-xl font-semibold text-ink">Belum ada project yang cocok.</p>
-          <p class="mt-1 sm:mt-2 font-mono text-xs text-mute uppercase">Coba kata kunci pencarian atau kategori lain.</p>
+          <p class="font-display text-lg sm:text-xl font-semibold text-ink">
+            {{ allProjects.length === 0 ? 'Belum ada project yang dipublikasikan.' : 'Belum ada project yang cocok.' }}
+          </p>
+          <p class="mt-1 sm:mt-2 font-mono text-xs text-mute uppercase">
+            {{ allProjects.length === 0 ? 'Project baru akan muncul di sini segera setelah dirilis.' : 'Coba kata kunci pencarian atau kategori lain.' }}
+          </p>
           <button
+            v-if="allProjects.length > 0"
             type="button"
             class="button-secondary mt-5 sm:mt-6 text-xs"
             @click="category = 'all'; searchQuery = ''"

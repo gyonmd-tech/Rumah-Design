@@ -15,7 +15,7 @@ for (const key of required) {
     if (isForce) {
       errors.push(`${key} wajib diisi`)
     } else {
-      warnings.push(`${key} belum diatur di Vercel Dashboard. Website akan berjalan dalam mode fallback showcase demo.`)
+      warnings.push(`${key} belum diatur di Vercel Dashboard. Supabase client tidak dapat terhubung.`)
     }
   }
 }
