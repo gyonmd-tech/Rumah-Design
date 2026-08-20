@@ -16,19 +16,23 @@ defineProps<{
       :aria-label="`Lihat project ${project.title}`"
     >
       <!-- Media Frame with 16:10 aspect ratio and rounded-2xl -->
-      <div class="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-[#e2dfd7] border border-ink/10 shadow-xs transition-all duration-500 group-hover:shadow-xl group-hover:border-ink/20">
+      <div class="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-[#e2dfd7] border border-ink/10 shadow-xs transition-all duration-500 group-hover:shadow-2xl group-hover:border-ink/25">
+        <!-- Project Thumbnail with Editorial Visual Filter -->
         <img
           :src="project.preview_media_url || project.thumbnail_url"
           :alt="`Tampilan ${project.title}`"
-          class="h-full w-full object-cover object-top transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+          class="h-full w-full object-cover object-top filter contrast-[104%] brightness-[96%] saturate-[94%] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:filter-none group-hover:saturate-[108%] group-hover:scale-106"
           :loading="index === 0 ? 'eager' : 'lazy'"
           :fetchpriority="index === 0 ? 'high' : 'auto'"
           width="1200"
           height="750"
         >
 
-        <!-- Subtle Gradient for bottom tag contrast -->
-        <div class="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent opacity-70 transition-opacity group-hover:opacity-85" />
+        <!-- Subtle Editorial Color Filter Overlay -->
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-black/25 via-transparent to-signal/5 mix-blend-multiply opacity-50 transition-opacity duration-500 group-hover:opacity-0" />
+
+        <!-- Bottom Gradient for tag contrast -->
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-black/15 to-transparent opacity-70 transition-opacity duration-300 group-hover:opacity-85" />
 
         <!-- Bottom Left Pill Tag -->
         <div class="absolute bottom-2.5 left-2.5 sm:bottom-3 sm:left-3 flex items-center gap-1.5 rounded-lg bg-black/75 backdrop-blur-md px-2 sm:px-2.5 py-0.5 sm:py-1 text-white font-mono text-[0.65rem] sm:text-[0.68rem] font-medium border border-white/10 shadow-xs">

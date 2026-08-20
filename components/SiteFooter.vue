@@ -121,9 +121,9 @@ const socialChannels = [
         </div>
       </div>
 
-      <!-- Massive Brand Signature Watermark -->
-      <div class="py-2 text-center select-none pointer-events-none overflow-hidden">
-        <span class="font-display font-bold text-[clamp(2.8rem,11.5vw,11rem)] text-white/[0.07] tracking-tighter leading-none block uppercase truncate">
+      <!-- Massive Brand Signature Watermark (Fully responsive on all mobile screens) -->
+      <div class="py-2 text-center select-none pointer-events-none overflow-hidden px-1">
+        <span class="font-display font-bold text-[clamp(1.6rem,10.2vw,11rem)] text-white/[0.07] tracking-tight sm:tracking-tighter leading-none block uppercase whitespace-nowrap">
           Rumah Design
         </span>
       </div>
