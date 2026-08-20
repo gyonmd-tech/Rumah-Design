@@ -16,12 +16,12 @@ defineProps<{
       :aria-label="`Lihat project ${project.title}`"
     >
       <!-- Media Frame with 16:10 aspect ratio and rounded-2xl -->
-      <div class="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-[#e2dfd7] border border-ink/10 shadow-xs transition-all duration-500 group-hover:shadow-2xl group-hover:border-ink/25">
-        <!-- Project Thumbnail with Editorial Visual Filter -->
+      <div class="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-[#141210] border border-ink/10 shadow-xs transition-all duration-500 group-hover:shadow-2xl group-hover:border-ink/25 flex items-center justify-center p-1.5 sm:p-2">
+        <!-- Project Thumbnail with Full Fit (Zero Cropping) and Editorial Filter -->
         <img
           :src="project.preview_media_url || project.thumbnail_url"
           :alt="`Tampilan ${project.title}`"
-          class="h-full w-full object-cover object-top filter contrast-[104%] brightness-[96%] saturate-[94%] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:filter-none group-hover:saturate-[108%] group-hover:scale-106"
+          class="h-full w-full object-contain object-center rounded-xl filter contrast-[103%] brightness-[97%] saturate-[95%] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:filter-none group-hover:saturate-[108%] group-hover:scale-102"
           :loading="index === 0 ? 'eager' : 'lazy'"
           :fetchpriority="index === 0 ? 'high' : 'auto'"
           width="1200"
@@ -29,10 +29,10 @@ defineProps<{
         >
 
         <!-- Subtle Editorial Color Filter Overlay -->
-        <div class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-black/25 via-transparent to-signal/5 mix-blend-multiply opacity-50 transition-opacity duration-500 group-hover:opacity-0" />
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-tr from-black/25 via-transparent to-signal/5 mix-blend-multiply opacity-40 transition-opacity duration-500 group-hover:opacity-0" />
 
         <!-- Bottom Gradient for tag contrast -->
-        <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-black/15 to-transparent opacity-70 transition-opacity duration-300 group-hover:opacity-85" />
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-75" />
 
         <!-- Bottom Left Pill Tag -->
         <div class="absolute bottom-2.5 left-2.5 sm:bottom-3 sm:left-3 flex items-center gap-1.5 rounded-lg bg-black/75 backdrop-blur-md px-2 sm:px-2.5 py-0.5 sm:py-1 text-white font-mono text-[0.65rem] sm:text-[0.68rem] font-medium border border-white/10 shadow-xs">

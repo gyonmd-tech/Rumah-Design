@@ -151,11 +151,11 @@ useHead(() => ({
 
       <!-- Main Showcase Frame with Rounded-3xl -->
       <div class="my-8 sm:my-12">
-        <div class="relative aspect-[16/10] overflow-hidden rounded-2xl sm:rounded-3xl bg-[#e5e2db] shadow-md border border-ink/10">
+        <div class="relative aspect-[16/10] overflow-hidden rounded-2xl sm:rounded-3xl bg-[#141210] shadow-md border border-ink/10 flex items-center justify-center p-2 sm:p-3">
           <img
             :src="project.thumbnail_url"
             :alt="`Tampilan utama ${project.title}`"
-            class="h-full w-full object-cover object-center"
+            class="h-full w-full object-contain object-center rounded-xl sm:rounded-2xl"
             width="1600"
             height="1000"
           >
@@ -184,12 +184,12 @@ useHead(() => ({
           <div
             v-for="(item, i) in galleryItems"
             :key="i"
-            class="relative aspect-[16/10] w-[88vw] sm:w-[80vw] max-w-[1000px] shrink-0 snap-center overflow-hidden rounded-xl sm:rounded-2xl bg-[#1f1d1a] border border-white/10"
+            class="relative aspect-[16/10] w-[88vw] sm:w-[80vw] max-w-[1000px] shrink-0 snap-center overflow-hidden rounded-xl sm:rounded-2xl bg-[#141210] border border-white/10 flex items-center justify-center p-2 sm:p-3"
           >
             <img
               :src="item.url"
               :alt="item.title"
-              class="h-full w-full object-cover"
+              class="h-full w-full object-contain object-center rounded-lg sm:rounded-xl"
               loading="lazy"
             >
             <span class="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 rounded-full bg-void/80 px-3 sm:px-4 py-1 sm:py-1.5 font-mono text-[0.65rem] sm:text-[0.7rem] uppercase tracking-wider text-paper backdrop-blur-md">

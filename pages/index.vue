@@ -172,10 +172,10 @@ useSeoMeta({
       </div>
     </section>
 
-    <!-- OVERLAPPING PROJECT WORK SECTION (ROUNDED TOP & BOTTOM + MULTI-ROW 4 CARDS) -->
+    <!-- WORK SECTION (FLAT ARCHITECTURAL BAND, INDIVIDUAL PROJECTS REMAIN ROUNDED) -->
     <section
       id="work"
-      class="relative z-20 -mt-12 sm:-mt-24 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3.5rem] bg-paper text-ink shadow-[0_25px_80px_rgba(0,0,0,0.5)] pt-10 sm:pt-16 pb-14 sm:pb-20 mb-12 sm:mb-24 border border-ink/10"
+      class="relative z-20 bg-paper text-ink shadow-[0_25px_80px_rgba(0,0,0,0.5)] pt-12 sm:pt-20 pb-16 sm:pb-28 border-y border-ink/10"
     >
       <div class="page-shell-wide">
         <!-- Minimalist Filter Header (Bracket Title + Search Bar + Category Tabs) -->
