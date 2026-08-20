@@ -100,8 +100,8 @@ const socialChannels = [
           />
         </div>
 
-        <!-- Pure Naked Social Media Logos -->
-        <div class="flex items-center justify-center gap-6 sm:gap-8 md:gap-10 pt-4 sm:pt-6">
+        <!-- Pure Naked Social Media Logos (Prominent Size) -->
+        <div class="flex items-center justify-center gap-7 sm:gap-10 md:gap-12 pt-5 sm:pt-7">
           <a
             v-for="item in socialChannels"
             :key="item.name"
@@ -110,12 +110,12 @@ const socialChannels = [
             rel="noopener noreferrer"
             :aria-label="item.name"
             :title="item.name"
-            class="group inline-flex items-center justify-center p-2 transition-transform duration-300 hover:scale-125 active:scale-95"
+            class="group inline-flex items-center justify-center p-2.5 transition-transform duration-300 hover:scale-125 active:scale-95"
           >
             <img
               :src="item.icon"
               :alt="`${item.name} logo`"
-              class="size-7 sm:size-8 md:size-9 object-contain opacity-75 transition-all duration-300 group-hover:opacity-100 group-hover:drop-shadow-[0_0_10px_rgba(255,74,28,0.6)]"
+              class="size-10 sm:size-12 md:size-14 object-contain opacity-80 transition-all duration-300 group-hover:opacity-100 group-hover:drop-shadow-[0_0_16px_rgba(255,74,28,0.65)]"
             >
           </a>
         </div>
