@@ -32,7 +32,8 @@ defineProps<{
       <circle cx="16" cy="13" r="2.5" fill="var(--color-signal)" />
     </svg>
     <span class="font-mono text-[0.72rem] sm:text-xs md:text-sm font-bold tracking-[0.06em] sm:tracking-[0.1em] uppercase whitespace-nowrap">
-      Rumah Design
+      <span class="hidden sm:inline">Rumah Design</span>
+      <span class="sm:hidden text-xs">RD</span>
     </span>
   </div>
 </template>

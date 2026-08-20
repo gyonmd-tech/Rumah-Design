@@ -11,6 +11,9 @@ export default defineNuxtConfig({
     '@nuxtjs/seo',
   ],
   css: ['~/assets/css/tailwind.css'],
+  build: {
+    transpile: ['gsap'],
+  },
   experimental: {
     appManifest: false,
   },
@@ -37,10 +40,12 @@ export default defineNuxtConfig({
     redirect: false,
   },
   app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
+    layoutTransition: { name: 'layout', mode: 'out-in' },
     head: {
       htmlAttrs: { lang: 'id' },
       meta: [
-        { name: 'theme-color', content: '#121110' },
+        { name: 'theme-color', content: '#0c0b0a' },
       ],
       link: [
         { rel: 'preconnect', href: 'https://api.fontshare.com', crossorigin: '' },

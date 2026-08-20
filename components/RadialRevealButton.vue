@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import gsap from 'gsap'
-
-export type IconConfig = {
+type IconConfig = {
   type?: 'symbol' | 'image'
   symbol?: string
   image?: string
@@ -22,7 +20,7 @@ type Props = {
   newTab?: boolean
   type?: 'button' | 'submit' | 'reset'
   variant?: 'primary' | 'secondary' | 'glass' | 'dark' | 'white' | 'custom'
-  rounded?: number // 0 (square) to 100 (pill)
+  rounded?: number // 0 to 100
   fill?: string
   textColor?: string
   hoverFill?: string
@@ -58,7 +56,7 @@ const variantColors = computed(() => {
         fill: props.fill ?? 'var(--color-signal, #ff4a1c)',
         textColor: props.textColor ?? '#ffffff',
         hoverFill: props.hoverFill ?? '#ffffff',
-        hoverTextColor: props.hoverTextColor ?? '#ff4a1c',
+        hoverTextColor: props.hoverTextColor ?? 'var(--color-signal, #ff4a1c)',
         borderColor: props.borderColor ?? 'rgba(255, 255, 255, 0.2)',
         hoverBorderColor: props.hoverBorderColor ?? '#ffffff',
       }
@@ -102,34 +100,22 @@ const variantColors = computed(() => {
   }
 })
 
+const isHovered = ref(false)
 const rootRef = ref<HTMLElement | null>(null)
-const overlayRef = ref<HTMLElement | null>(null)
-const radiusBox = ref({ w: 0, h: 0 })
+const clipX = ref(50)
+const clipY = ref(50)
+const clipRadius = ref(0)
 
-const radiusFromPercent = (w: number, h: number, pct: number) =>
-  (Math.min(w, h) / 2) * (Math.max(0, Math.min(100, pct)) / 100)
-
-const radiusPx = computed(() =>
-  radiusFromPercent(radiusBox.value.w, radiusBox.value.h, props.rounded)
-)
-
-const clip = reactive({ r: 0, x: 100, y: 100, max: 160 })
-let currentTween: gsap.core.Tween | null = null
-
-const applyClip = () => {
-  if (!overlayRef.value) return
-  const val = `circle(${clip.r}% at ${clip.x}% ${clip.y}%)`
-  overlayRef.value.style.clipPath = val
-  ;(overlayRef.value.style as any).webkitClipPath = val
-}
-
-const anchorTo = (e: PointerEvent) => {
-  const el = overlayRef.value
-  if (!el) return
+const updatePointerPos = (e: PointerEvent) => {
+  const el = (e.currentTarget as HTMLElement) || ((rootRef.value as any)?.$el as HTMLElement) || rootRef.value
+  if (!el || typeof el.getBoundingClientRect !== 'function') return
   const r = el.getBoundingClientRect()
   if (!r.width || !r.height) return
   const px = e.clientX - r.left
   const py = e.clientY - r.top
+  clipX.value = (px / r.width) * 100
+  clipY.value = (py / r.height) * 100
+
   const unit = Math.hypot(r.width, r.height) / Math.SQRT2
   const far = Math.max(
     Math.hypot(px, py),
@@ -137,51 +123,19 @@ const anchorTo = (e: PointerEvent) => {
     Math.hypot(px, r.height - py),
     Math.hypot(r.width - px, r.height - py)
   )
-  clip.x = (px / r.width) * 100
-  clip.y = (py / r.height) * 100
-  clip.max = (far / unit) * 100 + 2
-}
-
-const growTo = (to: number) => {
-  if (currentTween) currentTween.kill()
-  currentTween = gsap.to(clip, {
-    r: to,
-    duration: 0.45,
-    ease: 'power2.inOut',
-    onUpdate: applyClip,
-  })
+  clipRadius.value = (far / unit) * 100 + 4
 }
 
 const onPointerEnter = (e: PointerEvent) => {
   if (props.disabled) return
-  anchorTo(e)
-  applyClip()
-  growTo(clip.max)
+  updatePointerPos(e)
+  isHovered.value = true
 }
 
-const onPointerLeave = (e: PointerEvent) => {
+const onPointerLeave = () => {
   if (props.disabled) return
-  if (clip.r >= clip.max - 0.5) {
-    anchorTo(e)
-    clip.r = clip.max
-    applyClip()
-  }
-  growTo(0)
+  isHovered.value = false
 }
-
-onMounted(() => {
-  const el = rootRef.value
-  if (el) {
-    const updateSize = () => {
-      radiusBox.value = { w: el.offsetWidth, h: el.offsetHeight }
-    }
-    updateSize()
-    const ro = new ResizeObserver(updateSize)
-    ro.observe(el)
-    onUnmounted(() => ro.disconnect())
-  }
-  applyClip()
-})
 
 // Destination Tag Resolution
 const destination = computed(() => props.to || props.link || props.href || '')
@@ -203,95 +157,170 @@ const mergedIcon = computed(() => ({
   ...defaultIcon,
   ...(props.icon ?? {}),
 }))
+
+const commonStyle = computed(() => ({
+  borderRadius: props.rounded >= 100 ? '9999px' : `${props.rounded}px`,
+  backgroundColor: variantColors.value.fill,
+  borderColor: isHovered.value ? variantColors.value.hoverBorderColor : variantColors.value.borderColor,
+  borderWidth: props.borderWidth !== undefined ? (typeof props.borderWidth === 'number' ? `${props.borderWidth}px` : props.borderWidth) : '1px',
+  borderStyle: 'solid',
+  padding: props.padding || '0.75rem 1.6rem',
+  fontSize: '0.75rem',
+  lineHeight: '1.2',
+}))
 </script>
 
 <template>
-  <component
-    :is="isNuxtLink ? 'NuxtLink' : isExternalLink ? 'a' : 'button'"
+  <!-- 1. Internal Nuxt Link -->
+  <NuxtLink
+    v-if="isNuxtLink"
     ref="rootRef"
-    :to="isNuxtLink ? destination : undefined"
-    :href="isExternalLink ? destination : undefined"
-    :target="isExternalLink && newTab ? '_blank' : undefined"
-    :rel="isExternalLink && newTab ? 'noopener noreferrer' : undefined"
-    :type="!isNuxtLink && !isExternalLink ? (type || 'button') : undefined"
-    :disabled="disabled"
-    class="radial-reveal-btn group relative inline-flex items-center justify-center font-mono font-bold uppercase tracking-wider select-none cursor-pointer overflow-hidden transition-transform duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+    :to="destination"
+    class="radial-btn group relative inline-flex items-center justify-center font-mono font-bold uppercase tracking-wider select-none cursor-pointer overflow-hidden transition-transform duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
     :class="customClass"
-    :style="{
-      borderRadius: `${radiusPx}px`,
-      backgroundColor: variantColors.fill,
-      borderColor: variantColors.borderColor,
-      borderWidth: borderWidth !== undefined ? (typeof borderWidth === 'number' ? `${borderWidth}px` : borderWidth) : '1px',
-      borderStyle: 'solid',
-      padding: padding || '0.75rem 1.6rem',
-      fontSize: '0.75rem',
-      lineHeight: '1.2',
-    }"
+    :style="commonStyle"
     @pointerenter="onPointerEnter"
     @pointerleave="onPointerLeave"
   >
-    <!-- Resting Face (Sizes the container) -->
+    <!-- Background Radial Reveal Backdrop -->
     <span
-      class="resting-face relative z-0 flex items-center justify-center pointer-events-none transition-colors duration-200"
-      :style="{
-        color: variantColors.textColor,
-        gap: `${gap}px`,
-        flexDirection: mergedIcon.side === 'left' ? 'row-reverse' : 'row',
-      }"
-    >
-      <slot>
-        <span>{{ label }}</span>
-      </slot>
-
-      <!-- Optional Icon -->
-      <span
-        v-if="addIcon || $slots.icon"
-        class="inline-flex items-center justify-center shrink-0"
-        :style="{ fontSize: `${mergedIcon.size}px`, color: mergedIcon.color }"
-      >
-        <slot name="icon">
-          <span>{{ mergedIcon.symbol }}</span>
-        </slot>
-      </span>
-    </span>
-
-    <!-- Hover Face (Clipped Radial Reveal Overlay) -->
-    <span
-      ref="overlayRef"
       aria-hidden="true"
-      class="hover-face absolute inset-0 z-10 flex items-center justify-center pointer-events-none transition-colors duration-200"
+      class="radial-backdrop absolute inset-0 z-0 pointer-events-none transition-[clip-path] duration-300 ease-out"
       :style="{
-        borderRadius: `${radiusPx}px`,
         backgroundColor: variantColors.hoverFill,
-        color: variantColors.hoverTextColor,
+        clipPath: isHovered ? `circle(${clipRadius}% at ${clipX}% ${clipY}%)` : `circle(0% at ${clipX}% ${clipY}%)`,
+        WebkitClipPath: isHovered ? `circle(${clipRadius}% at ${clipX}% ${clipY}%)` : `circle(0% at ${clipX}% ${clipY}%)`,
+      }"
+    />
+
+    <!-- Single Unified Text Layer (Zero overlay clash) -->
+    <span
+      class="btn-text relative z-10 flex items-center justify-center pointer-events-none transition-colors duration-200"
+      :style="{
+        color: isHovered ? variantColors.hoverTextColor : variantColors.textColor,
         gap: `${gap}px`,
         flexDirection: mergedIcon.side === 'left' ? 'row-reverse' : 'row',
-        clipPath: 'circle(0% at 100% 100%)',
-        WebkitClipPath: 'circle(0% at 100% 100%)',
       }"
     >
       <slot>
         <span>{{ label }}</span>
       </slot>
-
-      <!-- Optional Icon Hover Face -->
       <span
         v-if="addIcon || $slots.icon"
-        class="inline-flex items-center justify-center shrink-0"
-        :style="{ fontSize: `${mergedIcon.size}px`, color: variantColors.hoverTextColor || mergedIcon.hoverColor }"
+        class="inline-flex items-center justify-center shrink-0 transition-transform duration-200"
+        :class="{ 'translate-x-0.5 -translate-y-0.5': isHovered && mergedIcon.symbol === '↗' }"
+        :style="{ fontSize: `${mergedIcon.size}px` }"
       >
         <slot name="icon">
           <span>{{ mergedIcon.symbol }}</span>
         </slot>
       </span>
     </span>
-  </component>
+  </NuxtLink>
+
+  <!-- 2. External Standard Anchor Link -->
+  <a
+    v-else-if="isExternalLink"
+    ref="rootRef"
+    :href="destination"
+    :target="newTab ? '_blank' : undefined"
+    :rel="newTab ? 'noopener noreferrer' : undefined"
+    class="radial-btn group relative inline-flex items-center justify-center font-mono font-bold uppercase tracking-wider select-none cursor-pointer overflow-hidden transition-transform duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+    :class="customClass"
+    :style="commonStyle"
+    @pointerenter="onPointerEnter"
+    @pointerleave="onPointerLeave"
+  >
+    <!-- Background Radial Reveal Backdrop -->
+    <span
+      aria-hidden="true"
+      class="radial-backdrop absolute inset-0 z-0 pointer-events-none transition-[clip-path] duration-300 ease-out"
+      :style="{
+        backgroundColor: variantColors.hoverFill,
+        clipPath: isHovered ? `circle(${clipRadius}% at ${clipX}% ${clipY}%)` : `circle(0% at ${clipX}% ${clipY}%)`,
+        WebkitClipPath: isHovered ? `circle(${clipRadius}% at ${clipX}% ${clipY}%)` : `circle(0% at ${clipX}% ${clipY}%)`,
+      }"
+    />
+
+    <!-- Single Unified Text Layer (Zero overlay clash) -->
+    <span
+      class="btn-text relative z-10 flex items-center justify-center pointer-events-none transition-colors duration-200"
+      :style="{
+        color: isHovered ? variantColors.hoverTextColor : variantColors.textColor,
+        gap: `${gap}px`,
+        flexDirection: mergedIcon.side === 'left' ? 'row-reverse' : 'row',
+      }"
+    >
+      <slot>
+        <span>{{ label }}</span>
+      </slot>
+      <span
+        v-if="addIcon || $slots.icon"
+        class="inline-flex items-center justify-center shrink-0 transition-transform duration-200"
+        :class="{ 'translate-x-0.5 -translate-y-0.5': isHovered && mergedIcon.symbol === '↗' }"
+        :style="{ fontSize: `${mergedIcon.size}px` }"
+      >
+        <slot name="icon">
+          <span>{{ mergedIcon.symbol }}</span>
+        </slot>
+      </span>
+    </span>
+  </a>
+
+  <!-- 3. Standard Button Element -->
+  <button
+    v-else
+    ref="rootRef"
+    :type="type || 'button'"
+    :disabled="disabled"
+    class="radial-btn group relative inline-flex items-center justify-center font-mono font-bold uppercase tracking-wider select-none cursor-pointer overflow-hidden transition-transform duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+    :class="customClass"
+    :style="commonStyle"
+    @pointerenter="onPointerEnter"
+    @pointerleave="onPointerLeave"
+  >
+    <!-- Background Radial Reveal Backdrop -->
+    <span
+      aria-hidden="true"
+      class="radial-backdrop absolute inset-0 z-0 pointer-events-none transition-[clip-path] duration-300 ease-out"
+      :style="{
+        backgroundColor: variantColors.hoverFill,
+        clipPath: isHovered ? `circle(${clipRadius}% at ${clipX}% ${clipY}%)` : `circle(0% at ${clipX}% ${clipY}%)`,
+        WebkitClipPath: isHovered ? `circle(${clipRadius}% at ${clipX}% ${clipY}%)` : `circle(0% at ${clipX}% ${clipY}%)`,
+      }"
+    />
+
+    <!-- Single Unified Text Layer (Zero overlay clash) -->
+    <span
+      class="btn-text relative z-10 flex items-center justify-center pointer-events-none transition-colors duration-200"
+      :style="{
+        color: isHovered ? variantColors.hoverTextColor : variantColors.textColor,
+        gap: `${gap}px`,
+        flexDirection: mergedIcon.side === 'left' ? 'row-reverse' : 'row',
+      }"
+    >
+      <slot>
+        <span>{{ label }}</span>
+      </slot>
+      <span
+        v-if="addIcon || $slots.icon"
+        class="inline-flex items-center justify-center shrink-0 transition-transform duration-200"
+        :class="{ 'translate-x-0.5 -translate-y-0.5': isHovered && mergedIcon.symbol === '↗' }"
+        :style="{ fontSize: `${mergedIcon.size}px` }"
+      >
+        <slot name="icon">
+          <span>{{ mergedIcon.symbol }}</span>
+        </slot>
+      </span>
+    </span>
+  </button>
 </template>
 
 <style scoped>
-.radial-reveal-btn {
+.radial-btn {
   box-sizing: border-box;
   text-decoration: none;
   isolation: isolate;
+  will-change: transform;
 }
 </style>
