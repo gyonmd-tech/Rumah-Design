@@ -24,26 +24,26 @@ const emit = defineEmits<{
         <span class="text-signal">}</span>
       </div>
 
-      <!-- Clean Minimalist Search Input -->
-      <div class="relative w-full sm:w-80 md:w-96">
+      <!-- Clean Minimalist Search Input (Underline & Icon Only) -->
+      <div class="relative w-full sm:w-72 md:w-80 group">
         <input
           :value="searchQuery"
           type="text"
           placeholder="Cari project, stack, atau topik..."
-          class="w-full rounded-full border border-ink/20 bg-white/80 backdrop-blur-sm pl-4 sm:pl-6 pr-10 py-2 sm:py-2.5 text-xs sm:text-sm text-ink placeholder:text-ink/40 focus:border-ink focus:bg-white focus:outline-none transition-all shadow-xs"
+          class="w-full bg-transparent border-b border-ink/25 pb-2 pt-1 pl-1 pr-8 font-mono text-xs sm:text-sm text-ink placeholder:text-ink/40 focus:border-signal focus:outline-none transition-colors duration-300 rounded-none"
           @input="emit('update:searchQuery', ($event.target as HTMLInputElement).value)"
         >
         <!-- Search Clear or Magnifier Icon -->
         <button
           v-if="searchQuery"
           type="button"
-          class="absolute right-3.5 top-1/2 -translate-y-1/2 text-ink/50 hover:text-signal text-xs font-mono font-bold cursor-pointer"
+          class="absolute right-1 top-1/2 -translate-y-1/2 text-ink/50 hover:text-signal text-xs font-mono font-bold cursor-pointer p-1"
           title="Reset Pencarian"
           @click="emit('update:searchQuery', '')"
         >
           ✕
         </button>
-        <div v-else class="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-ink/40">
+        <div v-else class="pointer-events-none absolute right-1 top-1/2 -translate-y-1/2 text-ink/40 group-focus-within:text-signal transition-colors">
           <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8" />
             <path d="m21 21-4.3-4.3" />
