@@ -1,11 +1,22 @@
 import tailwindcss from '@tailwindcss/vite'
 
 const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+const googleSiteVerification =
+  process.env.NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION ||
+  process.env.GOOGLE_SITE_VERIFICATION ||
+  process.env['google-site-verification'] ||
+  ''
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   ssr: true,
+  runtimeConfig: {
+    public: {
+      siteUrl,
+      googleSiteVerification,
+    },
+  },
   modules: [
     '@nuxtjs/supabase',
     '@nuxtjs/seo',
@@ -46,6 +57,7 @@ export default defineNuxtConfig({
       htmlAttrs: { lang: 'id' },
       meta: [
         { name: 'theme-color', content: '#0c0b0a' },
+        ...(googleSiteVerification ? [{ name: 'google-site-verification', content: googleSiteVerification }] : []),
       ],
       link: [
         { rel: 'preconnect', href: 'https://api.fontshare.com', crossorigin: '' },
