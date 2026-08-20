@@ -172,10 +172,56 @@ useSeoMeta({
       </div>
     </section>
 
-    <!-- WORK SECTION (FLAT ARCHITECTURAL BAND, INDIVIDUAL PROJECTS REMAIN ROUNDED) -->
+    <!-- THIN COLORED MARQUEE TICKER -->
+    <div
+      class="relative z-30 w-full overflow-hidden bg-signal text-white py-2 sm:py-2.5 border-y border-white/20 select-none shadow-[0_4px_24px_rgba(255,74,28,0.25)]"
+      aria-label="Studio Highlights Marquee"
+    >
+      <div class="flex w-max animate-marquee gap-8 whitespace-nowrap font-mono text-[0.68rem] sm:text-xs font-semibold uppercase tracking-[0.18em]">
+        <div class="flex items-center gap-8">
+          <span>✦ SELECTED DIGITAL WORKS</span>
+          <span class="opacity-60">•</span>
+          <span>PRODUCT DESIGN</span>
+          <span class="opacity-60">•</span>
+          <span>FRONTEND ENGINEERING</span>
+          <span class="opacity-60">•</span>
+          <span>INTERACTIVE EXPERIENCES</span>
+          <span class="opacity-60">•</span>
+          <span>NUXT 3 SSR</span>
+          <span class="opacity-60">•</span>
+          <span>GSAP MOTION</span>
+          <span class="opacity-60">•</span>
+          <span>CLEAN ARCHITECTURE</span>
+          <span class="opacity-60">•</span>
+          <span>JAKARTA, ID</span>
+          <span class="opacity-60">•</span>
+        </div>
+        <!-- Duplicate loop for seamless continuous scrolling -->
+        <div aria-hidden="true" class="flex items-center gap-8">
+          <span>✦ SELECTED DIGITAL WORKS</span>
+          <span class="opacity-60">•</span>
+          <span>PRODUCT DESIGN</span>
+          <span class="opacity-60">•</span>
+          <span>FRONTEND ENGINEERING</span>
+          <span class="opacity-60">•</span>
+          <span>INTERACTIVE EXPERIENCES</span>
+          <span class="opacity-60">•</span>
+          <span>NUXT 3 SSR</span>
+          <span class="opacity-60">•</span>
+          <span>GSAP MOTION</span>
+          <span class="opacity-60">•</span>
+          <span>CLEAN ARCHITECTURE</span>
+          <span class="opacity-60">•</span>
+          <span>JAKARTA, ID</span>
+          <span class="opacity-60">•</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORK SECTION -->
     <section
       id="work"
-      class="relative z-20 bg-paper text-ink shadow-[0_25px_80px_rgba(0,0,0,0.5)] pt-12 sm:pt-20 pb-16 sm:pb-28 border-y border-ink/10"
+      class="relative z-20 bg-paper text-ink shadow-[0_25px_80px_rgba(0,0,0,0.5)] pt-12 sm:pt-20 pb-16 sm:pb-28 border-b border-ink/10"
     >
       <div class="page-shell-wide">
         <!-- Minimalist Filter Header (Bracket Title + Search Bar + Category Tabs) -->

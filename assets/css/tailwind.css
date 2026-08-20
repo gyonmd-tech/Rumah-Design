@@ -237,41 +237,44 @@
     left: 140%;
   }
 
-  /* Primary Signal Button */
+  /* Primary Signal Button (Oval with Border Only + Shimmer Hover) */
   .button-primary,
   .btn-premium-primary {
-    background: var(--color-signal);
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 4px 18px rgba(255, 74, 28, 0.3), 0 0 0 1px rgba(255, 74, 28, 0.2);
+    background: transparent;
+    color: var(--color-signal);
+    border: 1.5px solid var(--color-signal);
+    border-radius: 9999px;
+    box-shadow: 0 2px 10px rgba(255, 74, 28, 0.15);
   }
 
   .button-primary:hover,
   .btn-premium-primary:hover {
-    background: #ff592e;
-    transform: translateY(-3px) scale(1.025);
-    box-shadow: 0 10px 28px rgba(255, 74, 28, 0.45), 0 0 20px rgba(255, 74, 28, 0.3);
-    border-color: rgba(255, 255, 255, 0.4);
+    background: var(--color-signal);
+    color: #ffffff;
+    border-color: var(--color-signal);
+    transform: translateY(-2px) scale(1.025);
+    box-shadow: 0 8px 25px rgba(255, 74, 28, 0.35);
   }
 
-  /* Secondary / Glass Button */
+  /* Secondary / Glass Button (Oval with Border Only + Shimmer Hover) */
   .button-secondary,
   .btn-premium-glass {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    color: var(--color-paper);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+    background: transparent;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1.5px solid currentColor;
+    border-radius: 9999px;
+    color: inherit;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   }
 
   .button-secondary:hover,
   .btn-premium-glass:hover {
-    background: rgba(255, 255, 255, 0.16);
-    border-color: rgba(255, 255, 255, 0.35);
+    background: var(--color-signal);
+    border-color: var(--color-signal);
     color: #ffffff;
-    transform: translateY(-3px) scale(1.025);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35), 0 0 15px rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px) scale(1.025);
+    box-shadow: 0 8px 22px rgba(255, 74, 28, 0.3);
   }
 
   /* Tactile Click Feedback */
@@ -319,10 +322,25 @@
     transform: translateY(6px);
   }
 
-  .page-leave-to,
-  .layout-leave-to {
-    opacity: 0;
-    transform: translateY(-6px);
+  /* Smooth Infinite Marquee */
+  @keyframes marquee {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-marquee {
+    display: flex;
+    width: max-content;
+    animation: marquee 26s linear infinite;
+    will-change: transform;
+  }
+
+  .animate-marquee:hover {
+    animation-play-state: paused;
   }
 }
 

@@ -48,54 +48,54 @@ const props = withDefaults(defineProps<Props>(), {
   customClass: '',
 })
 
-// Variant Palette Presets
+// Variant Palette Presets (Oval with Border Only + Smooth Radial Fill on Hover)
 const variantColors = computed(() => {
   switch (props.variant) {
     case 'primary':
       return {
-        fill: props.fill ?? 'var(--color-signal, #ff4a1c)',
-        textColor: props.textColor ?? '#ffffff',
-        hoverFill: props.hoverFill ?? '#ffffff',
-        hoverTextColor: props.hoverTextColor ?? 'var(--color-signal, #ff4a1c)',
-        borderColor: props.borderColor ?? 'rgba(255, 255, 255, 0.2)',
-        hoverBorderColor: props.hoverBorderColor ?? '#ffffff',
+        fill: props.fill ?? 'transparent',
+        textColor: props.textColor ?? 'var(--color-signal, #ff4a1c)',
+        hoverFill: props.hoverFill ?? 'var(--color-signal, #ff4a1c)',
+        hoverTextColor: props.hoverTextColor ?? '#ffffff',
+        borderColor: props.borderColor ?? 'var(--color-signal, #ff4a1c)',
+        hoverBorderColor: props.hoverBorderColor ?? 'var(--color-signal, #ff4a1c)',
       }
     case 'glass':
     case 'secondary':
       return {
-        fill: props.fill ?? 'rgba(255, 255, 255, 0.08)',
+        fill: props.fill ?? 'transparent',
         textColor: props.textColor ?? 'var(--color-paper, #f3ede6)',
         hoverFill: props.hoverFill ?? 'var(--color-signal, #ff4a1c)',
         hoverTextColor: props.hoverTextColor ?? '#ffffff',
-        borderColor: props.borderColor ?? 'rgba(255, 255, 255, 0.18)',
+        borderColor: props.borderColor ?? 'rgba(255, 255, 255, 0.28)',
         hoverBorderColor: props.hoverBorderColor ?? 'var(--color-signal, #ff4a1c)',
       }
     case 'dark':
       return {
-        fill: props.fill ?? '#161514',
-        textColor: props.textColor ?? '#f3ede6',
-        hoverFill: props.hoverFill ?? 'var(--color-signal, #ff4a1c)',
+        fill: props.fill ?? 'transparent',
+        textColor: props.textColor ?? 'var(--color-ink, #14120f)',
+        hoverFill: props.hoverFill ?? 'var(--color-ink, #14120f)',
         hoverTextColor: props.hoverTextColor ?? '#ffffff',
-        borderColor: props.borderColor ?? 'rgba(255, 255, 255, 0.12)',
-        hoverBorderColor: props.hoverBorderColor ?? 'var(--color-signal, #ff4a1c)',
+        borderColor: props.borderColor ?? 'rgba(20, 18, 15, 0.35)',
+        hoverBorderColor: props.hoverBorderColor ?? 'var(--color-ink, #14120f)',
       }
     case 'white':
       return {
-        fill: props.fill ?? '#ffffff',
-        textColor: props.textColor ?? '#0c0b0a',
-        hoverFill: props.hoverFill ?? 'var(--color-signal, #ff4a1c)',
-        hoverTextColor: props.hoverTextColor ?? '#ffffff',
-        borderColor: props.borderColor ?? '#ffffff',
-        hoverBorderColor: props.hoverBorderColor ?? 'var(--color-signal, #ff4a1c)',
+        fill: props.fill ?? 'transparent',
+        textColor: props.textColor ?? '#ffffff',
+        hoverFill: props.hoverFill ?? '#ffffff',
+        hoverTextColor: props.hoverTextColor ?? '#0c0b0a',
+        borderColor: props.borderColor ?? 'rgba(255, 255, 255, 0.35)',
+        hoverBorderColor: props.hoverBorderColor ?? '#ffffff',
       }
     default:
       return {
-        fill: props.fill ?? '#000000',
+        fill: props.fill ?? 'transparent',
         textColor: props.textColor ?? '#ffffff',
         hoverFill: props.hoverFill ?? '#ff4a1c',
         hoverTextColor: props.hoverTextColor ?? '#ffffff',
-        borderColor: props.borderColor ?? 'transparent',
-        hoverBorderColor: props.hoverBorderColor ?? 'transparent',
+        borderColor: props.borderColor ?? 'rgba(255, 255, 255, 0.35)',
+        hoverBorderColor: props.hoverBorderColor ?? '#ff4a1c',
       }
   }
 })
