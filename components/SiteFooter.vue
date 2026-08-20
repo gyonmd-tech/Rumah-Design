@@ -62,35 +62,23 @@ const copyEmail = async () => {
 const socialChannels = [
   {
     name: 'GitHub',
-    handle: '@rumahdesign',
     url: 'https://github.com',
     icon: githubIcon,
-    desc: 'Kode sumber terbuka, template arsitektur, & prototype interaktif.',
-    action: 'Explore ↗',
   },
   {
     name: 'LinkedIn',
-    handle: 'in/rumah-design',
     url: 'https://linkedin.com',
     icon: linkedinIcon,
-    desc: 'Jaringan profesional, rilis studi kasus produk, & wawasan industri.',
-    action: 'Connect ↗',
   },
   {
     name: 'Instagram',
-    handle: '@rumahdesign.id',
     url: 'https://instagram.com',
     icon: instagramIcon,
-    desc: 'Arsip eksplorasi visual, render micro-interaction, & desain antarmuka.',
-    action: 'Follow ↗',
   },
   {
-    name: 'Gmail / Email',
-    handle: 'hello@rumahdesign.dev',
+    name: 'Gmail',
     url: 'mailto:hello@rumahdesign.dev',
     icon: gmailIcon,
-    desc: 'Inquiry proyek baru, diskusi estimasi timeline, & kolaborasi studio.',
-    action: 'Tulis Email ↗',
   },
 ]
 </script>
@@ -104,7 +92,7 @@ const socialChannels = [
     <!-- Background Ambient Glow Center Spotlight -->
     <div class="pointer-events-none absolute -bottom-36 left-1/2 -translate-x-1/2 w-[360px] sm:w-[680px] h-[220px] sm:h-[340px] bg-signal/14 rounded-full blur-[100px] sm:blur-[130px]" />
 
-    <div ref="footerInnerRef" class="page-shell-wide relative z-10 flex flex-col justify-between grow space-y-12 sm:space-y-18">
+    <div ref="footerInnerRef" class="page-shell-wide relative z-10 flex flex-col justify-between grow space-y-12 sm:space-y-16">
       <!-- 1. Top Live Availability & Clock Strip (Centered Balance) -->
       <div class="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 border-b border-white/12 pb-6 sm:pb-8 font-mono text-xs text-center sm:text-left">
         <div class="flex items-center gap-2.5">
@@ -164,59 +152,24 @@ const socialChannels = [
             <span>Salin Email 📋</span>
           </button>
         </div>
-      </div>
 
-      <!-- 3. CENTERED EDITORIAL SOCIAL CHANNELS (WITH PROVIDED SVG LOGOS) -->
-      <div class="space-y-4 pt-2">
-        <div class="flex items-center justify-between border-b border-white/10 pb-3">
-          <span class="font-mono text-xs font-bold text-signal uppercase tracking-widest">
-            { Kanal Resmi & Media Sosial }
-          </span>
-          <span class="font-mono text-[0.68rem] text-paper/50 uppercase tracking-wider hidden sm:inline">
-            Terhubung Melalui Platform Pilihan
-          </span>
-        </div>
-
-        <div class="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        <!-- 3. SLEEK SOCIAL MEDIA LOGO ICONS ROW -->
+        <div class="flex items-center justify-center gap-3 sm:gap-4 pt-4 sm:pt-6">
           <a
             v-for="item in socialChannels"
             :key="item.name"
             :href="item.url"
             target="_blank"
             rel="noopener noreferrer"
-            class="group relative flex flex-col justify-between rounded-2xl sm:rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-6 backdrop-blur-md transition-all duration-300 hover:border-signal/60 hover:bg-white/[0.08] hover:-translate-y-1 active:scale-[0.99] shadow-xs"
+            :aria-label="item.name"
+            :title="item.name"
+            class="group relative size-11 sm:size-13 rounded-2xl bg-white/[0.05] border border-white/12 p-2.5 sm:p-3 flex items-center justify-center backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-white/15 hover:border-signal/70 hover:shadow-[0_0_24px_rgba(255,74,28,0.25)] active:scale-95"
           >
-            <div class="space-y-4">
-              <!-- Top Row: SVG Logo Box + Action Arrow -->
-              <div class="flex items-center justify-between">
-                <!-- SVG Logo Container -->
-                <div class="size-11 sm:size-12 rounded-2xl bg-white/10 border border-white/12 p-2.5 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-white/20 group-hover:border-signal/50">
-                  <img
-                    :src="item.icon"
-                    :alt="`${item.name} logo`"
-                    class="h-full w-full object-contain filter brightness-100 invert-[0.15]"
-                  >
-                </div>
-
-                <!-- Action Pill -->
-                <span class="font-mono text-[0.7rem] text-signal font-semibold opacity-70 group-hover:opacity-100 transition-opacity">
-                  {{ item.action }}
-                </span>
-              </div>
-
-              <!-- Content Info -->
-              <div class="space-y-1">
-                <h3 class="font-display text-base font-bold text-paper group-hover:text-signal transition-colors">
-                  {{ item.name }}
-                </h3>
-                <p class="font-mono text-xs text-paper/90 font-medium truncate">
-                  {{ item.handle }}
-                </p>
-                <p class="font-sans text-xs text-paper/60 leading-relaxed pt-1">
-                  {{ item.desc }}
-                </p>
-              </div>
-            </div>
+            <img
+              :src="item.icon"
+              :alt="`${item.name} logo`"
+              class="size-full object-contain filter brightness-100 transition-transform duration-300 group-hover:scale-105"
+            >
           </a>
         </div>
       </div>
