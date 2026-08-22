@@ -1,8 +1,17 @@
 <script setup lang="ts">
-import { marked } from 'marked'
 import type { Project, ProjectCategory, ProjectStatus } from '~/types/database.types'
 import type { ProjectFormPayload } from '~/types/project-form'
-import { PROJECT_CATEGORIES, parseTags, slugify } from '~/utils/project'
+import { renderSafeMarkdown } from '~/utils/markdown'
+import {
+  isValidHttpsUrl,
+  PROJECT_CATEGORIES,
+  PROJECT_LIMITS,
+  parseTags,
+  slugify,
+  STYLE_TAG_SUGGESTIONS,
+  TECH_STACK_SUGGESTIONS,
+  validateTags,
+} from '~/utils/project'
 import { analyzeSeoQuality } from '~/utils/seo'
 
 const props = defineProps<{
@@ -38,9 +47,8 @@ const thumbnailPreview = ref(props.project?.thumbnail_url ?? '')
 const isDragOver = ref(false)
 const errors = ref<string[]>([])
 
-// Predefined tag suggestions
-const STYLE_SUGGESTIONS = ['Minimal', 'Dark Mode', 'Bold Typography', 'Editorial', 'Bento Grid', 'Micro-interactions', 'Experimental', '3D / Interactive', 'Neobrutalism']
-const TECH_SUGGESTIONS = ['Nuxt 3', 'Vue 3', 'TypeScript', 'Tailwind CSS', 'Supabase', 'GSAP', 'Lenis', 'Three.js', 'Vite', 'Pinia', 'Postgres']
+const STYLE_SUGGESTIONS = STYLE_TAG_SUGGESTIONS
+const TECH_SUGGESTIONS = TECH_STACK_SUGGESTIONS
 
 // Real-time SEO Analysis
 const seoAnalysis = computed(() => {
@@ -56,16 +64,28 @@ const seoAnalysis = computed(() => {
   })
 })
 
-// Live rendered markdown for preview
-const renderedMarkdown = computed(() => {
-  if (!form.description) return '<p class="text-mute italic">Belum ada konten case study untuk dipratinjau.</p>'
-  try {
-    return marked.parse(form.description, { breaks: true, gfm: true })
-  }
-  catch {
-    return '<p class="text-signal">Gagal merender markdown.</p>'
-  }
-})
+// Preview admin harus melewati sanitizer yang sama dengan halaman publik.
+const renderedMarkdown = ref('<p class="text-mute italic">Belum ada konten case study untuk dipratinjau.</p>')
+let markdownRenderVersion = 0
+
+watch(
+  () => form.description,
+  async (markdown) => {
+    const version = ++markdownRenderVersion
+    try {
+      const html = await renderSafeMarkdown(markdown)
+      if (version === markdownRenderVersion) {
+        renderedMarkdown.value = html || '<p class="text-mute italic">Belum ada konten case study untuk dipratinjau.</p>'
+      }
+    }
+    catch {
+      if (version === markdownRenderVersion) {
+        renderedMarkdown.value = '<p class="text-signal">Gagal merender markdown.</p>'
+      }
+    }
+  },
+  { immediate: true },
+)
 
 function onTitleInput() {
   if (!isSlugLocked.value) {
@@ -152,44 +172,58 @@ function onDropFile(e: DragEvent) {
   handleFileSelection(file)
 }
 
-function validHttpsUrl(value: string) {
-  try {
-    const u = new URL(value)
-    return u.protocol === 'https:'
-  }
-  catch {
-    return false
-  }
-}
+const submitLabel = computed(() => {
+  if (props.busy) return 'Menyimpan…'
+  if (form.status === 'draft') return props.project ? 'Perbarui Draft ↗' : 'Simpan Draft ↗'
+  return props.project ? 'Perbarui Project ↗' : 'Terbitkan Project ↗'
+})
 
 function submit() {
   errors.value = []
-  if (!form.title.trim() || form.title.trim().length > 120) errors.value.push('Judul wajib diisi dan maksimal 120 karakter.')
+  const styleTags = parseTags(form.styleTags)
+  const techStack = parseTags(form.techStack)
+
+  if (!form.title.trim() || form.title.trim().length > PROJECT_LIMITS.title) errors.value.push(`Judul wajib diisi dan maksimal ${PROJECT_LIMITS.title} karakter.`)
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(form.slug)) errors.value.push('Slug hanya boleh berisi huruf kecil, angka, dan tanda hubung.')
-  if (!validHttpsUrl(form.liveUrl)) errors.value.push('Live URL wajib berupa HTTPS yang valid (https://...).')
-  if (form.repoUrl && !validHttpsUrl(form.repoUrl)) errors.value.push('Repository URL harus berupa HTTPS yang valid.')
+  if (!isValidHttpsUrl(form.liveUrl)) errors.value.push('Live URL wajib berupa HTTPS yang valid (https://...).')
+  if (form.repoUrl && !isValidHttpsUrl(form.repoUrl)) errors.value.push('Repository URL harus berupa HTTPS yang valid.')
+  if (form.previewMediaUrl && !isValidHttpsUrl(form.previewMediaUrl)) errors.value.push('Preview media URL harus berupa HTTPS yang valid.')
+  if (form.description.length > PROJECT_LIMITS.description) errors.value.push(`Case study maksimal ${PROJECT_LIMITS.description.toLocaleString('id-ID')} karakter.`)
+  if (form.seoTitle.length > PROJECT_LIMITS.seoTitle) errors.value.push(`Meta title maksimal ${PROJECT_LIMITS.seoTitle} karakter.`)
+  if (form.seoDescription.length > PROJECT_LIMITS.seoDescription) errors.value.push(`Meta description maksimal ${PROJECT_LIMITS.seoDescription} karakter.`)
+  if (form.focusKeyword.length > PROJECT_LIMITS.focusKeyword) errors.value.push(`Focus keyword maksimal ${PROJECT_LIMITS.focusKeyword} karakter.`)
+  errors.value.push(...validateTags(styleTags, 'Style tags'), ...validateTags(techStack, 'Tech stack'))
   if (!props.project && !thumbnailFile.value && !thumbnailPreview.value) errors.value.push('Thumbnail wajib diunggah.')
   if (thumbnailFile.value && thumbnailFile.value.size > 10 * 1024 * 1024) errors.value.push('Ukuran thumbnail maksimal 10 MB.')
 
+  if (form.status === 'published') {
+    if (form.description.trim().length < 80) errors.value.push('Project published memerlukan case study minimal 80 karakter.')
+    if (!styleTags.length) errors.value.push('Project published memerlukan minimal satu style tag.')
+    if (!techStack.length) errors.value.push('Project published memerlukan minimal satu teknologi.')
+  }
+
   if (errors.value.length) {
+    if (errors.value.some(error => /thumbnail|preview media/i.test(error))) activeTab.value = 'media'
+    else if (errors.value.some(error => /meta|keyword/i.test(error))) activeTab.value = 'seo'
+    else activeTab.value = 'content'
     window.scrollTo({ top: 0, behavior: 'smooth' })
     return
   }
 
   emit('submit', {
-    title: form.title,
+    title: form.title.trim(),
     slug: form.slug,
-    description: form.description,
-    liveUrl: form.liveUrl,
-    repoUrl: form.repoUrl,
+    description: form.description.trim(),
+    liveUrl: form.liveUrl.trim(),
+    repoUrl: form.repoUrl.trim(),
     category: form.category,
-    styleTags: parseTags(form.styleTags),
-    techStack: parseTags(form.techStack),
+    styleTags,
+    techStack,
     status: form.status,
-    previewMediaUrl: form.previewMediaUrl,
-    seoTitle: form.seoTitle,
-    seoDescription: form.seoDescription,
-    focusKeyword: form.focusKeyword,
+    previewMediaUrl: form.previewMediaUrl.trim(),
+    seoTitle: form.seoTitle.trim(),
+    seoDescription: form.seoDescription.trim(),
+    focusKeyword: form.focusKeyword.trim(),
     thumbnailFile: thumbnailFile.value,
   })
 }
@@ -201,6 +235,7 @@ function submit() {
     <div
       v-if="errors.length"
       role="alert"
+      aria-live="assertive"
       class="rounded-3xl border border-signal/40 bg-signal/10 p-5 text-xs font-mono text-signal shadow-sm"
     >
       <div class="font-bold uppercase tracking-wider">
@@ -214,9 +249,13 @@ function submit() {
     <!-- Header Navigation Tabs & Quick SEO Pill -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 border-b border-ink/12 pb-4">
       <div class="overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory rounded-2xl bg-white/70 p-1.5 border border-ink/10 shadow-xs font-mono text-xs font-semibold">
-        <div class="flex items-center gap-1.5 min-w-max sm:min-w-0">
+        <div role="tablist" aria-label="Bagian formulir project" class="flex items-center gap-1.5 min-w-max sm:min-w-0">
           <button
+            id="project-tab-content"
             type="button"
+            role="tab"
+            aria-controls="project-panel-content"
+            :aria-selected="activeTab === 'content'"
             class="snap-start cursor-pointer rounded-xl px-3 sm:px-4 py-2 transition-all whitespace-nowrap"
             :class="activeTab === 'content' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
             @click="activeTab = 'content'"
@@ -224,7 +263,11 @@ function submit() {
             1. Konten
           </button>
           <button
+            id="project-tab-media"
             type="button"
+            role="tab"
+            aria-controls="project-panel-media"
+            :aria-selected="activeTab === 'media'"
             class="snap-start cursor-pointer rounded-xl px-3 sm:px-4 py-2 transition-all whitespace-nowrap"
             :class="activeTab === 'media' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
             @click="activeTab = 'media'"
@@ -232,7 +275,11 @@ function submit() {
             2. Media
           </button>
           <button
+            id="project-tab-seo"
             type="button"
+            role="tab"
+            aria-controls="project-panel-seo"
+            :aria-selected="activeTab === 'seo'"
             class="snap-start cursor-pointer rounded-xl px-3 sm:px-4 py-2 transition-all flex items-center gap-1.5 whitespace-nowrap"
             :class="activeTab === 'seo' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
             @click="activeTab = 'seo'"
@@ -263,7 +310,7 @@ function submit() {
     </div>
 
     <!-- TAB 1: KONTEN & DETAIL -->
-    <div v-show="activeTab === 'content'" class="space-y-6">
+    <div id="project-panel-content" v-show="activeTab === 'content'" role="tabpanel" aria-labelledby="project-tab-content" class="space-y-6">
       <fieldset :disabled="busy" class="grid gap-6 lg:grid-cols-2 rounded-3xl bg-white/85 p-6 sm:p-8 border border-ink/10 shadow-xs">
         <!-- Title Field -->
         <label class="space-y-2 lg:col-span-2">
@@ -343,7 +390,7 @@ function submit() {
           <div class="flex items-center justify-between">
             <span class="font-mono text-xs font-bold text-ink uppercase tracking-wider">Live URL (Demo) *</span>
             <a
-              v-if="form.liveUrl && validHttpsUrl(form.liveUrl)"
+              v-if="form.liveUrl && isValidHttpsUrl(form.liveUrl)"
               :href="form.liveUrl"
               target="_blank"
               class="font-mono text-[0.7rem] text-signal hover:underline"
@@ -553,7 +600,7 @@ function submit() {
     </div>
 
     <!-- TAB 2: MEDIA & VISUAL -->
-    <div v-show="activeTab === 'media'" class="space-y-6">
+    <div id="project-panel-media" v-show="activeTab === 'media'" role="tabpanel" aria-labelledby="project-tab-media" class="space-y-6">
       <div class="rounded-3xl bg-white/85 p-6 sm:p-8 border border-ink/10 shadow-xs space-y-6">
         <div>
           <h3 class="font-display text-xl font-bold text-ink">Thumbnail & Aset Visual</h3>
@@ -618,7 +665,7 @@ function submit() {
     </div>
 
     <!-- TAB 3: SEO & SOCIAL SHARING -->
-    <div v-show="activeTab === 'seo'" class="space-y-8">
+    <div id="project-panel-seo" v-show="activeTab === 'seo'" role="tabpanel" aria-labelledby="project-tab-seo" class="space-y-8">
       <!-- Top SEO Scorecard & Audit Breakdown -->
       <div class="grid gap-6 lg:grid-cols-[1.2fr_1.8fr]">
         <!-- Gauge Card -->
@@ -837,7 +884,7 @@ function submit() {
           class="button-primary text-xs cursor-pointer flex-1 sm:flex-none text-center"
           :disabled="busy"
         >
-          {{ busy ? 'Menyimpan…' : props.project ? 'Perbarui ↗' : 'Terbitkan ↗' }}
+          {{ submitLabel }}
         </button>
       </div>
     </div>

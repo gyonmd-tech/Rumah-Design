@@ -42,7 +42,7 @@ Referensi utama: **Awwwards** dan **Onepagelove** — showcase site yang visual-
 | description | markdown | Case study: problem → proses → solusi → hasil |
 | live_url | text | Link ke deployment Vercel/Netlify |
 | repo_url | text (opsional) | Link ke repo publik |
-| category | enum | landing-page / web-app / dashboard / lainnya |
+| category | enum | landing-page / web-app / dashboard / portfolio / e-commerce / blog-editorial / saas / ai-tool / mobile-app / game-interactive / productivity / experimental / lainnya |
 | style_tags | array | mis. ["Minimal", "Dark", "Bold", "Experimental"] — gaya visual, mirip tag style di Awwwards/Onepagelove |
 | tech_stack | array | mis. ["Nuxt", "Tailwind", "Supabase"] |
 | thumbnail_url | text | Screenshot statis, wajib |
@@ -53,7 +53,7 @@ Referensi utama: **Awwwards** dan **Onepagelove** — showcase site yang visual-
 ## 6. Wireframe Level Konsep (deskripsi tekstual)
 - **Homepage**: header minimal (nama + short bio + social links) → dua baris filter chip (kategori & style) di atas grid → grid 3 kolom (desktop) / 1 kolom (mobile), tiap card didominasi visual besar, hover menampilkan preview scroll/GIF.
 - **Detail project**: full-bleed hero screenshot (mengisi lebar layar) → judul & tag (kategori + style) → tombol "Lihat Live Demo" (primary) & "Lihat Repo" (secondary, kalau ada) → tech stack badges → case study dalam format rich text/markdown di bagian bawah.
-- **Admin**: layout dashboard sederhana, sidebar kiri (menu: Projects, Logout), konten kanan berupa tabel atau form (termasuk input style tags & upload preview media opsional).
+- **Admin**: dashboard responsif dengan navigasi Projects, SEO Center, Media Library, Settings, dan Logout. Form project dibagi menjadi tab Content, Media, dan SEO; status draft/published serta kualitas konten harus terlihat jelas sebelum submit.
 
 ## 7. Visual Direction
 Karena kamu designer, arahan visual detail (warna, tipografi, spacing scale) sebaiknya ditentukan di Figma/desain kamu sendiri lebih dulu. Yang jadi acuan dari dokumen ini: **visual harus mendominasi, teks seminimal mungkin di permukaan** — sama seperti prinsip Awwwards/Onepagelove.

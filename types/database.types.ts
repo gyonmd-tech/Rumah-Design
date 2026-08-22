@@ -1,4 +1,17 @@
-export type ProjectCategory = 'landing-page' | 'web-app' | 'dashboard' | 'lainnya'
+export type ProjectCategory
+  = | 'landing-page'
+    | 'web-app'
+    | 'dashboard'
+    | 'portfolio'
+    | 'e-commerce'
+    | 'blog-editorial'
+    | 'saas'
+    | 'ai-tool'
+    | 'mobile-app'
+    | 'game-interactive'
+    | 'productivity'
+    | 'experimental'
+    | 'lainnya'
 export type ProjectStatus = 'draft' | 'published'
 
 export type Project = {

@@ -63,7 +63,10 @@ create table projects (
   description text, -- markdown
   live_url text not null,
   repo_url text,
-  category text not null check (category in ('landing-page','web-app','dashboard','lainnya')),
+  category text not null check (category in (
+    'landing-page','web-app','dashboard','portfolio','e-commerce','blog-editorial',
+    'saas','ai-tool','mobile-app','game-interactive','productivity','experimental','lainnya'
+  )),
   style_tags text[] default '{}', -- mis. Minimal, Dark, Bold — ala Awwwards/Onepagelove
   tech_stack text[] default '{}',
   thumbnail_url text,
@@ -83,6 +86,10 @@ create policy "public read published"
 -- Implementasi aktual memakai helper security-definer `public.is_admin()`.
 -- Akses tulis tidak diberikan ke semua user authenticated; hanya UUID yang
 -- tercatat di `public.admin_users` yang lolos policy INSERT/UPDATE/DELETE.
+
+-- File Storage ditulis ke folder `<auth.uid()>/...`; policy insert/update/delete
+-- memverifikasi admin sekaligus kepemilikan folder. Konfigurasi publik dibatasi
+-- pada key `general`, `seo`, dan `socials`.
 ```
 
 ## 5. Auth
