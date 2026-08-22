@@ -28,6 +28,9 @@ Roadmap implementasi bertahap. Tiap fase idealnya bisa di-deploy & diuji sebelum
 - [x] Komponen `ProjectFilter` (kategori + style)
 - [x] Halaman `/about`
 - [x] Responsive implementation (mobile-first)
+- [x] Perluas taxonomy kategori, style tags, dan tech stack untuk variasi portofolio
+- [x] Hardening admin: sanitasi preview Markdown, validasi URL/data, dan batas publish
+- [x] Hardening Supabase: batas payload, public settings whitelist, dan Storage folder policy
 - [ ] Lighthouse audit — performance & SEO > 90
 
 ## Fase 4 — Go Live
