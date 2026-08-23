@@ -43,15 +43,10 @@ export default defineNuxtPlugin((nuxtApp) => {
   })
 
   nuxtApp.hook('page:finish', () => {
-    const route = useRoute()
-    if (route.path.startsWith('/admin')) {
-      lenis?.stop()
-    } else {
-      lenis?.start()
-      requestAnimationFrame(() => {
-        ScrollTrigger.refresh()
-      })
-    }
+    lenis?.start()
+    requestAnimationFrame(() => {
+      ScrollTrigger.refresh()
+    })
   })
 
   return {
