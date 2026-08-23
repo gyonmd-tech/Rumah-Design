@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AdminIcon from '~/components/admin/AdminIcon.vue'
 import type { Database } from '~/types/database.types'
 
 definePageMeta({ middleware: 'admin', layout: 'admin' })
@@ -14,7 +15,6 @@ const testingConnection = ref(false)
 const dbStatus = ref<'online' | 'error' | 'idle'>('idle')
 const dbLatency = ref<number | null>(null)
 
-// General Site Settings Form
 const generalForm = reactive({
   site_name: 'Rumah Design',
   tagline: 'Showcase karya frontend & narasi proses desain',
@@ -22,15 +22,13 @@ const generalForm = reactive({
   contact_email: 'hello@rumahdesign.dev',
 })
 
-// SEO Defaults Form
 const seoForm = reactive({
   default_title: 'Rumah Design — Portofolio & Case Study Frontend',
   default_description: 'Kumpulan karya frontend, landing page interaktif, dan case study proses desain produk oleh desainer & engineer.',
-  default_og_image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&h=630&q=80',
+  default_og_image: '',
   indexing: true,
 })
 
-// Social Profiles Form
 const socialsForm = reactive({
   github: 'https://github.com',
   linkedin: 'https://linkedin.com',
@@ -40,7 +38,6 @@ const socialsForm = reactive({
   medium: '',
 })
 
-// Fetch Existing Settings
 const { data: settingsData, refresh } = await useAsyncData('admin-site-settings', async () => {
   try {
     const { data, error } = await client.from('site_settings').select('*')
@@ -52,7 +49,6 @@ const { data: settingsData, refresh } = await useAsyncData('admin-site-settings'
   }
 })
 
-// Populate state if loaded
 watch(
   settingsData,
   (loaded) => {
@@ -79,17 +75,12 @@ async function saveSettings(tab: 'general' | 'seo' | 'socials') {
       .upsert({ key: tab, value: payload, updated_at: new Date().toISOString() })
 
     if (error) throw error
-    success(`Pengaturan ${tab === 'general' ? 'Identitas Situs' : tab === 'seo' ? 'SEO Global' : 'Tautan Sosial'} berhasil disimpan ke Supabase.`)
+    const labels = { general: 'Identitas Situs', seo: 'SEO Global', socials: 'Tautan Sosial' }
+    success(`Pengaturan ${labels[tab]} berhasil disimpan.`)
     await refresh()
   }
   catch (err) {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(`rumahdesign_settings_${tab}`, JSON.stringify(tab === 'general' ? generalForm : tab === 'seo' ? seoForm : socialsForm))
-      success(`Pengaturan disimpan secara lokal. (${err instanceof Error ? err.message : 'Database sync'})`)
-    }
-    else {
-      toastError(err instanceof Error ? err.message : 'Gagal menyimpan pengaturan.')
-    }
+    toastError(err instanceof Error ? err.message : 'Gagal menyimpan pengaturan.')
   }
   finally {
     busy.value = false
@@ -98,9 +89,10 @@ async function saveSettings(tab: 'general' | 'seo' | 'socials') {
 
 async function testDatabaseConnection() {
   testingConnection.value = true
+  dbStatus.value = 'idle'
   const start = performance.now()
   try {
-    const { data, error } = await client.from('projects').select('id').limit(1)
+    const { error } = await client.from('projects').select('id').limit(1)
     const end = performance.now()
     if (error) throw error
     dbStatus.value = 'online'
@@ -116,292 +108,364 @@ async function testDatabaseConnection() {
     testingConnection.value = false
   }
 }
+
+const tabs = [
+  { id: 'general', label: 'Situs & Identitas', icon: 'projects' },
+  { id: 'seo', label: 'SEO & Metadata', icon: 'seo' },
+  { id: 'socials', label: 'Ekosistem Sosial', icon: 'external' },
+  { id: 'system', label: 'Diagnostik Sistem', icon: 'database' },
+] as const
 </script>
 
 <template>
   <div class="max-w-5xl mx-auto space-y-8">
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-ink/12 pb-6">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-5 border-b border-ink/10 pb-6">
       <div>
-        <div class="inline-flex items-center gap-2 rounded-full bg-ink/5 px-3 py-1 font-mono text-[0.7rem] font-bold text-mute uppercase tracking-widest">
-          <span class="size-1.5 rounded-full bg-signal" />
+        <div class="inline-flex items-center gap-2 rounded-full bg-ink/5 border border-ink/10 px-3 py-1 font-mono text-[0.68rem] font-bold text-mute uppercase tracking-widest">
+          <AdminIcon name="settings" size="12" />
           <span>Konfigurasi & Sistem</span>
         </div>
-        <h1 class="mt-2 sm:mt-3 font-display text-3xl sm:text-4xl font-bold text-ink tracking-tight">
+        <h1 class="mt-2.5 font-display text-3xl sm:text-4xl font-bold text-ink tracking-tight">
           Pengaturan Platform
         </h1>
         <p class="mt-1 font-sans text-xs sm:text-sm text-mute">
-          Sesuaikan profil studio, konfigurasi SEO bawaan, tautan sosial, dan periksa kesehatan sistem.
+          Sesuaikan profil studio, konfigurasi SEO bawaan, tautan sosial, dan kesehatan sistem.
         </p>
       </div>
     </div>
 
-    <!-- Navigation Tabs -->
-    <div class="overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory rounded-2xl bg-white/80 p-1.5 border border-ink/10 shadow-xs font-mono text-xs font-semibold">
+    <!-- Tab Navigation -->
+    <div class="overflow-x-auto no-scrollbar rounded-2xl bg-white/80 p-1.5 border border-ink/10 shadow-2xs font-mono text-xs font-semibold">
       <div class="flex items-center gap-1.5 min-w-max sm:min-w-0 sm:flex-wrap">
         <button
+          v-for="tab in tabs"
+          :key="tab.id"
           type="button"
-          class="snap-start cursor-pointer rounded-xl px-4 py-2.5 transition-all whitespace-nowrap flex items-center gap-2"
-          :class="activeTab === 'general' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
-          @click="activeTab = 'general'"
+          class="snap-start cursor-pointer rounded-xl px-4 py-2 transition-all whitespace-nowrap flex items-center gap-2"
+          :class="activeTab === tab.id ? 'bg-ink text-paper shadow-2xs' : 'text-mute hover:text-ink'"
+          @click="activeTab = tab.id"
         >
-          <span>🏛️</span>
-          <span>Situs & Identitas</span>
-        </button>
-        <button
-          type="button"
-          class="snap-start cursor-pointer rounded-xl px-4 py-2.5 transition-all whitespace-nowrap flex items-center gap-2"
-          :class="activeTab === 'seo' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
-          @click="activeTab = 'seo'"
-        >
-          <span>⚡</span>
-          <span>SEO & Metadata</span>
-        </button>
-        <button
-          type="button"
-          class="snap-start cursor-pointer rounded-xl px-4 py-2.5 transition-all whitespace-nowrap flex items-center gap-2"
-          :class="activeTab === 'socials' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
-          @click="activeTab = 'socials'"
-        >
-          <span>🌐</span>
-          <span>Tautan Sosial</span>
-        </button>
-        <button
-          type="button"
-          class="snap-start cursor-pointer rounded-xl px-4 py-2.5 transition-all whitespace-nowrap flex items-center gap-2"
-          :class="activeTab === 'system' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
-          @click="activeTab = 'system'"
-        >
-          <span>🛠️</span>
-          <span>Sistem & Diagnostik</span>
+          <AdminIcon :name="tab.icon" size="13" />
+          <span>{{ tab.label }}</span>
         </button>
       </div>
     </div>
 
-    <!-- ============================================================== -->
-    <!-- TAB 1: SITUS & IDENTITAS                                       -->
-    <!-- ============================================================== -->
-    <div v-show="activeTab === 'general'" class="space-y-6">
-      <div class="rounded-3xl bg-white/85 p-6 sm:p-8 border border-ink/10 shadow-xs space-y-6">
-        <div class="border-b border-ink/10 pb-4">
-          <h3 class="font-display text-xl font-bold text-ink">Identitas Studio & Profil Publik</h3>
-          <p class="text-xs text-mute font-sans mt-0.5">Informasi profil umum yang tampil pada header, hero section, dan footer.</p>
-        </div>
+    <!-- ============================= -->
+    <!-- TAB 1: SITUS & IDENTITAS       -->
+    <!-- ============================= -->
+    <div v-show="activeTab === 'general'" class="rounded-2xl bg-white/95 border border-ink/10 shadow-2xs">
+      <div class="px-6 sm:px-8 py-6 border-b border-ink/10">
+        <h2 class="font-display text-xl font-bold text-ink">Identitas & Profil Studio</h2>
+        <p class="text-xs text-mute font-sans mt-0.5">Nama situs, tagline, bio singkat, dan kontak utama.</p>
+      </div>
 
-        <div class="grid gap-6 sm:grid-cols-2">
-          <label class="space-y-2">
-            <span class="font-mono text-xs font-bold text-ink uppercase tracking-wider">Nama Situs / Studio</span>
-            <input v-model="generalForm.site_name" class="field font-display font-bold" placeholder="Rumah Design">
+      <form class="p-6 sm:p-8 space-y-5" @submit.prevent="saveSettings('general')">
+        <div class="space-y-2">
+          <label for="s-site-name" class="font-mono text-xs font-bold text-ink uppercase tracking-wider block">
+            Nama Situs Studio
           </label>
-
-          <label class="space-y-2">
-            <span class="font-mono text-xs font-bold text-ink uppercase tracking-wider">Email Kontak Publik</span>
-            <input v-model="generalForm.contact_email" type="email" class="field font-mono text-sm" placeholder="hello@rumahdesign.dev">
-          </label>
-
-          <label class="space-y-2 sm:col-span-2">
-            <span class="font-mono text-xs font-bold text-ink uppercase tracking-wider">Tagline Utama Portofolio</span>
-            <input v-model="generalForm.tagline" class="field font-sans" placeholder="Showcase karya frontend & narasi proses desain">
-          </label>
-
-          <label class="space-y-2 sm:col-span-2">
-            <span class="font-mono text-xs font-bold text-ink uppercase tracking-wider">Bio Ringkas Studio</span>
-            <textarea v-model="generalForm.bio" rows="3" class="field resize-y font-sans text-sm leading-relaxed" />
-          </label>
-        </div>
-
-        <div class="pt-4 border-t border-ink/10 flex justify-end">
-          <button
-            type="button"
-            class="rounded-full bg-signal text-white hover:bg-[#e63d10] px-6 py-2.5 font-mono text-xs font-bold uppercase tracking-wider shadow-sm transition-all cursor-pointer hover:scale-105 active:scale-95 disabled:opacity-50"
-            :disabled="busy"
-            @click="saveSettings('general')"
+          <input
+            id="s-site-name"
+            v-model="generalForm.site_name"
+            type="text"
+            class="field font-display font-bold text-base !rounded-xl"
+            placeholder="Rumah Design"
           >
-            {{ busy ? 'Menyimpan…' : 'Simpan Identitas ↗' }}
+        </div>
+
+        <div class="space-y-2">
+          <label for="s-tagline" class="font-mono text-xs font-bold text-ink uppercase tracking-wider block">
+            Tagline Studio
+          </label>
+          <input
+            id="s-tagline"
+            v-model="generalForm.tagline"
+            type="text"
+            class="field font-sans !rounded-xl"
+            placeholder="Showcase karya frontend & narasi proses desain"
+          >
+        </div>
+
+        <div class="space-y-2">
+          <label for="s-bio" class="font-mono text-xs font-bold text-ink uppercase tracking-wider block">
+            Bio / Deskripsi Singkat
+          </label>
+          <textarea
+            id="s-bio"
+            v-model="generalForm.bio"
+            rows="3"
+            class="field font-sans leading-relaxed !rounded-xl"
+            placeholder="Deskripsi singkat studio Anda..."
+          />
+        </div>
+
+        <div class="space-y-2">
+          <label for="s-email" class="font-mono text-xs font-bold text-ink uppercase tracking-wider block">
+            Email Kontak Publik
+          </label>
+          <input
+            id="s-email"
+            v-model="generalForm.contact_email"
+            type="email"
+            class="field font-mono !rounded-xl"
+            placeholder="hello@studio.dev"
+          >
+        </div>
+
+        <div class="flex justify-end pt-2">
+          <button
+            type="submit"
+            class="inline-flex items-center gap-2 rounded-xl bg-signal text-white hover:bg-[#e63d10] px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer disabled:opacity-50"
+            :disabled="busy"
+          >
+            <AdminIcon :name="busy ? 'refresh' : 'check'" size="13" :class="busy ? 'animate-spin' : ''" />
+            <span>{{ busy ? 'Menyimpan...' : 'Simpan Identitas' }}</span>
           </button>
         </div>
-      </div>
+      </form>
     </div>
 
-    <!-- ============================================================== -->
-    <!-- TAB 2: SEO & METADATA                                          -->
-    <!-- ============================================================== -->
-    <div v-show="activeTab === 'seo'" class="space-y-6">
-      <div class="rounded-3xl bg-white/85 p-6 sm:p-8 border border-ink/10 shadow-xs space-y-6">
-        <div class="border-b border-ink/10 pb-4">
-          <h3 class="font-display text-xl font-bold text-ink">Konfigurasi SEO Global</h3>
-          <p class="text-xs text-mute font-sans mt-0.5">Pengaturan default untuk meta tag, Open Graph, dan indeks mesin pencari.</p>
-        </div>
+    <!-- ============================= -->
+    <!-- TAB 2: SEO & METADATA          -->
+    <!-- ============================= -->
+    <div v-show="activeTab === 'seo'" class="rounded-2xl bg-white/95 border border-ink/10 shadow-2xs">
+      <div class="px-6 sm:px-8 py-6 border-b border-ink/10">
+        <h2 class="font-display text-xl font-bold text-ink">SEO Global & Konfigurasi Indexing</h2>
+        <p class="text-xs text-mute font-sans mt-0.5">Default meta title, deskripsi, OG Image, dan kontrol indeks mesin pencari.</p>
+      </div>
 
-        <div class="grid gap-6 sm:grid-cols-2">
-          <label class="space-y-2 sm:col-span-2">
-            <div class="flex items-center justify-between">
-              <span class="font-mono text-xs font-bold text-ink uppercase tracking-wider">Default Meta Title</span>
-              <span class="font-mono text-[0.7rem] text-mute">{{ seoForm.default_title.length }} / 80 char</span>
-            </div>
-            <input v-model="seoForm.default_title" class="field font-sans" maxlength="80">
-          </label>
-
-          <label class="space-y-2 sm:col-span-2">
-            <div class="flex items-center justify-between">
-              <span class="font-mono text-xs font-bold text-ink uppercase tracking-wider">Default Meta Description</span>
-              <span class="font-mono text-[0.7rem] text-mute">{{ seoForm.default_description.length }} / 200 char</span>
-            </div>
-            <textarea v-model="seoForm.default_description" rows="3" class="field resize-y font-sans text-sm leading-relaxed" maxlength="200" />
-          </label>
-
-          <label class="space-y-2 sm:col-span-2">
-            <span class="font-mono text-xs font-bold text-ink uppercase tracking-wider">Default OG Image URL (Fallback Share Banner)</span>
-            <input v-model="seoForm.default_og_image" class="field font-mono text-xs" placeholder="https://.../og-banner.png">
-          </label>
-
-          <div class="sm:col-span-2 flex items-center justify-between rounded-2xl bg-ink/[0.03] p-4 border border-ink/10">
-            <div>
-              <p class="font-display font-bold text-ink text-sm">Izinkan Indeks Google & Mesin Pencari</p>
-              <p class="text-xs text-mute font-sans">Mengatur meta tag robots: index, follow pada seluruh halaman publik.</p>
-            </div>
-            <label class="relative inline-flex items-center cursor-pointer">
-              <input v-model="seoForm.indexing" type="checkbox" class="sr-only peer">
-              <div class="w-11 h-6 bg-ink/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600" />
+      <form class="p-6 sm:p-8 space-y-5" @submit.prevent="saveSettings('seo')">
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label for="s-def-title" class="font-mono text-xs font-bold text-ink uppercase tracking-wider">
+              Default SEO Title
             </label>
+            <span class="font-mono text-[0.7rem]" :class="seoForm.default_title.length > 60 ? 'text-amber-600 font-bold' : 'text-mute'">
+              {{ seoForm.default_title.length }} / 60
+            </span>
           </div>
-        </div>
-
-        <div class="pt-4 border-t border-ink/10 flex justify-end">
-          <button
-            type="button"
-            class="rounded-full bg-signal text-white hover:bg-[#e63d10] px-6 py-2.5 font-mono text-xs font-bold uppercase tracking-wider shadow-sm transition-all cursor-pointer hover:scale-105 active:scale-95 disabled:opacity-50"
-            :disabled="busy"
-            @click="saveSettings('seo')"
+          <input
+            id="s-def-title"
+            v-model="seoForm.default_title"
+            type="text"
+            class="field font-sans !rounded-xl"
           >
-            {{ busy ? 'Menyimpan…' : 'Simpan Pengaturan SEO ↗' }}
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================================================== -->
-    <!-- TAB 3: TAUTAN SOSIAL                                           -->
-    <!-- ============================================================== -->
-    <div v-show="activeTab === 'socials'" class="space-y-6">
-      <div class="rounded-3xl bg-white/85 p-6 sm:p-8 border border-ink/10 shadow-xs space-y-6">
-        <div class="border-b border-ink/10 pb-4">
-          <h3 class="font-display text-xl font-bold text-ink">Profil & Ekosistem Sosial</h3>
-          <p class="text-xs text-mute font-sans mt-0.5">Tautan profil yang ditampilkan pada footer dan halaman kontak.</p>
         </div>
 
-        <div class="grid gap-6 sm:grid-cols-2">
-          <label class="space-y-2">
-            <span class="font-mono text-xs font-bold text-ink uppercase tracking-wider">GitHub URL</span>
-            <input v-model="socialsForm.github" type="url" class="field font-mono text-xs" placeholder="https://github.com/...">
-          </label>
-
-          <label class="space-y-2">
-            <span class="font-mono text-xs font-bold text-ink uppercase tracking-wider">LinkedIn URL</span>
-            <input v-model="socialsForm.linkedin" type="url" class="field font-mono text-xs" placeholder="https://linkedin.com/in/...">
-          </label>
-
-          <label class="space-y-2">
-            <span class="font-mono text-xs font-bold text-ink uppercase tracking-wider">Dribbble URL</span>
-            <input v-model="socialsForm.dribbble" type="url" class="field font-mono text-xs" placeholder="https://dribbble.com/...">
-          </label>
-
-          <label class="space-y-2">
-            <span class="font-mono text-xs font-bold text-ink uppercase tracking-wider">Twitter / X URL</span>
-            <input v-model="socialsForm.twitter" type="url" class="field font-mono text-xs" placeholder="https://x.com/...">
-          </label>
-
-          <label class="space-y-2">
-            <span class="font-mono text-xs font-bold text-ink uppercase tracking-wider">Instagram URL</span>
-            <input v-model="socialsForm.instagram" type="url" class="field font-mono text-xs" placeholder="https://instagram.com/...">
-          </label>
-
-          <label class="space-y-2">
-            <span class="font-mono text-xs font-bold text-ink uppercase tracking-wider">Medium / Substack URL</span>
-            <input v-model="socialsForm.medium" type="url" class="field font-mono text-xs" placeholder="https://medium.com/@...">
-          </label>
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <label for="s-def-desc" class="font-mono text-xs font-bold text-ink uppercase tracking-wider">
+              Default Meta Description
+            </label>
+            <span class="font-mono text-[0.7rem]" :class="seoForm.default_description.length > 160 ? 'text-amber-600 font-bold' : 'text-mute'">
+              {{ seoForm.default_description.length }} / 160
+            </span>
+          </div>
+          <textarea
+            id="s-def-desc"
+            v-model="seoForm.default_description"
+            rows="3"
+            class="field font-sans leading-relaxed !rounded-xl"
+          />
         </div>
 
-        <div class="pt-4 border-t border-ink/10 flex justify-end">
-          <button
-            type="button"
-            class="rounded-full bg-signal text-white hover:bg-[#e63d10] px-6 py-2.5 font-mono text-xs font-bold uppercase tracking-wider shadow-sm transition-all cursor-pointer hover:scale-105 active:scale-95 disabled:opacity-50"
-            :disabled="busy"
-            @click="saveSettings('socials')"
+        <div class="space-y-2">
+          <label for="s-og-image" class="font-mono text-xs font-bold text-ink uppercase tracking-wider block">
+            Default OG Image URL (1200×630)
+          </label>
+          <input
+            id="s-og-image"
+            v-model="seoForm.default_og_image"
+            type="url"
+            class="field font-mono text-xs !rounded-xl"
+            placeholder="https://..."
           >
-            {{ busy ? 'Menyimpan…' : 'Simpan Tautan Sosial ↗' }}
-          </button>
         </div>
-      </div>
-    </div>
 
-    <!-- ============================================================== -->
-    <!-- TAB 4: SISTEM & DIAGNOSTIK                                     -->
-    <!-- ============================================================== -->
-    <div v-show="activeTab === 'system'" class="space-y-6">
-      <div class="rounded-3xl bg-white/85 p-6 sm:p-8 border border-ink/10 shadow-xs space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-ink/10 pb-4">
+        <div class="flex items-center justify-between rounded-xl border border-ink/10 bg-ink/[0.02] px-4 py-3.5">
           <div>
-            <h3 class="font-display text-xl font-bold text-ink">Status Infrastruktur & Layanan</h3>
-            <p class="text-xs text-mute font-sans mt-0.5">Kesehatan koneksi Supabase Postgres, Auth, Storage, dan Runtime Nuxt 3.</p>
+            <p class="font-mono text-xs font-bold text-ink">Pengindeksan Mesin Pencari (Robots)</p>
+            <p class="font-sans text-xs text-mute mt-0.5">
+              Aktifkan agar halaman publik terindeks oleh Google, Bing, dan mesin pencari lainnya.
+            </p>
           </div>
           <button
             type="button"
-            class="rounded-full bg-white/80 hover:bg-white border border-ink/10 px-4 py-2 font-mono text-xs font-semibold text-ink transition-all cursor-pointer shadow-xs"
-            :disabled="testingConnection"
-            @click="testDatabaseConnection"
+            class="relative size-11 rounded-xl cursor-pointer transition-all"
+            :class="seoForm.indexing ? 'bg-emerald-500' : 'bg-ink/15'"
+            @click="seoForm.indexing = !seoForm.indexing"
           >
-            {{ testingConnection ? 'Menguji Latensi…' : '⚡ Uji Ping Supabase' }}
+            <span
+              class="absolute inset-1 bg-white rounded-lg shadow-sm transition-transform"
+              :class="seoForm.indexing ? 'translate-x-4' : 'translate-x-0'"
+            />
           </button>
         </div>
 
-        <div class="grid gap-4 sm:grid-cols-2">
-          <!-- Database Health -->
-          <div class="rounded-2xl bg-ink/[0.03] p-5 border border-ink/10 space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="font-mono text-xs font-bold uppercase tracking-wider text-mute">Database Postgres</span>
-              <span
-                class="flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-mono text-[0.68rem] font-bold"
-                :class="dbStatus === 'online' ? 'bg-emerald-100 text-emerald-800' : 'bg-ink/10 text-mute'"
+        <div class="flex justify-end pt-2">
+          <button
+            type="submit"
+            class="inline-flex items-center gap-2 rounded-xl bg-signal text-white hover:bg-[#e63d10] px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer disabled:opacity-50"
+            :disabled="busy"
+          >
+            <AdminIcon :name="busy ? 'refresh' : 'check'" size="13" :class="busy ? 'animate-spin' : ''" />
+            <span>{{ busy ? 'Menyimpan...' : 'Simpan Pengaturan SEO' }}</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ============================= -->
+    <!-- TAB 3: EKOSISTEM SOSIAL       -->
+    <!-- ============================= -->
+    <div v-show="activeTab === 'socials'" class="rounded-2xl bg-white/95 border border-ink/10 shadow-2xs">
+      <div class="px-6 sm:px-8 py-6 border-b border-ink/10">
+        <h2 class="font-display text-xl font-bold text-ink">Ekosistem Tautan Sosial</h2>
+        <p class="text-xs text-mute font-sans mt-0.5">Profil platform sosial dan repositori yang ditampilkan di halaman publik.</p>
+      </div>
+
+      <form class="p-6 sm:p-8 space-y-4" @submit.prevent="saveSettings('socials')">
+        <div
+          v-for="(field, key) in { github: 'GitHub', linkedin: 'LinkedIn', dribbble: 'Dribbble', twitter: 'X / Twitter', instagram: 'Instagram', medium: 'Medium Blog' }"
+          :key="key"
+          class="space-y-1.5"
+        >
+          <label :for="`s-${key}`" class="font-mono text-xs font-bold text-ink uppercase tracking-wider block">
+            {{ field }}
+          </label>
+          <div class="relative">
+            <AdminIcon name="external" size="13" class="absolute left-3 top-1/2 -translate-y-1/2 text-mute" />
+            <input
+              :id="`s-${key}`"
+              v-model="socialsForm[key as keyof typeof socialsForm]"
+              type="url"
+              class="field font-mono text-xs pl-8 !rounded-xl"
+              :placeholder="`https://${key}.com/username`"
+            >
+          </div>
+        </div>
+
+        <div class="flex justify-end pt-2">
+          <button
+            type="submit"
+            class="inline-flex items-center gap-2 rounded-xl bg-signal text-white hover:bg-[#e63d10] px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer disabled:opacity-50"
+            :disabled="busy"
+          >
+            <AdminIcon :name="busy ? 'refresh' : 'check'" size="13" :class="busy ? 'animate-spin' : ''" />
+            <span>{{ busy ? 'Menyimpan...' : 'Simpan Tautan Sosial' }}</span>
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ============================= -->
+    <!-- TAB 4: DIAGNOSTIK SISTEM      -->
+    <!-- ============================= -->
+    <div v-show="activeTab === 'system'" class="space-y-4">
+      <!-- Session Info -->
+      <div class="rounded-2xl bg-white/95 border border-ink/10 shadow-2xs">
+        <div class="px-6 sm:px-8 py-6 border-b border-ink/10">
+          <h2 class="font-display text-xl font-bold text-ink">Sesi & Akun Admin</h2>
+          <p class="text-xs text-mute font-sans mt-0.5">Informasi sesi aktif Supabase Auth dan status akun.</p>
+        </div>
+
+        <div class="p-6 sm:p-8 space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="rounded-xl border border-ink/10 bg-ink/[0.02] p-4 space-y-1">
+              <span class="font-mono text-[0.68rem] text-mute uppercase font-bold tracking-wider block">Email Admin</span>
+              <p class="font-mono text-sm text-ink font-bold truncate">{{ user?.email || '—' }}</p>
+            </div>
+            <div class="rounded-xl border border-ink/10 bg-ink/[0.02] p-4 space-y-1">
+              <span class="font-mono text-[0.68rem] text-mute uppercase font-bold tracking-wider block">User ID (UUID)</span>
+              <p class="font-mono text-xs text-ink truncate" :title="user?.id">{{ user?.id?.slice(0, 8) }}...{{ user?.id?.slice(-6) }}</p>
+            </div>
+            <div class="rounded-xl border border-ink/10 bg-ink/[0.02] p-4 space-y-1">
+              <span class="font-mono text-[0.68rem] text-mute uppercase font-bold tracking-wider block">Provider Auth</span>
+              <p class="font-mono text-xs text-ink">{{ user?.app_metadata?.provider || 'email' }}</p>
+            </div>
+            <div class="rounded-xl border border-ink/10 bg-ink/[0.02] p-4 space-y-1">
+              <span class="font-mono text-[0.68rem] text-mute uppercase font-bold tracking-wider block">Konfirmasi Email</span>
+              <p class="font-mono text-xs" :class="user?.email_confirmed_at ? 'text-emerald-600 font-bold' : 'text-amber-600'">
+                {{ user?.email_confirmed_at ? 'Terverifikasi' : 'Belum terverifikasi' }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Supabase Connection Test -->
+      <div class="rounded-2xl bg-white/95 border border-ink/10 shadow-2xs">
+        <div class="px-6 sm:px-8 py-6 border-b border-ink/10">
+          <h2 class="font-display text-xl font-bold text-ink">Diagnostik Koneksi Database</h2>
+          <p class="text-xs text-mute font-sans mt-0.5">Uji latensi dan status koneksi ke Supabase Postgres secara real-time.</p>
+        </div>
+
+        <div class="p-6 sm:p-8 space-y-5">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-xl border border-ink/10 bg-ink/[0.02] p-5">
+            <div class="flex items-center gap-3.5">
+              <div
+                class="size-10 rounded-xl border flex items-center justify-center transition-colors"
+                :class="{
+                  'bg-emerald-50 border-emerald-200 text-emerald-600': dbStatus === 'online',
+                  'bg-rose-50 border-rose-200 text-signal': dbStatus === 'error',
+                  'bg-ink/5 border-ink/10 text-mute': dbStatus === 'idle',
+                }"
               >
-                <span class="size-1.5 rounded-full" :class="dbStatus === 'online' ? 'bg-emerald-600' : 'bg-mute'" />
-                {{ dbStatus === 'online' ? `Online (${dbLatency}ms)` : 'Siap Diuji' }}
-              </span>
+                <AdminIcon name="database" size="16" />
+              </div>
+              <div>
+                <p class="font-mono text-xs font-bold text-ink uppercase tracking-wider">Supabase Postgres</p>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <span
+                    class="size-1.5 rounded-full"
+                    :class="{
+                      'bg-emerald-500 animate-pulse': dbStatus === 'online',
+                      'bg-signal': dbStatus === 'error',
+                      'bg-mute': dbStatus === 'idle',
+                    }"
+                  />
+                  <p class="font-mono text-[0.72rem]" :class="dbStatus === 'online' ? 'text-emerald-700' : dbStatus === 'error' ? 'text-signal' : 'text-mute'">
+                    <template v-if="dbStatus === 'online'">
+                      Online — Latensi {{ dbLatency }}ms
+                    </template>
+                    <template v-else-if="dbStatus === 'error'">
+                      Koneksi gagal — Periksa environment variable SUPABASE_URL
+                    </template>
+                    <template v-else>
+                      Belum diuji
+                    </template>
+                  </p>
+                </div>
+              </div>
             </div>
-            <p class="font-sans text-xs text-ink/80">Koneksi Supabase terenkripsi SSL dengan Row Level Security (RLS) aktif.</p>
+
+            <button
+              type="button"
+              class="inline-flex items-center gap-2 rounded-xl bg-ink text-paper hover:bg-ink/80 px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer disabled:opacity-50 whitespace-nowrap"
+              :disabled="testingConnection"
+              @click="testDatabaseConnection"
+            >
+              <AdminIcon :name="testingConnection ? 'refresh' : 'database'" size="13" :class="testingConnection ? 'animate-spin' : ''" />
+              <span>{{ testingConnection ? 'Mengukur...' : 'Uji Koneksi' }}</span>
+            </button>
           </div>
 
-          <!-- Auth Session -->
-          <div class="rounded-2xl bg-ink/[0.03] p-5 border border-ink/10 space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="font-mono text-xs font-bold uppercase tracking-wider text-mute">Sesi Admin</span>
-              <span class="rounded-full bg-emerald-100 text-emerald-800 px-2.5 py-0.5 font-mono text-[0.68rem] font-bold">
-                Tervalidasi (Super Admin)
-              </span>
+          <!-- System Info -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs">
+            <div class="rounded-xl border border-ink/10 bg-ink/[0.02] p-3.5 space-y-1">
+              <span class="text-[0.65rem] text-mute uppercase font-bold tracking-wider block">Framework</span>
+              <p class="text-ink font-semibold">Nuxt 3 (SSR)</p>
             </div>
-            <p class="font-mono text-xs text-ink/80 truncate">{{ user?.email || 'Active Session' }}</p>
-          </div>
-
-          <!-- Storage Bucket -->
-          <div class="rounded-2xl bg-ink/[0.03] p-5 border border-ink/10 space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="font-mono text-xs font-bold uppercase tracking-wider text-mute">Storage CDN Bucket</span>
-              <span class="rounded-full bg-ink/10 text-ink px-2.5 py-0.5 font-mono text-[0.68rem] font-bold">
-                project-media
-              </span>
+            <div class="rounded-xl border border-ink/10 bg-ink/[0.02] p-3.5 space-y-1">
+              <span class="text-[0.65rem] text-mute uppercase font-bold tracking-wider block">Backend</span>
+              <p class="text-ink font-semibold">Supabase (Postgres)</p>
             </div>
-            <p class="font-sans text-xs text-ink/80">Public CDN bucket aktif untuk thumbnail & media preview.</p>
-          </div>
-
-          <!-- Runtime & SSR -->
-          <div class="rounded-2xl bg-ink/[0.03] p-5 border border-ink/10 space-y-2">
-            <div class="flex items-center justify-between">
-              <span class="font-mono text-xs font-bold uppercase tracking-wider text-mute">Nuxt 3 Architecture</span>
-              <span class="rounded-full bg-emerald-100 text-emerald-800 px-2.5 py-0.5 font-mono text-[0.68rem] font-bold">
-                SSR Enabled
-              </span>
+            <div class="rounded-xl border border-ink/10 bg-ink/[0.02] p-3.5 space-y-1">
+              <span class="text-[0.65rem] text-mute uppercase font-bold tracking-wider block">Deployment</span>
+              <p class="text-ink font-semibold">Vercel Edge</p>
             </div>
-            <p class="font-sans text-xs text-ink/80">Server-Side Rendering untuk indeks SEO Google instan.</p>
           </div>
         </div>
       </div>

@@ -1,289 +1,319 @@
 <script setup lang="ts">
-import AdminModal from '~/components/admin/AdminModal.vue'
+import AdminIcon from '~/components/admin/AdminIcon.vue'
 import type { Database } from '~/types/database.types'
 
 definePageMeta({ middleware: 'admin', layout: 'admin' })
 useSeoMeta({ title: 'Media Library — Studio Admin Rumah Design', robots: 'noindex, nofollow' })
 
 const client = useSupabaseClient<Database>()
-const { uploadThumbnail } = useProjectAdmin()
-const { success, error: toastError, info } = useToast()
+const { success, error: toastError } = useToast()
 
-const searchQuery = ref('')
 const isUploading = ref(false)
 const isDragOver = ref(false)
-const assetToDelete = ref<{ name: string, id?: string } | null>(null)
-const isDeleting = ref(false)
-const previewModalUrl = ref<string | null>(null)
+const uploadProgress = ref(0)
+const searchQuery = ref('')
+const lightboxItem = ref<{ url: string; name: string } | null>(null)
 
-interface MediaFileItem {
+interface MediaFile {
   id: string
   name: string
   url: string
-  created_at: string
   size: number
+  created_at: string
+  metadata?: { mimetype?: string }
 }
 
-const { data: mediaFiles, status, refresh } = await useAsyncData('admin-media-files', async () => {
-  const { data: user } = await client.auth.getUser()
-  if (!user?.user) return []
+const { data: files, refresh } = await useAsyncData('admin-media-files', async () => {
+  const { data, error } = await client.storage
+    .from('project-media')
+    .list('', { sortBy: { column: 'created_at', order: 'desc' }, limit: 100 })
 
-  try {
-    const { data, error } = await client.storage.from('project-media').list(user.user.id, {
-      limit: 100,
-      offset: 0,
-      sortBy: { column: 'created_at', order: 'desc' },
-    })
+  if (error) throw error
 
-    if (error) throw error
-    if (!data) return []
-
-    return data.map(file => ({
-      id: file.id,
-      name: file.name,
-      url: client.storage.from('project-media').getPublicUrl(`${user.user.id}/${file.name}`).data.publicUrl,
-      created_at: file.created_at || new Date().toISOString(),
-      size: file.metadata?.size || 0,
-    })) as MediaFileItem[]
-  }
-  catch {
-    return []
-  }
+  return await Promise.all(
+    (data ?? []).map(async (file) => {
+      const { data: urlData } = client.storage
+        .from('project-media')
+        .getPublicUrl(file.name)
+      return {
+        id: file.id ?? file.name,
+        name: file.name,
+        url: urlData.publicUrl,
+        size: file.metadata?.size ?? 0,
+        created_at: file.created_at ?? '',
+        metadata: file.metadata as MediaFile['metadata'],
+      } satisfies MediaFile
+    }),
+  )
 })
 
-const filteredMedia = computed(() => {
-  if (!mediaFiles.value) return []
-  if (!searchQuery.value.trim()) return mediaFiles.value
-  const q = searchQuery.value.toLowerCase().trim()
-  return mediaFiles.value.filter(item => item.name.toLowerCase().includes(q))
+const filteredFiles = computed(() => {
+  if (!files.value) return []
+  if (!searchQuery.value.trim()) return files.value
+  const q = searchQuery.value.toLowerCase()
+  return files.value.filter(f => f.name.toLowerCase().includes(q))
 })
 
-async function handleUpload(files: FileList | null) {
-  if (!files || !files.length) return
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return '0 B'
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+}
+
+function isImage(file: MediaFile): boolean {
+  const ext = file.name.split('.').pop()?.toLowerCase() ?? ''
+  return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'avif'].includes(ext)
+}
+
+async function uploadFiles(rawFiles: File[]) {
+  if (!rawFiles.length) return
   isUploading.value = true
-  try {
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i]
-      await uploadThumbnail(file)
+  uploadProgress.value = 0
+
+  let successCount = 0
+  for (let i = 0; i < rawFiles.length; i++) {
+    const file = rawFiles[i]
+    const ext = file.name.split('.').pop()
+    const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-z0-9-]/gi, '-').toLowerCase()
+    const path = `${baseName}-${Date.now()}.${ext}`
+
+    const { error } = await client.storage
+      .from('project-media')
+      .upload(path, file, { upsert: false })
+
+    if (!error) {
+      successCount++
     }
-    success(`Berhasil mengunggah ${files.length} file ke storage.`)
+    else {
+      toastError(`Gagal mengunggah "${file.name}": ${error.message}`)
+    }
+
+    uploadProgress.value = Math.round(((i + 1) / rawFiles.length) * 100)
+  }
+
+  isUploading.value = false
+  if (successCount > 0) {
+    success(`${successCount} berkas berhasil diunggah.`)
     await refresh()
   }
-  catch (err) {
-    toastError(err instanceof Error ? err.message : 'Gagal mengunggah media.')
-  }
-  finally {
-    isUploading.value = false
-  }
 }
 
-function onFileSelect(e: Event) {
+function onFileInput(e: Event) {
   const input = e.target as HTMLInputElement
-  handleUpload(input.files)
-  input.value = ''
+  if (input.files?.length) {
+    uploadFiles(Array.from(input.files))
+    input.value = ''
+  }
 }
 
 function onDrop(e: DragEvent) {
   isDragOver.value = false
-  handleUpload(e.dataTransfer?.files ?? null)
+  const dropped = e.dataTransfer?.files
+  if (dropped?.length) {
+    uploadFiles(Array.from(dropped))
+  }
 }
 
 async function copyUrl(url: string) {
   try {
     await navigator.clipboard.writeText(url)
-    success('URL media berhasil disalin ke clipboard.')
+    success('URL berkas disalin ke clipboard.')
   }
   catch {
-    info(`URL: ${url}`)
+    toastError('Gagal menyalin URL.')
   }
 }
 
-async function copyMarkdownSnippet(item: MediaFileItem) {
-  const snippet = `![${item.name}](${item.url})`
+async function copyMarkdown(file: MediaFile) {
+  const alt = file.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ')
+  const md = `![${alt}](${file.url})`
   try {
-    await navigator.clipboard.writeText(snippet)
-    success('Snippet Markdown disalin: ' + snippet)
+    await navigator.clipboard.writeText(md)
+    success('Markdown snippet disalin ke clipboard.')
   }
   catch {
-    info(snippet)
+    toastError('Gagal menyalin markdown.')
   }
 }
 
-function promptDeleteAsset(item: MediaFileItem) {
-  assetToDelete.value = item
+const fileToDelete = ref<MediaFile | null>(null)
+const isDeleting = ref(false)
+
+function promptDeleteFile(file: MediaFile) {
+  fileToDelete.value = file
 }
 
-async function confirmDeleteAsset() {
-  if (!assetToDelete.value) return
+async function confirmDeleteFile() {
+  if (!fileToDelete.value) return
   isDeleting.value = true
-  try {
-    const { data: user } = await client.auth.getUser()
-    if (!user?.user) throw new Error('Sesi admin tidak ditemukan')
+  const { error } = await client.storage
+    .from('project-media')
+    .remove([fileToDelete.value.name])
 
-    const path = `${user.user.id}/${assetToDelete.value.name}`
-    const { error } = await client.storage.from('project-media').remove([path])
-    if (error) throw error
-
-    success('File berhasil dihapus dari storage.')
+  if (error) {
+    toastError(`Gagal menghapus: ${error.message}`)
+  }
+  else {
+    success(`"${fileToDelete.value.name}" berhasil dihapus.`)
+    fileToDelete.value = null
     await refresh()
   }
-  catch (err) {
-    toastError(err instanceof Error ? err.message : 'Gagal menghapus file.')
-  }
-  finally {
-    isDeleting.value = false
-    assetToDelete.value = null
-  }
-}
-
-function formatBytes(bytes: number) {
-  if (!bytes) return '0 B'
-  const k = 1024
-  const sizes = ['B', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return `${Number.parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`
+  isDeleting.value = false
 }
 </script>
 
 <template>
   <div class="space-y-8">
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-ink/12 pb-6">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-5 border-b border-ink/10 pb-6">
       <div>
-        <div class="inline-flex items-center gap-2 rounded-full bg-ink/5 px-3 py-1 font-mono text-[0.7rem] font-bold text-mute uppercase tracking-widest">
-          <span class="size-1.5 rounded-full bg-signal" />
-          <span>Supabase Storage Bucket</span>
+        <div class="inline-flex items-center gap-2 rounded-full bg-ink/5 border border-ink/10 px-3 py-1 font-mono text-[0.68rem] font-bold text-mute uppercase tracking-widest">
+          <AdminIcon name="media" size="12" />
+          <span>Supabase Storage — project-media</span>
         </div>
-        <h1 class="mt-2 sm:mt-3 font-display text-3xl sm:text-4xl font-bold text-ink tracking-tight">
+        <h1 class="mt-2.5 font-display text-3xl sm:text-4xl font-bold text-ink tracking-tight">
           Media Library
         </h1>
         <p class="mt-1 font-sans text-xs sm:text-sm text-mute">
-          Kelola aset visual thumbnail, ilustrasi case study, dan video preview.
+          Kelola aset visual proyek. Unggah, salin URL, dan hapus berkas dari bucket Supabase Storage.
         </p>
       </div>
 
-      <div>
-        <label class="rounded-full bg-signal text-white hover:bg-[#e63d10] px-5 py-2.5 font-mono text-xs font-bold uppercase tracking-wider shadow-sm transition-all cursor-pointer inline-flex items-center gap-2 hover:scale-105 active:scale-95">
-          <input
-            type="file"
-            multiple
-            accept="image/jpeg,image/png,image/webp,image/gif,video/mp4"
-            class="hidden"
-            :disabled="isUploading"
-            @change="onFileSelect"
-          >
-          <span>{{ isUploading ? 'Mengunggah…' : '+ Unggah Media Baru' }}</span>
-        </label>
+      <div class="flex items-center gap-2 font-mono text-xs">
+        <span class="text-mute">{{ filteredFiles.length }} berkas</span>
       </div>
     </div>
 
     <!-- Drag & Drop Upload Zone -->
     <div
-      class="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed p-8 sm:p-12 transition-all text-center cursor-pointer bg-white/70 shadow-xs"
-      :class="isDragOver ? 'border-signal bg-signal/5 scale-[1.01]' : 'border-ink/20 hover:border-signal/50'"
+      class="relative rounded-2xl border-2 border-dashed flex flex-col items-center justify-center p-8 sm:p-12 transition-all text-center"
+      :class="isDragOver ? 'border-signal bg-signal/5 scale-[1.01]' : 'border-ink/20 bg-white/60 hover:border-signal/40'"
       @dragover.prevent="isDragOver = true"
       @dragleave.prevent="isDragOver = false"
       @drop.prevent="onDrop"
-      @click="($refs.uploadInput as HTMLInputElement).click()"
     >
-      <input
-        ref="uploadInput"
-        type="file"
-        multiple
-        accept="image/jpeg,image/png,image/webp,image/gif,video/mp4"
-        class="hidden"
-        @change="onFileSelect"
-      >
-      <div class="size-12 rounded-2xl bg-ink/5 flex items-center justify-center text-2xl mb-2">
-        ☁️
+      <!-- Upload Progress Overlay -->
+      <div v-if="isUploading" class="space-y-4 w-full max-w-sm mx-auto">
+        <div class="size-12 rounded-2xl bg-signal/10 flex items-center justify-center mx-auto text-signal">
+          <AdminIcon name="upload" size="20" class="animate-pulse" />
+        </div>
+        <p class="font-display font-bold text-ink">Mengunggah berkas...</p>
+        <div class="h-1.5 w-full rounded-full bg-ink/10 overflow-hidden">
+          <div
+            class="h-full rounded-full bg-signal transition-all duration-300"
+            :style="{ width: `${uploadProgress}%` }"
+          />
+        </div>
+        <p class="font-mono text-xs text-mute">{{ uploadProgress }}% selesai</p>
       </div>
-      <p class="font-display font-bold text-ink text-base sm:text-lg">
-        Tarik & Lepas Gambar / Video ke sini untuk Mengunggah
-      </p>
-      <p class="mt-1 font-mono text-xs text-mute">
-        Bucket: <span class="font-bold text-ink">project-media</span> · Format didukung: WebP, PNG, JPG, GIF, MP4 · Max 10 MB
-      </p>
+
+      <!-- Default Upload State -->
+      <div v-else class="space-y-4">
+        <div class="size-12 rounded-2xl bg-ink/5 flex items-center justify-center mx-auto text-ink/60 border border-ink/10">
+          <AdminIcon name="upload" size="20" />
+        </div>
+        <div>
+          <p class="font-display text-base sm:text-lg font-bold text-ink">
+            Tarik & Lepas berkas ke sini
+          </p>
+          <p class="font-sans text-xs sm:text-sm text-mute mt-0.5">
+            Atau klik tombol di bawah untuk memilih dari perangkat Anda
+          </p>
+        </div>
+        <label class="inline-flex items-center gap-2 rounded-xl bg-signal text-white hover:bg-[#e63d10] px-5 py-2.5 font-mono text-xs font-bold uppercase tracking-wider cursor-pointer transition-all shadow-sm hover:scale-[1.02] active:scale-98">
+          <AdminIcon name="upload" size="13" />
+          <span>Pilih Berkas</span>
+          <input type="file" multiple accept="image/*,video/*,.gif" class="hidden" @change="onFileInput">
+        </label>
+        <p class="font-mono text-[0.68rem] text-mute">WebP, PNG, JPG, GIF, SVG, MP4 — Maks. 10 MB per berkas</p>
+      </div>
     </div>
 
-    <!-- Search & Summary Toolbar -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 rounded-3xl bg-white/85 p-4 border border-ink/10 shadow-xs">
-      <div class="relative flex-1 max-w-md">
-        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-mute text-xs">🔍</span>
+    <!-- Search & Grid -->
+    <div class="space-y-4">
+      <!-- Search bar -->
+      <div class="relative max-w-sm">
+        <AdminIcon name="search" size="13" class="absolute left-3 top-1/2 -translate-y-1/2 text-mute" />
         <input
           v-model="searchQuery"
           type="search"
-          class="field pl-9 font-sans text-xs sm:text-sm !min-h-10 !rounded-2xl"
-          placeholder="Cari nama berkas media..."
+          class="field !min-h-9 pl-8 font-mono text-xs !rounded-xl !w-full"
+          placeholder="Cari nama berkas..."
         >
       </div>
-      <p class="font-mono text-xs text-mute pr-2">
-        Menampilkan <span class="font-bold text-ink">{{ filteredMedia.length }}</span> aset tersimpan
-      </p>
-    </div>
 
-    <!-- Media Grid -->
-    <div v-if="status === 'pending'" class="p-12 text-center font-mono text-xs text-mute rounded-3xl bg-white/70 border border-ink/10">
-      Memuat daftar file media…
-    </div>
-
-    <div v-else-if="!filteredMedia.length" class="p-10 sm:p-16 text-center rounded-3xl bg-white/85 border border-ink/10 space-y-3">
-      <p class="font-display text-2xl font-bold text-ink">Belum ada file media.</p>
-      <p class="font-mono text-xs text-mute">Unggah thumbnail project untuk mulai mengisi storage.</p>
-    </div>
-
-    <div v-else class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-      <div
-        v-for="item in filteredMedia"
-        :key="item.id || item.name"
-        class="group overflow-hidden rounded-3xl border border-ink/10 bg-white/90 shadow-xs flex flex-col justify-between transition-all hover:shadow-md"
-      >
-        <!-- Preview Container -->
-        <div class="relative aspect-[16/10] w-full bg-ink/5 overflow-hidden cursor-pointer" @click="previewModalUrl = item.url">
-          <img
-            :src="item.url"
-            :alt="item.name"
-            class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-            loading="lazy"
-          >
-          <div class="absolute inset-0 bg-void/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-            <span class="rounded-full bg-white/90 text-ink px-3 py-1 font-mono text-[0.65rem] font-bold shadow-xs">
-              🔍 Perbesar
-            </span>
-          </div>
-          <button
-            type="button"
-            class="absolute top-2 right-2 rounded-full bg-void/80 text-white px-2.5 py-1 text-[0.65rem] font-mono uppercase font-bold opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity cursor-pointer hover:bg-signal active:scale-95"
-            title="Hapus Media"
-            @click.stop="promptDeleteAsset(item)"
-          >
-            Hapus
-          </button>
+      <!-- Empty State -->
+      <div v-if="!filteredFiles.length" class="rounded-2xl border border-ink/10 bg-white/85 p-12 text-center shadow-2xs">
+        <div class="size-12 rounded-2xl bg-ink/5 flex items-center justify-center mx-auto text-ink/50 mb-4">
+          <AdminIcon name="media" size="20" />
         </div>
+        <p class="font-display font-bold text-ink">Tidak ada berkas di library.</p>
+        <p class="font-mono text-xs text-mute mt-1">Unggah aset visual portofolio melalui zona upload di atas.</p>
+      </div>
 
-        <!-- Info & Actions -->
-        <div class="p-4 space-y-2">
-          <p class="font-mono text-xs text-ink truncate font-medium" :title="item.name">
-            {{ item.name }}
-          </p>
-          <div class="flex items-center justify-between font-mono text-[0.68rem] text-mute pt-1 border-t border-ink/5">
-            <span>{{ formatBytes(item.size) }}</span>
-            <div class="flex items-center gap-2">
+      <!-- Media Grid -->
+      <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+        <div
+          v-for="file in filteredFiles"
+          :key="file.id"
+          class="group rounded-2xl border border-ink/10 bg-white/95 overflow-hidden shadow-2xs hover:shadow-md transition-all"
+        >
+          <!-- Thumbnail / File Type Preview -->
+          <div class="relative aspect-[4/3] bg-ink/5 overflow-hidden cursor-pointer" @click="lightboxItem = { url: file.url, name: file.name }">
+            <img
+              v-if="isImage(file)"
+              :src="file.url"
+              :alt="file.name"
+              class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              loading="lazy"
+            >
+            <div v-else class="h-full flex items-center justify-center text-mute">
+              <AdminIcon name="media" size="24" />
+            </div>
+
+            <!-- Hover overlay -->
+            <div class="absolute inset-0 bg-ink/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <div class="size-9 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center">
+                <AdminIcon name="eye" size="16" class="text-white" />
+              </div>
+            </div>
+          </div>
+
+          <!-- File Info & Actions -->
+          <div class="p-3 space-y-2">
+            <p class="font-mono text-[0.65rem] text-ink font-semibold truncate" :title="file.name">
+              {{ file.name }}
+            </p>
+            <p class="font-mono text-[0.62rem] text-mute">{{ formatBytes(file.size) }}</p>
+
+            <!-- Action Buttons Row -->
+            <div class="flex items-center gap-1 font-mono text-[0.65rem]">
               <button
                 type="button"
-                class="font-bold text-ink hover:text-signal transition-colors cursor-pointer"
-                title="Salin snippet markdown"
-                @click="copyMarkdownSnippet(item)"
-              >
-                MD
-              </button>
-              <span>·</span>
-              <button
-                type="button"
-                class="font-bold text-signal hover:underline cursor-pointer"
+                class="flex-1 rounded-lg bg-ink/5 hover:bg-ink hover:text-paper py-1 text-ink transition-all cursor-pointer font-semibold flex items-center justify-center gap-1"
                 title="Salin URL publik"
-                @click="copyUrl(item.url)"
+                @click="copyUrl(file.url)"
               >
-                Salin URL
+                <AdminIcon name="copy" size="11" />
+                <span>URL</span>
+              </button>
+              <button
+                type="button"
+                class="flex-1 rounded-lg bg-ink/5 hover:bg-ink hover:text-paper py-1 text-ink transition-all cursor-pointer font-semibold flex items-center justify-center gap-1"
+                title="Salin Markdown ![alt](url)"
+                @click="copyMarkdown(file)"
+              >
+                <AdminIcon name="code" size="11" />
+                <span>MD</span>
+              </button>
+              <button
+                type="button"
+                class="rounded-lg bg-rose-50 hover:bg-signal hover:text-white p-1 text-signal transition-all cursor-pointer"
+                title="Hapus berkas"
+                @click="promptDeleteFile(file)"
+              >
+                <AdminIcon name="trash" size="11" />
               </button>
             </div>
           </div>
@@ -291,32 +321,61 @@ function formatBytes(bytes: number) {
       </div>
     </div>
 
-    <!-- Image Preview Modal -->
-    <div
-      v-if="previewModalUrl"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-void/80 backdrop-blur-sm"
-      @click="previewModalUrl = null"
-    >
-      <div class="relative max-w-4xl max-h-[90vh] overflow-hidden rounded-3xl bg-paper p-2 border border-ink/20 shadow-2xl" @click.stop>
-        <img :src="previewModalUrl" alt="Media Full Preview" class="max-h-[80vh] w-auto object-contain rounded-2xl">
-        <div class="flex justify-between items-center p-3 font-mono text-xs">
-          <a :href="previewModalUrl" target="_blank" class="text-signal hover:underline">Buka Berkas Asli ↗</a>
-          <button type="button" class="rounded-full bg-ink/10 px-3 py-1 font-bold" @click="previewModalUrl = null">Tutup (ESC)</button>
+    <!-- Lightbox Modal -->
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="lightboxItem"
+          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm"
+          @click.self="lightboxItem = null"
+        >
+          <div class="relative max-w-4xl w-full bg-[#0d0c0b] rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-white/10">
+              <p class="font-mono text-xs text-white/80 truncate">{{ lightboxItem.name }}</p>
+              <button
+                type="button"
+                class="text-white/60 hover:text-white cursor-pointer"
+                @click="lightboxItem = null"
+              >
+                <AdminIcon name="close" size="16" />
+              </button>
+            </div>
+            <div class="p-4">
+              <img :src="lightboxItem.url" :alt="lightboxItem.name" class="max-h-[75vh] w-full object-contain rounded-xl">
+            </div>
+            <div class="flex items-center justify-end gap-2 px-5 pb-5">
+              <button
+                type="button"
+                class="inline-flex items-center gap-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white px-4 py-2 font-mono text-xs font-bold transition-all cursor-pointer"
+                @click="copyUrl(lightboxItem.url); lightboxItem = null"
+              >
+                <AdminIcon name="copy" size="12" />
+                <span>Salin URL</span>
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </Transition>
+    </Teleport>
 
-    <!-- Confirmation Modal for Delete Media -->
+    <!-- Delete Confirmation Modal -->
     <AdminModal
-      :show="Boolean(assetToDelete)"
-      :title="`Hapus berkas “${assetToDelete?.name}”?`"
-      message="File ini akan dihapus dari Supabase Storage. Project yang menautkan URL ini mungkin tidak dapat menampilkan gambar."
-      confirm-label="Hapus Berkas"
+      :show="Boolean(fileToDelete)"
+      :title="`Hapus &quot;${fileToDelete?.name}&quot;?`"
+      message="Berkas ini akan dihapus permanen dari Supabase Storage dan tidak dapat dipulihkan."
+      confirm-label="Hapus Permanen"
       cancel-label="Batal"
       :danger="true"
       :busy="isDeleting"
-      @confirm="confirmDeleteAsset"
-      @cancel="assetToDelete = null"
+      @confirm="confirmDeleteFile"
+      @cancel="fileToDelete = null"
     />
   </div>
 </template>

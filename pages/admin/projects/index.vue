@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AdminIcon from '~/components/admin/AdminIcon.vue'
 import AdminModal from '~/components/admin/AdminModal.vue'
 import type { Database, Project, ProjectCategory, ProjectStatus } from '~/types/database.types'
 import { PROJECT_CATEGORIES, categoryLabel } from '~/utils/project'
@@ -146,10 +147,10 @@ async function quickToggleStatus(project: Project) {
   try {
     await toggleProjectStatus(project.id, newStatus)
     project.status = newStatus
-    success(`Status project "${project.title}" kini ${newStatus.toUpperCase()}.`)
+    success(`Status "${project.title}" diubah ke ${newStatus.toUpperCase()}`)
   }
   catch (err) {
-    toastError(err instanceof Error ? err.message : 'Gagal memperbarui status project.')
+    toastError(err instanceof Error ? err.message : 'Gagal memperbarui status.')
   }
 }
 
@@ -200,149 +201,159 @@ function exportJsonBackup() {
 
 <template>
   <div class="space-y-8">
-    <!-- Header & Action Bar -->
-    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-ink/12 pb-6">
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-5 border-b border-ink/10 pb-6">
       <div>
-        <div class="inline-flex items-center gap-2 rounded-full bg-ink/5 px-3 py-1 font-mono text-[0.7rem] font-bold text-mute uppercase tracking-widest">
+        <div class="inline-flex items-center gap-2 rounded-full bg-ink/5 border border-ink/10 px-3 py-1 font-mono text-[0.68rem] font-bold text-mute uppercase tracking-widest">
           <span class="size-1.5 rounded-full bg-signal" />
           <span>Katalog & Kurasi Portofolio</span>
         </div>
-        <h1 class="mt-2 sm:mt-3 font-display text-3xl sm:text-4xl font-bold text-ink tracking-tight">
+        <h1 class="mt-2.5 font-display text-3xl sm:text-4xl font-bold text-ink tracking-tight">
           Manajemen Projects
         </h1>
         <p class="mt-1 font-sans text-xs sm:text-sm text-mute">
-          Kelola portofolio karya, atur status publikasi, dan pantau kualitas SEO setiap case study.
+          Kelola metadata karya, atur status publikasi, dan pantau kualitas SEO setiap case study.
         </p>
       </div>
 
       <div class="flex items-center gap-2.5 flex-wrap">
         <button
           type="button"
-          class="rounded-full bg-white/80 hover:bg-white border border-ink/10 px-4 py-2 font-mono text-xs font-semibold text-ink transition-all cursor-pointer shadow-xs hover:border-ink/20"
-          title="Unduh Backup JSON seluruh project"
+          class="inline-flex items-center gap-1.5 rounded-xl bg-white hover:bg-ink/5 border border-ink/15 px-3.5 py-2 font-mono text-xs font-semibold text-ink transition-all cursor-pointer shadow-2xs"
+          title="Unduh backup JSON"
           @click="exportJsonBackup"
         >
-          ⬇ Export JSON
+          <AdminIcon name="download" size="13" />
+          <span>Export JSON</span>
         </button>
 
         <NuxtLink
           to="/admin/projects/new"
-          class="rounded-full bg-signal text-white hover:bg-[#e63d10] px-5 py-2.5 font-mono text-xs font-bold uppercase tracking-wider shadow-sm transition-all hover:scale-[1.02] active:scale-95"
+          class="inline-flex items-center gap-2 rounded-xl bg-signal text-white hover:bg-[#e63d10] px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider shadow-xs transition-all hover:scale-[1.02] active:scale-98"
         >
-          + Tambah Project Baru
+          <AdminIcon name="plus" size="14" stroke-width="2.5" />
+          <span>Tambah Project</span>
         </NuxtLink>
       </div>
     </div>
 
-    <!-- Analytics & Stats Cards Grid -->
+    <!-- Stat Metric Cards -->
     <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-      <div class="rounded-3xl bg-white/85 p-5 border border-ink/10 shadow-xs space-y-2">
+      <div class="rounded-2xl bg-white/90 p-5 border border-ink/10 shadow-2xs space-y-2">
         <div class="flex items-center justify-between">
-          <span class="font-mono text-[0.7rem] font-bold uppercase tracking-wider text-mute">Total Project</span>
-          <span class="font-mono text-base">📁</span>
+          <span class="font-mono text-[0.68rem] font-bold uppercase tracking-wider text-mute">Total Karya</span>
+          <div class="size-7 rounded-lg bg-ink/5 flex items-center justify-center text-ink/70">
+            <AdminIcon name="projects" size="14" />
+          </div>
         </div>
-        <p class="font-display text-3xl sm:text-4xl font-bold text-ink">{{ stats.total }}</p>
-        <p class="font-mono text-[0.68rem] text-mute">{{ stats.gradeACount }} berkategori Grade A</p>
+        <p class="font-display text-3xl font-bold text-ink">{{ stats.total }}</p>
+        <p class="font-mono text-[0.65rem] text-mute">{{ stats.gradeACount }} berkategori Grade A</p>
       </div>
 
-      <div class="rounded-3xl bg-white/85 p-5 border border-ink/10 shadow-xs space-y-2">
+      <div class="rounded-2xl bg-white/90 p-5 border border-ink/10 shadow-2xs space-y-2">
         <div class="flex items-center justify-between">
-          <span class="font-mono text-[0.7rem] font-bold uppercase tracking-wider text-emerald-800">Published</span>
-          <span class="size-2 rounded-full bg-emerald-500 ring-2 ring-emerald-500/20" />
+          <span class="font-mono text-[0.68rem] font-bold uppercase tracking-wider text-emerald-800">Published</span>
+          <div class="size-7 rounded-lg bg-emerald-50 border border-emerald-200/80 flex items-center justify-center text-emerald-600">
+            <AdminIcon name="check-circle" size="14" />
+          </div>
         </div>
-        <p class="font-display text-3xl sm:text-4xl font-bold text-emerald-600">{{ stats.published }}</p>
-        <p class="font-mono text-[0.68rem] text-mute">Tampil di halaman publik</p>
+        <p class="font-display text-3xl font-bold text-emerald-600">{{ stats.published }}</p>
+        <p class="font-mono text-[0.65rem] text-mute">Tampil di halaman publik</p>
       </div>
 
-      <div class="rounded-3xl bg-white/85 p-5 border border-ink/10 shadow-xs space-y-2">
+      <div class="rounded-2xl bg-white/90 p-5 border border-ink/10 shadow-2xs space-y-2">
         <div class="flex items-center justify-between">
-          <span class="font-mono text-[0.7rem] font-bold uppercase tracking-wider text-mute">Draft / Privat</span>
-          <span class="size-2 rounded-full bg-mute/40" />
+          <span class="font-mono text-[0.68rem] font-bold uppercase tracking-wider text-mute">Draft / Privat</span>
+          <div class="size-7 rounded-lg bg-ink/5 flex items-center justify-center text-mute">
+            <AdminIcon name="clock" size="14" />
+          </div>
         </div>
-        <p class="font-display text-3xl sm:text-4xl font-bold text-ink/70">{{ stats.draft }}</p>
-        <p class="font-mono text-[0.68rem] text-mute">Hanya terlihat di admin</p>
+        <p class="font-display text-3xl font-bold text-ink/70">{{ stats.draft }}</p>
+        <p class="font-mono text-[0.65rem] text-mute">Hanya terlihat di admin</p>
       </div>
 
-      <div class="rounded-3xl bg-white/85 p-5 border border-ink/10 shadow-xs space-y-2">
+      <div class="rounded-2xl bg-white/90 p-5 border border-ink/10 shadow-2xs space-y-2">
         <div class="flex items-center justify-between">
-          <span class="font-mono text-[0.7rem] font-bold uppercase tracking-wider text-mute">Rata-Rata SEO</span>
-          <span class="font-mono text-base">⚡</span>
+          <span class="font-mono text-[0.68rem] font-bold uppercase tracking-wider text-mute">Rata-Rata SEO</span>
+          <div class="size-7 rounded-lg bg-amber-50 border border-amber-200/80 flex items-center justify-center text-amber-600">
+            <AdminIcon name="seo" size="14" />
+          </div>
         </div>
         <div class="flex items-baseline gap-1">
-          <p class="font-display text-3xl sm:text-4xl font-bold" :class="stats.avgSeo >= 80 ? 'text-emerald-600' : 'text-amber-600'">
+          <p class="font-display text-3xl font-bold" :class="stats.avgSeo >= 80 ? 'text-emerald-600' : 'text-amber-600'">
             {{ stats.avgSeo }}
           </p>
           <span class="font-mono text-xs text-mute">/ 100</span>
         </div>
-        <p class="font-mono text-[0.68rem] text-mute">{{ stats.avgSeo >= 80 ? 'Kualitas metadata prima' : 'Perlu penyesuaian SEO' }}</p>
+        <p class="font-mono text-[0.65rem] text-mute">{{ stats.avgSeo >= 80 ? 'Kualitas metadata prima' : 'Perlu optimasi SEO' }}</p>
       </div>
     </div>
 
-    <!-- Filter, Search & View Switcher Toolbar -->
-    <div class="space-y-3 rounded-3xl bg-white/85 p-4 sm:p-5 border border-ink/10 shadow-xs">
+    <!-- Toolbar: Search, Filters, and Segmented View Switcher -->
+    <div class="space-y-3 rounded-2xl bg-white/90 p-3.5 sm:p-4 border border-ink/10 shadow-2xs">
       <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
         <!-- Search Input -->
         <div class="relative flex-1">
-          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-mute text-xs">🔍</span>
+          <AdminIcon name="search" size="14" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-mute" />
           <input
             v-model="searchQuery"
             type="search"
-            class="field pl-9 font-sans text-xs sm:text-sm !min-h-11 !rounded-2xl"
-            placeholder="Cari berdasarkan judul, slug, kategori, teknologi, atau tag..."
+            class="field pl-9.5 font-sans text-xs sm:text-sm !min-h-10 !rounded-xl"
+            placeholder="Cari judul, slug, kategori, teknologi, atau style tag..."
           >
         </div>
 
-        <!-- View Mode Switcher -->
+        <!-- Segmented View Switcher -->
         <div class="flex items-center justify-between sm:justify-end gap-2 border-t lg:border-t-0 pt-2 lg:pt-0 border-ink/5">
-          <div class="flex items-center rounded-2xl bg-ink/5 p-1 font-mono text-xs">
+          <div class="flex items-center rounded-xl bg-ink/5 p-1 font-mono text-xs">
             <button
               type="button"
-              class="rounded-xl px-3 py-1.5 font-bold transition-all cursor-pointer flex items-center gap-1.5"
-              :class="viewMode === 'table' ? 'bg-ink text-paper shadow-xs' : 'text-mute hover:text-ink'"
+              class="rounded-lg px-3 py-1.5 font-bold transition-all cursor-pointer flex items-center gap-1.5"
+              :class="viewMode === 'table' ? 'bg-ink text-paper shadow-2xs' : 'text-mute hover:text-ink'"
               @click="viewMode = 'table'"
             >
-              <span>📋</span>
+              <AdminIcon name="table" size="13" />
               <span class="hidden sm:inline">Tabel</span>
             </button>
             <button
               type="button"
-              class="rounded-xl px-3 py-1.5 font-bold transition-all cursor-pointer flex items-center gap-1.5"
-              :class="viewMode === 'grid' ? 'bg-ink text-paper shadow-xs' : 'text-mute hover:text-ink'"
+              class="rounded-lg px-3 py-1.5 font-bold transition-all cursor-pointer flex items-center gap-1.5"
+              :class="viewMode === 'grid' ? 'bg-ink text-paper shadow-2xs' : 'text-mute hover:text-ink'"
               @click="viewMode = 'grid'"
             >
-              <span>🗂️</span>
+              <AdminIcon name="grid" size="13" />
               <span class="hidden sm:inline">Grid Kartu</span>
             </button>
             <button
               type="button"
-              class="rounded-xl px-3 py-1.5 font-bold transition-all cursor-pointer flex items-center gap-1.5"
-              :class="viewMode === 'list' ? 'bg-ink text-paper shadow-xs' : 'text-mute hover:text-ink'"
+              class="rounded-lg px-3 py-1.5 font-bold transition-all cursor-pointer flex items-center gap-1.5"
+              :class="viewMode === 'list' ? 'bg-ink text-paper shadow-2xs' : 'text-mute hover:text-ink'"
               @click="viewMode = 'list'"
             >
-              <span>📄</span>
-              <span class="hidden sm:inline">Ringkas</span>
+              <AdminIcon name="list" size="13" />
+              <span class="hidden sm:inline">List</span>
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Filters & Sorting Selectors -->
+      <!-- Filters & Sorting Row -->
       <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 font-mono text-xs pt-1">
         <!-- Category Filter -->
-        <select v-model="selectedCategory" class="field !min-h-10 !py-1.5 !px-3 font-mono cursor-pointer !w-full sm:!w-auto !rounded-xl">
+        <select v-model="selectedCategory" class="field !min-h-9 !py-1.5 !px-3 font-mono cursor-pointer !w-full sm:!w-auto !rounded-xl">
           <option value="all">Semua Kategori</option>
           <option v-for="cat in PROJECT_CATEGORIES" :key="cat.value" :value="cat.value">{{ cat.label }}</option>
         </select>
 
         <!-- Status Filter -->
-        <select v-model="selectedStatus" class="field !min-h-10 !py-1.5 !px-3 font-mono cursor-pointer !w-full sm:!w-auto !rounded-xl">
+        <select v-model="selectedStatus" class="field !min-h-9 !py-1.5 !px-3 font-mono cursor-pointer !w-full sm:!w-auto !rounded-xl">
           <option value="all">Semua Status</option>
           <option value="published">Published</option>
           <option value="draft">Draft</option>
         </select>
 
         <!-- SEO Grade Filter -->
-        <select v-model="selectedSeoGrade" class="field !min-h-10 !py-1.5 !px-3 font-mono cursor-pointer !w-full sm:!w-auto !rounded-xl">
+        <select v-model="selectedSeoGrade" class="field !min-h-9 !py-1.5 !px-3 font-mono cursor-pointer !w-full sm:!w-auto !rounded-xl">
           <option value="all">Semua Grade SEO</option>
           <option value="A">Grade A (≥ 80)</option>
           <option value="B">Grade B (65–79)</option>
@@ -350,7 +361,7 @@ function exportJsonBackup() {
         </select>
 
         <!-- Sort Filter -->
-        <select v-model="sortBy" class="field !min-h-10 !py-1.5 !px-3 font-mono cursor-pointer col-span-2 sm:col-span-1 !w-full sm:!w-auto !rounded-xl sm:ml-auto">
+        <select v-model="sortBy" class="field !min-h-9 !py-1.5 !px-3 font-mono cursor-pointer col-span-2 sm:col-span-1 !w-full sm:!w-auto !rounded-xl sm:ml-auto">
           <option value="updated_desc">Terbaru Diperbarui</option>
           <option value="updated_asc">Terlama Diperbarui</option>
           <option value="title_asc">Judul (A–Z)</option>
@@ -361,116 +372,121 @@ function exportJsonBackup() {
     </div>
 
     <!-- Loading State -->
-    <div v-if="status === 'pending'" class="animate-pulse rounded-3xl bg-white/70 p-12 text-center font-mono text-xs text-mute border border-ink/10">
-      Memuat katalog project…
+    <div v-if="status === 'pending'" class="animate-pulse rounded-2xl bg-white/70 p-12 text-center font-mono text-xs text-mute border border-ink/10">
+      Memuat data project…
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="!filteredProjects.length" class="rounded-3xl border border-ink/10 bg-white/85 p-10 sm:p-16 text-center shadow-xs space-y-4">
+    <div v-else-if="!filteredProjects.length" class="rounded-2xl border border-ink/10 bg-white/85 p-10 sm:p-14 text-center shadow-2xs space-y-3">
       <p class="font-display text-2xl font-bold text-ink">Tidak ada project ditemukan.</p>
       <p class="font-mono text-xs text-mute max-w-md mx-auto">
-        Kriteria pencarian atau filter yang Anda pilih tidak cocok dengan data project saat ini.
+        Kriteria pencarian atau filter tidak cocok dengan data project.
       </p>
       <button
         v-if="searchQuery || selectedCategory !== 'all' || selectedStatus !== 'all' || selectedSeoGrade !== 'all'"
         type="button"
-        class="rounded-full bg-ink/5 hover:bg-ink hover:text-paper px-4 py-2 font-mono text-xs font-bold uppercase transition-all cursor-pointer"
+        class="inline-flex items-center gap-1.5 rounded-xl bg-ink/5 hover:bg-ink hover:text-paper px-4 py-2 font-mono text-xs font-bold uppercase transition-all cursor-pointer"
         @click="searchQuery = ''; selectedCategory = 'all'; selectedStatus = 'all'; selectedSeoGrade = 'all'"
       >
-        Reset Filter
+        <AdminIcon name="refresh" size="12" />
+        <span>Reset Filter</span>
       </button>
     </div>
 
     <!-- ========================================== -->
     <!-- VIEW 1: STUDIO TABLE VIEW                  -->
     <!-- ========================================== -->
-    <div v-else-if="viewMode === 'table'" class="overflow-hidden rounded-3xl border border-ink/10 bg-white/90 shadow-xs">
+    <div v-else-if="viewMode === 'table'" class="overflow-hidden rounded-2xl border border-ink/10 bg-white/95 shadow-2xs">
       <div class="overflow-x-auto">
-        <table class="w-full min-w-[900px] border-collapse text-left font-sans text-sm">
+        <table class="w-full min-w-[920px] border-collapse text-left font-sans text-sm">
           <thead>
-            <tr class="border-b border-ink/10 font-mono text-xs uppercase tracking-wider text-mute bg-ink/[0.02]">
-              <th class="p-4 pl-6">Project & Visual</th>
-              <th class="p-4">Kategori & Tags</th>
-              <th class="p-4 text-center">Skor SEO</th>
-              <th class="p-4">Status Publikasi</th>
-              <th class="p-4">Pembaruan</th>
-              <th class="p-4 pr-6 text-right">Aksi</th>
+            <tr class="border-b border-ink/10 font-mono text-[0.68rem] uppercase tracking-wider text-mute bg-ink/[0.02]">
+              <th class="py-3.5 px-5">Project & Identitas</th>
+              <th class="py-3.5 px-4">Kategori & Tags</th>
+              <th class="py-3.5 px-4 text-center">Skor SEO</th>
+              <th class="py-3.5 px-4">Status</th>
+              <th class="py-3.5 px-4">Diperbarui</th>
+              <th class="py-3.5 px-5 text-right">Aksi</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-ink/10">
-            <tr v-for="project in filteredProjects" :key="project.id" class="hover:bg-ink/[0.02] transition-colors group">
-              <!-- Title & Thumbnail -->
-              <td class="p-4 pl-6">
-                <div class="flex items-center gap-4">
-                  <div class="relative aspect-[16/10] w-24 shrink-0 overflow-hidden rounded-2xl border border-ink/10 bg-ink/10 shadow-xs">
+          <tbody class="divide-y divide-ink/8">
+            <tr v-for="project in filteredProjects" :key="project.id" class="hover:bg-ink/[0.015] transition-colors group">
+              <!-- Title & Thumbnail (Fixed Wrapping & Alignment) -->
+              <td class="py-4 px-5">
+                <div class="flex items-center gap-3.5">
+                  <div class="relative aspect-[16/10] w-20 shrink-0 overflow-hidden rounded-xl border border-ink/10 bg-ink/10 shadow-2xs">
                     <img :src="project.thumbnail_url" :alt="project.title" class="h-full w-full object-cover" loading="lazy">
                   </div>
-                  <div class="min-w-0">
+                  <div class="min-w-0 max-w-[280px]">
                     <NuxtLink
                       :to="`/admin/projects/${project.id}/edit`"
-                      class="font-display font-bold text-ink hover:text-signal transition-colors text-base block truncate max-w-xs sm:max-w-sm"
+                      class="font-display font-bold text-ink hover:text-signal transition-colors text-[0.95rem] block truncate leading-tight"
+                      :title="project.title"
                     >
                       {{ project.title }}
                     </NuxtLink>
-                    <div class="flex items-center gap-2 mt-1">
-                      <span class="font-mono text-xs text-mute">/{{ project.slug }}</span>
+                    <div class="flex items-center gap-2 mt-1 font-mono text-[0.7rem] text-mute flex-wrap">
+                      <span class="truncate max-w-[140px]" :title="project.slug">/{{ project.slug }}</span>
+                      <span class="text-mute/30">·</span>
                       <button
                         type="button"
-                        class="text-[0.68rem] font-mono text-signal hover:underline cursor-pointer"
+                        class="text-signal hover:underline cursor-pointer inline-flex items-center gap-1"
                         title="Salin Link Publik"
                         @click="copyPublicLink(project)"
                       >
-                        Salin URL
+                        <AdminIcon name="copy" size="10" />
+                        <span>Salin</span>
                       </button>
-                      <span class="text-mute/40">·</span>
+                      <span class="text-mute/30">·</span>
                       <a
                         :href="project.live_url"
                         target="_blank"
                         rel="noopener"
-                        class="text-[0.68rem] font-mono text-mute hover:text-ink transition-colors"
+                        class="text-mute hover:text-ink transition-colors inline-flex items-center gap-0.5"
                         title="Buka Demo Eksternal"
                       >
-                        Live Demo ↗
+                        <span>Demo</span>
+                        <AdminIcon name="external" size="10" />
                       </a>
                     </div>
                   </div>
                 </div>
               </td>
 
-              <!-- Category & Tags -->
-              <td class="p-4">
-                <div class="space-y-1">
-                  <span class="inline-block rounded-full bg-ink/5 px-2.5 py-0.5 font-mono text-xs font-semibold text-ink">
+              <!-- Category & Style Tags -->
+              <td class="py-4 px-4">
+                <div class="space-y-1 max-w-[180px]">
+                  <span class="inline-block rounded-md bg-ink/5 px-2 py-0.5 font-mono text-[0.7rem] font-semibold text-ink">
                     {{ categoryLabel(project.category) }}
                   </span>
-                  <p class="font-mono text-[0.68rem] text-mute truncate max-w-[170px]" :title="project.style_tags.join(', ')">
-                    {{ project.style_tags.join(', ') || 'No style tags' }}
+                  <p class="font-mono text-[0.68rem] text-mute truncate" :title="project.style_tags.join(', ')">
+                    {{ project.style_tags.join(', ') || 'No tags' }}
                   </p>
                 </div>
               </td>
 
-              <!-- SEO Gauge -->
-              <td class="p-4 text-center">
+              <!-- Real-time SEO Score Badge -->
+              <td class="py-4 px-4 text-center">
                 <div class="inline-flex flex-col items-center gap-0.5">
                   <span
-                    class="rounded-full px-2.5 py-0.5 font-mono text-xs font-bold border"
+                    class="rounded-md px-2.5 py-0.5 font-mono text-xs font-bold border"
                     :class="getProjectSeoScore(project).colorClass"
                   >
                     {{ getProjectSeoScore(project).score }} / 100
                   </span>
-                  <span class="font-mono text-[0.65rem] text-mute uppercase">
+                  <span class="font-mono text-[0.62rem] text-mute uppercase">
                     Grade {{ getProjectSeoScore(project).grade }}
                   </span>
                 </div>
               </td>
 
-              <!-- Status Switcher -->
-              <td class="p-4">
+              <!-- Status Switcher Button -->
+              <td class="py-4 px-4">
                 <button
                   type="button"
-                  class="group inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-mono text-[0.7rem] font-bold uppercase tracking-wider transition-all cursor-pointer"
-                  :class="project.status === 'published' ? 'bg-emerald-100 text-emerald-900 hover:bg-emerald-200' : 'bg-ink/10 text-mute hover:bg-ink/15'"
-                  title="Klik untuk toggle status publikasi"
+                  class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-[0.68rem] font-bold uppercase tracking-wider transition-all cursor-pointer border"
+                  :class="project.status === 'published' ? 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100' : 'bg-ink/5 text-mute border-ink/10 hover:bg-ink/10'"
+                  title="Klik untuk mengubah status"
                   @click="quickToggleStatus(project)"
                 >
                   <span class="size-1.5 rounded-full" :class="project.status === 'published' ? 'bg-emerald-600' : 'bg-mute'" />
@@ -478,26 +494,29 @@ function exportJsonBackup() {
                 </button>
               </td>
 
-              <!-- Updated Date -->
-              <td class="p-4 font-mono text-xs text-mute whitespace-nowrap">
-                {{ new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium' }).format(new Date(project.updated_at)) }}
+              <!-- Updated Time -->
+              <td class="py-4 px-4 font-mono text-xs text-mute whitespace-nowrap">
+                {{ new Intl.DateTimeFormat('id-ID', { dateStyle: 'short' }).format(new Date(project.updated_at)) }}
               </td>
 
-              <!-- Action Menu -->
-              <td class="p-4 pr-6 text-right whitespace-nowrap">
-                <div class="flex justify-end items-center gap-2 font-mono text-xs font-bold uppercase tracking-wider">
+              <!-- Action Buttons -->
+              <td class="py-4 px-5 text-right whitespace-nowrap">
+                <div class="flex justify-end items-center gap-1.5 font-mono text-xs">
                   <NuxtLink
                     :to="`/admin/projects/${project.id}/edit`"
-                    class="rounded-full bg-ink/5 hover:bg-ink hover:text-paper px-3.5 py-1.5 text-ink transition-all"
+                    class="inline-flex items-center gap-1 rounded-lg bg-ink/5 hover:bg-ink hover:text-paper px-2.5 py-1.5 text-ink transition-all font-semibold text-[0.7rem]"
+                    title="Edit Project"
                   >
-                    Edit ↗
+                    <AdminIcon name="edit" size="12" />
+                    <span>Edit</span>
                   </NuxtLink>
                   <button
                     type="button"
-                    class="cursor-pointer rounded-full bg-signal/10 hover:bg-signal hover:text-white px-3.5 py-1.5 text-signal transition-all"
+                    class="cursor-pointer rounded-lg bg-rose-50 hover:bg-signal hover:text-white px-2.5 py-1.5 text-signal transition-all font-semibold text-[0.7rem]"
+                    title="Hapus Project"
                     @click="promptDelete(project)"
                   >
-                    Hapus
+                    <AdminIcon name="trash" size="12" />
                   </button>
                 </div>
               </td>
@@ -514,23 +533,23 @@ function exportJsonBackup() {
       <div
         v-for="project in filteredProjects"
         :key="project.id"
-        class="rounded-3xl border border-ink/10 bg-white/90 overflow-hidden shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
+        class="rounded-2xl border border-ink/10 bg-white/95 overflow-hidden shadow-2xs hover:shadow-md transition-all flex flex-col justify-between"
       >
         <div>
           <!-- Thumbnail & Badges -->
           <div class="relative aspect-[16/10] w-full bg-ink/10 overflow-hidden">
             <img :src="project.thumbnail_url" :alt="project.title" class="h-full w-full object-cover" loading="lazy">
             <div class="absolute top-3 left-3 flex items-center gap-1.5">
-              <span class="rounded-full bg-void/80 text-white backdrop-blur-md px-2.5 py-1 font-mono text-[0.65rem] font-bold uppercase">
+              <span class="rounded-md bg-void/80 text-white backdrop-blur-md px-2 py-0.5 font-mono text-[0.65rem] font-bold uppercase">
                 {{ categoryLabel(project.category) }}
               </span>
             </div>
             <div class="absolute top-3 right-3">
               <span
-                class="rounded-full px-2.5 py-1 font-mono text-[0.65rem] font-bold border backdrop-blur-md"
+                class="rounded-md px-2 py-0.5 font-mono text-[0.65rem] font-bold border backdrop-blur-md"
                 :class="getProjectSeoScore(project).colorClass"
               >
-                SEO {{ getProjectSeoScore(project).score }}/100
+                SEO {{ getProjectSeoScore(project).score }} ({{ getProjectSeoScore(project).grade }})
               </span>
             </div>
           </div>
@@ -540,7 +559,7 @@ function exportJsonBackup() {
             <div>
               <NuxtLink
                 :to="`/admin/projects/${project.id}/edit`"
-                class="font-display text-lg font-bold text-ink hover:text-signal transition-colors block truncate"
+                class="font-display text-base font-bold text-ink hover:text-signal transition-colors block truncate"
               >
                 {{ project.title }}
               </NuxtLink>
@@ -548,7 +567,7 @@ function exportJsonBackup() {
                 <span class="font-mono text-xs text-mute truncate">/{{ project.slug }}</span>
                 <button
                   type="button"
-                  class="text-[0.65rem] font-mono text-signal hover:underline cursor-pointer"
+                  class="text-[0.68rem] font-mono text-signal hover:underline cursor-pointer"
                   @click="copyPublicLink(project)"
                 >
                   Salin
@@ -556,12 +575,12 @@ function exportJsonBackup() {
               </div>
             </div>
 
-            <!-- Tags -->
+            <!-- Tech Tags -->
             <div class="flex flex-wrap gap-1">
               <span
                 v-for="tech in project.tech_stack.slice(0, 3)"
                 :key="tech"
-                class="rounded-md bg-ink/5 px-2 py-0.5 font-mono text-[0.65rem] text-ink/80"
+                class="rounded bg-ink/5 px-1.5 py-0.5 font-mono text-[0.65rem] text-ink/80"
               >
                 {{ tech }}
               </span>
@@ -573,30 +592,31 @@ function exportJsonBackup() {
         </div>
 
         <!-- Card Footer -->
-        <div class="p-5 pt-0 flex items-center justify-between border-t border-ink/5 mt-2 pt-4">
+        <div class="p-4 pt-0 flex items-center justify-between border-t border-ink/5 mt-2 pt-3">
           <button
             type="button"
-            class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-mono text-[0.7rem] font-bold uppercase tracking-wider transition-all cursor-pointer"
-            :class="project.status === 'published' ? 'bg-emerald-100 text-emerald-900' : 'bg-ink/10 text-mute'"
+            class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-mono text-[0.68rem] font-bold uppercase tracking-wider transition-all cursor-pointer border"
+            :class="project.status === 'published' ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-ink/5 text-mute border-ink/10'"
             @click="quickToggleStatus(project)"
           >
             <span class="size-1.5 rounded-full" :class="project.status === 'published' ? 'bg-emerald-600' : 'bg-mute'" />
             <span>{{ project.status }}</span>
           </button>
 
-          <div class="flex items-center gap-2 font-mono text-xs font-bold uppercase">
+          <div class="flex items-center gap-1.5 font-mono text-xs">
             <NuxtLink
               :to="`/admin/projects/${project.id}/edit`"
-              class="rounded-full bg-ink/5 hover:bg-ink hover:text-paper px-3 py-1 text-ink transition-all"
+              class="inline-flex items-center gap-1 rounded-lg bg-ink/5 hover:bg-ink hover:text-paper px-2.5 py-1 text-ink transition-all font-semibold text-[0.7rem]"
             >
-              Edit ↗
+              <AdminIcon name="edit" size="11" />
+              <span>Edit</span>
             </NuxtLink>
             <button
               type="button"
-              class="cursor-pointer rounded-full bg-signal/10 hover:bg-signal hover:text-white px-3 py-1 text-signal transition-all"
+              class="cursor-pointer rounded-lg bg-rose-50 hover:bg-signal hover:text-white px-2 py-1 text-signal transition-all"
               @click="promptDelete(project)"
             >
-              Hapus
+              <AdminIcon name="trash" size="11" />
             </button>
           </div>
         </div>
@@ -610,10 +630,10 @@ function exportJsonBackup() {
       <div
         v-for="project in filteredProjects"
         :key="project.id"
-        class="rounded-2xl border border-ink/10 bg-white/90 p-4 shadow-xs hover:shadow-sm transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+        class="rounded-xl border border-ink/10 bg-white/95 p-3.5 shadow-2xs hover:shadow-xs transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
       >
-        <div class="flex items-center gap-3.5 min-w-0">
-          <div class="size-10 rounded-xl overflow-hidden bg-ink/10 shrink-0 border border-ink/10">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="size-10 rounded-lg overflow-hidden bg-ink/10 shrink-0 border border-ink/10">
             <img :src="project.thumbnail_url" :alt="project.title" class="h-full w-full object-cover">
           </div>
           <div class="min-w-0">
@@ -633,7 +653,7 @@ function exportJsonBackup() {
 
         <div class="flex items-center justify-between sm:justify-end gap-3 font-mono text-xs">
           <span
-            class="rounded-full px-2.5 py-0.5 font-bold border"
+            class="rounded px-2 py-0.5 font-bold border text-[0.68rem]"
             :class="getProjectSeoScore(project).colorClass"
           >
             SEO {{ getProjectSeoScore(project).score }}
@@ -641,26 +661,27 @@ function exportJsonBackup() {
 
           <button
             type="button"
-            class="rounded-full px-3 py-1 font-bold uppercase cursor-pointer"
-            :class="project.status === 'published' ? 'bg-emerald-100 text-emerald-900' : 'bg-ink/10 text-mute'"
+            class="rounded-full px-2.5 py-0.5 font-bold uppercase cursor-pointer border text-[0.68rem]"
+            :class="project.status === 'published' ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-ink/5 text-mute border-ink/10'"
             @click="quickToggleStatus(project)"
           >
             {{ project.status }}
           </button>
 
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-1.5">
             <NuxtLink
               :to="`/admin/projects/${project.id}/edit`"
-              class="rounded-full bg-ink/5 hover:bg-ink hover:text-paper px-3 py-1 text-ink font-bold uppercase transition-all"
+              class="rounded-lg bg-ink/5 hover:bg-ink hover:text-paper px-2.5 py-1 text-ink font-semibold text-[0.7rem] transition-all inline-flex items-center gap-1"
             >
-              Edit ↗
+              <AdminIcon name="edit" size="11" />
+              <span>Edit</span>
             </NuxtLink>
             <button
               type="button"
-              class="rounded-full bg-signal/10 hover:bg-signal hover:text-white px-3 py-1 text-signal font-bold uppercase transition-all cursor-pointer"
+              class="rounded-lg bg-rose-50 hover:bg-signal hover:text-white px-2 py-1 text-signal transition-all cursor-pointer"
               @click="promptDelete(project)"
             >
-              Hapus
+              <AdminIcon name="trash" size="11" />
             </button>
           </div>
         </div>

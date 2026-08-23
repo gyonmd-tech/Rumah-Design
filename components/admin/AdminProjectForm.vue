@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AdminIcon from '~/components/admin/AdminIcon.vue'
 import type { Project, ProjectCategory, ProjectStatus } from '~/types/database.types'
 import type { ProjectFormPayload } from '~/types/project-form'
 import { renderSafeMarkdown } from '~/utils/markdown'
@@ -214,7 +215,6 @@ function validateAndSubmit() {
   if (styleError) errors.value.push(styleError)
 
   if (errors.value.length > 0) {
-    // Jump to the first error tab if needed
     if (errors.value.some(e => e.includes('Thumbnail'))) activeTab.value = 'media'
     else activeTab.value = 'general'
     return
@@ -246,61 +246,61 @@ function validateAndSubmit() {
     <div
       v-if="errors.length"
       role="alert"
-      class="rounded-3xl border border-signal/40 bg-signal/5 p-5 text-xs font-sans text-signal space-y-2"
+      class="rounded-2xl border border-signal/40 bg-signal/5 p-4 text-xs font-sans text-signal space-y-2"
     >
       <div class="flex items-center gap-2 font-bold font-mono uppercase tracking-wider">
-        <span>⚠️</span>
-        <span>Harap perbaiki kesalahan berikut:</span>
+        <AdminIcon name="alert" size="14" />
+        <span>Harap perbaiki kesalahan input berikut:</span>
       </div>
-      <ul class="list-disc list-inside space-y-1 pl-1">
+      <ul class="list-disc list-inside space-y-1 pl-1 font-mono text-[0.72rem]">
         <li v-for="err in errors" :key="err">{{ err }}</li>
       </ul>
     </div>
 
     <!-- Navigation Tabs for Editor Studio -->
-    <div class="overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory rounded-2xl bg-white/80 p-1.5 border border-ink/10 shadow-xs font-mono text-xs font-semibold">
+    <div class="overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory rounded-2xl bg-white/90 p-1.5 border border-ink/10 shadow-2xs font-mono text-xs font-semibold">
       <div class="flex items-center gap-1.5 min-w-max sm:min-w-0 sm:flex-wrap">
         <button
           type="button"
-          class="snap-start cursor-pointer rounded-xl px-4 py-2.5 transition-all whitespace-nowrap flex items-center gap-2"
-          :class="activeTab === 'general' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
-          @click="activeTab = 'general'"
+          class="snap-start cursor-pointer rounded-xl px-4 py-2 transition-all whitespace-nowrap flex items-center gap-2"
+          :class="activeTab === 'general' ? 'bg-ink text-paper shadow-2xs' : 'text-mute hover:text-ink'"
+          @click="activeTab === 'general'"
         >
-          <span>📝</span>
+          <AdminIcon name="projects" size="13" />
           <span>Informasi & Taksonomi</span>
         </button>
 
         <button
           type="button"
-          class="snap-start cursor-pointer rounded-xl px-4 py-2.5 transition-all whitespace-nowrap flex items-center gap-2"
-          :class="activeTab === 'media' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
-          @click="activeTab = 'media'"
+          class="snap-start cursor-pointer rounded-xl px-4 py-2 transition-all whitespace-nowrap flex items-center gap-2"
+          :class="activeTab === 'media' ? 'bg-ink text-paper shadow-2xs' : 'text-mute hover:text-ink'"
+          @click="activeTab === 'media'"
         >
-          <span>🎨</span>
+          <AdminIcon name="media" size="13" />
           <span>Visual & Media</span>
           <span v-if="thumbnailPreview" class="size-1.5 rounded-full bg-emerald-500" />
         </button>
 
         <button
           type="button"
-          class="snap-start cursor-pointer rounded-xl px-4 py-2.5 transition-all whitespace-nowrap flex items-center gap-2"
-          :class="activeTab === 'content' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
-          @click="activeTab = 'content'"
+          class="snap-start cursor-pointer rounded-xl px-4 py-2 transition-all whitespace-nowrap flex items-center gap-2"
+          :class="activeTab === 'content' ? 'bg-ink text-paper shadow-2xs' : 'text-mute hover:text-ink'"
+          @click="activeTab === 'content'"
         >
-          <span>📖</span>
-          <span>Case Study & Editorial</span>
+          <AdminIcon name="edit" size="13" />
+          <span>Case Study Editorial</span>
         </button>
 
         <button
           type="button"
-          class="snap-start cursor-pointer rounded-xl px-4 py-2.5 transition-all whitespace-nowrap flex items-center gap-2"
-          :class="activeTab === 'seo' ? 'bg-ink text-paper shadow-sm' : 'text-mute hover:text-ink'"
-          @click="activeTab = 'seo'"
+          class="snap-start cursor-pointer rounded-xl px-4 py-2 transition-all whitespace-nowrap flex items-center gap-2"
+          :class="activeTab === 'seo' ? 'bg-ink text-paper shadow-2xs' : 'text-mute hover:text-ink'"
+          @click="activeTab === 'seo'"
         >
-          <span>⚡</span>
+          <AdminIcon name="seo" size="13" />
           <span>SEO & SERP Simulator</span>
           <span
-            class="rounded-full px-1.5 py-0.2 font-mono text-[0.62rem] font-bold border"
+            class="rounded-md px-1.5 py-0.2 font-mono text-[0.62rem] font-bold border"
             :class="seoAnalysis.colorClass"
           >
             {{ seoAnalysis.score }}
@@ -313,7 +313,7 @@ function validateAndSubmit() {
     <!-- TAB 1: INFORMASI & TAKSONOMI                                   -->
     <!-- ============================================================== -->
     <div v-show="activeTab === 'general'" class="space-y-6">
-      <div class="rounded-3xl bg-white/85 p-6 sm:p-8 border border-ink/10 shadow-xs space-y-6">
+      <div class="rounded-2xl bg-white/95 p-6 sm:p-8 border border-ink/10 shadow-2xs space-y-6">
         <div class="border-b border-ink/10 pb-4">
           <h3 class="font-display text-xl font-bold text-ink">Metadata & Taksonomi Karya</h3>
           <p class="text-xs text-mute font-sans mt-0.5">Identitas utama, URL eksternal, kategori, dan tag teknologi.</p>
@@ -333,7 +333,7 @@ function validateAndSubmit() {
               v-model="form.title"
               type="text"
               maxlength="120"
-              class="field font-display font-bold text-base sm:text-lg"
+              class="field font-display font-bold text-base sm:text-lg !rounded-xl"
               placeholder="Contoh: Pundi — Modern Financial Dashboard"
               required
               @input="onTitleInput"
@@ -349,10 +349,11 @@ function validateAndSubmit() {
               <button
                 v-if="isSlugLocked"
                 type="button"
-                class="font-mono text-[0.7rem] text-signal hover:underline cursor-pointer"
+                class="font-mono text-[0.7rem] text-signal hover:underline cursor-pointer inline-flex items-center gap-1"
                 @click="unlockSlug"
               >
-                🔄 Sinkronkan dengan Judul
+                <AdminIcon name="refresh" size="11" />
+                <span>Sinkronkan dengan Judul</span>
               </button>
             </div>
             <div class="relative flex items-center">
@@ -361,7 +362,7 @@ function validateAndSubmit() {
                 id="p-slug"
                 v-model="form.slug"
                 type="text"
-                class="field font-mono text-xs sm:text-sm pl-20"
+                class="field font-mono text-xs sm:text-sm pl-20 !rounded-xl"
                 placeholder="nama-project-anda"
                 required
                 @input="onSlugInput"
@@ -374,7 +375,7 @@ function validateAndSubmit() {
             <label for="p-category" class="font-mono text-xs font-bold text-ink uppercase tracking-wider">
               Kategori Project <span class="text-signal">*</span>
             </label>
-            <select id="p-category" v-model="form.category" class="field font-mono text-xs cursor-pointer">
+            <select id="p-category" v-model="form.category" class="field font-mono text-xs cursor-pointer !rounded-xl">
               <option v-for="cat in PROJECT_CATEGORIES" :key="cat.value" :value="cat.value">
                 {{ cat.label }} ({{ cat.value }})
               </option>
@@ -390,7 +391,7 @@ function validateAndSubmit() {
               <button
                 type="button"
                 class="flex items-center justify-center gap-2 rounded-xl p-2.5 font-mono text-xs font-bold uppercase tracking-wider border transition-all cursor-pointer"
-                :class="form.status === 'published' ? 'bg-emerald-50 text-emerald-900 border-emerald-500 shadow-xs' : 'bg-ink/[0.02] text-mute border-ink/10 hover:border-ink/20'"
+                :class="form.status === 'published' ? 'bg-emerald-50 text-emerald-900 border-emerald-300 shadow-2xs' : 'bg-ink/[0.02] text-mute border-ink/10 hover:border-ink/20'"
                 @click="form.status = 'published'"
               >
                 <span class="size-2 rounded-full bg-emerald-500" />
@@ -400,7 +401,7 @@ function validateAndSubmit() {
               <button
                 type="button"
                 class="flex items-center justify-center gap-2 rounded-xl p-2.5 font-mono text-xs font-bold uppercase tracking-wider border transition-all cursor-pointer"
-                :class="form.status === 'draft' ? 'bg-ink/10 text-ink border-ink/40 shadow-xs' : 'bg-ink/[0.02] text-mute border-ink/10 hover:border-ink/20'"
+                :class="form.status === 'draft' ? 'bg-ink/10 text-ink border-ink/40 shadow-2xs' : 'bg-ink/[0.02] text-mute border-ink/10 hover:border-ink/20'"
                 @click="form.status = 'draft'"
               >
                 <span class="size-2 rounded-full bg-mute" />
@@ -420,16 +421,17 @@ function validateAndSubmit() {
                 :href="form.liveUrl"
                 target="_blank"
                 rel="noopener"
-                class="font-mono text-[0.7rem] text-signal hover:underline"
+                class="font-mono text-[0.7rem] text-signal hover:underline inline-flex items-center gap-1"
               >
-                Uji Tautan ↗
+                <span>Uji Tautan</span>
+                <AdminIcon name="external" size="10" />
               </a>
             </div>
             <input
               id="p-live-url"
               v-model="form.liveUrl"
               type="url"
-              class="field font-mono text-xs"
+              class="field font-mono text-xs !rounded-xl"
               placeholder="https://my-app.vercel.app"
               required
             >
@@ -444,7 +446,7 @@ function validateAndSubmit() {
               id="p-repo-url"
               v-model="form.repoUrl"
               type="url"
-              class="field font-mono text-xs"
+              class="field font-mono text-xs !rounded-xl"
               placeholder="https://github.com/username/repo"
             >
           </div>
@@ -461,7 +463,7 @@ function validateAndSubmit() {
               id="p-tech-stack"
               v-model="form.techStack"
               type="text"
-              class="field font-mono text-xs"
+              class="field font-mono text-xs !rounded-xl"
               placeholder="Nuxt 3, Vue, Tailwind CSS, TypeScript, Supabase"
             >
 
@@ -473,8 +475,8 @@ function validateAndSubmit() {
                   v-for="tag in TECH_STACK_SUGGESTIONS"
                   :key="tag"
                   type="button"
-                  class="rounded-full px-2.5 py-0.5 font-mono text-[0.68rem] transition-all cursor-pointer"
-                  :class="parseTags(form.techStack).includes(tag) ? 'bg-ink text-paper font-bold' : 'bg-ink/5 text-ink hover:bg-ink/10'"
+                  class="rounded-lg px-2.5 py-1 font-mono text-[0.68rem] transition-all cursor-pointer border"
+                  :class="parseTags(form.techStack).includes(tag) ? 'bg-ink text-paper font-bold border-ink' : 'bg-ink/5 text-ink hover:bg-ink/10 border-transparent'"
                   @click="parseTags(form.techStack).includes(tag) ? removeTechTag(tag) : addTechTag(tag)"
                 >
                   {{ parseTags(form.techStack).includes(tag) ? '✓ ' : '+ ' }}{{ tag }}
@@ -495,7 +497,7 @@ function validateAndSubmit() {
               id="p-style-tags"
               v-model="form.styleTags"
               type="text"
-              class="field font-mono text-xs"
+              class="field font-mono text-xs !rounded-xl"
               placeholder="Minimalist, Dark Mode, Neo-brutalism, Micro-interactions"
             >
 
@@ -507,8 +509,8 @@ function validateAndSubmit() {
                   v-for="tag in STYLE_TAG_SUGGESTIONS"
                   :key="tag"
                   type="button"
-                  class="rounded-full px-2.5 py-0.5 font-mono text-[0.68rem] transition-all cursor-pointer"
-                  :class="parseTags(form.styleTags).includes(tag) ? 'bg-ink text-paper font-bold' : 'bg-ink/5 text-ink hover:bg-ink/10'"
+                  class="rounded-lg px-2.5 py-1 font-mono text-[0.68rem] transition-all cursor-pointer border"
+                  :class="parseTags(form.styleTags).includes(tag) ? 'bg-ink text-paper font-bold border-ink' : 'bg-ink/5 text-ink hover:bg-ink/10 border-transparent'"
                   @click="parseTags(form.styleTags).includes(tag) ? removeStyleTag(tag) : addStyleTag(tag)"
                 >
                   {{ parseTags(form.styleTags).includes(tag) ? '✓ ' : '+ ' }}{{ tag }}
@@ -524,7 +526,7 @@ function validateAndSubmit() {
     <!-- TAB 2: VISUAL & MEDIA                                          -->
     <!-- ============================================================== -->
     <div v-show="activeTab === 'media'" class="space-y-6">
-      <div class="rounded-3xl bg-white/85 p-6 sm:p-8 border border-ink/10 shadow-xs space-y-6">
+      <div class="rounded-2xl bg-white/95 p-6 sm:p-8 border border-ink/10 shadow-2xs space-y-6">
         <div class="border-b border-ink/10 pb-4">
           <h3 class="font-display text-xl font-bold text-ink">Visual Showcase & Asset Portofolio</h3>
           <p class="text-xs text-mute font-sans mt-0.5">Thumbnail beresolusi tinggi dan media hover showcase (GIF / Video MP4).</p>
@@ -540,7 +542,7 @@ function validateAndSubmit() {
           </div>
 
           <div
-            class="relative flex flex-col items-center justify-center rounded-3xl border-2 border-dashed p-6 sm:p-10 transition-all text-center bg-white/60 overflow-hidden"
+            class="relative flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-6 sm:p-10 transition-all text-center bg-white/60 overflow-hidden"
             :class="isDragOver ? 'border-signal bg-signal/5' : 'border-ink/20 hover:border-signal/50'"
             @dragover.prevent="isDragOver = true"
             @dragleave.prevent="isDragOver = false"
@@ -548,40 +550,43 @@ function validateAndSubmit() {
           >
             <!-- When Thumbnail Exists -->
             <div v-if="thumbnailPreview" class="space-y-4 w-full max-w-md">
-              <div class="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-ink/15 shadow-md bg-ink/5">
+              <div class="relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-ink/15 shadow-sm bg-ink/5">
                 <img :src="thumbnailPreview" alt="Thumbnail Preview" class="h-full w-full object-cover">
               </div>
               <div class="flex items-center justify-center gap-3 font-mono text-xs">
-                <label class="rounded-full bg-ink/5 hover:bg-ink hover:text-paper px-4 py-2 font-bold transition-all cursor-pointer">
+                <label class="rounded-lg bg-ink/5 hover:bg-ink hover:text-paper px-3.5 py-1.5 font-bold transition-all cursor-pointer inline-flex items-center gap-1.5 border border-ink/10">
                   <input type="file" accept="image/*" class="hidden" @change="onFileSelect">
-                  Ganti Gambar 🔄
+                  <AdminIcon name="refresh" size="12" />
+                  <span>Ganti Gambar</span>
                 </label>
                 <button
                   type="button"
-                  class="rounded-full bg-signal/10 hover:bg-signal hover:text-white px-4 py-2 font-bold text-signal transition-all cursor-pointer"
+                  class="rounded-lg bg-rose-50 hover:bg-signal hover:text-white px-3.5 py-1.5 font-bold text-signal transition-all cursor-pointer inline-flex items-center gap-1.5"
                   @click="removeThumbnail"
                 >
-                  Hapus
+                  <AdminIcon name="trash" size="12" />
+                  <span>Hapus</span>
                 </button>
               </div>
             </div>
 
             <!-- When Empty -->
             <div v-else class="space-y-3">
-              <div class="size-12 rounded-2xl bg-ink/5 flex items-center justify-center mx-auto text-xl">
-                🖼️
+              <div class="size-10 rounded-xl bg-ink/5 flex items-center justify-center mx-auto text-ink/70">
+                <AdminIcon name="upload" size="20" />
               </div>
               <div>
                 <p class="font-display font-bold text-ink text-sm sm:text-base">
                   Tarik & Lepas Thumbnail ke sini
                 </p>
                 <p class="font-sans text-xs text-mute mt-0.5">
-                  atau pilih file dari perangkat komputer Anda
+                  atau pilih berkas gambar dari perangkat Anda
                 </p>
               </div>
-              <label class="inline-flex rounded-full bg-signal text-white hover:bg-[#e63d10] px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider cursor-pointer transition-all shadow-xs">
+              <label class="inline-flex items-center gap-1.5 rounded-xl bg-signal text-white hover:bg-[#e63d10] px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider cursor-pointer transition-all shadow-2xs">
+                <AdminIcon name="image" size="13" />
                 <input type="file" accept="image/*" class="hidden" @change="onFileSelect">
-                Pilih Berkas Gambar
+                <span>Pilih Berkas Gambar</span>
               </label>
             </div>
           </div>
@@ -599,7 +604,7 @@ function validateAndSubmit() {
             id="p-preview-media"
             v-model="form.previewMediaUrl"
             type="url"
-            class="field font-mono text-xs"
+            class="field font-mono text-xs !rounded-xl"
             placeholder="https://.../preview.mp4 atau https://.../animation.gif"
           >
           <p class="font-sans text-xs text-mute">
@@ -613,7 +618,7 @@ function validateAndSubmit() {
     <!-- TAB 3: CASE STUDY & EDITORIAL MARKDOWN                         -->
     <!-- ============================================================== -->
     <div v-show="activeTab === 'content'" class="space-y-6">
-      <div class="rounded-3xl bg-white/85 p-6 sm:p-8 border border-ink/10 shadow-xs space-y-5">
+      <div class="rounded-2xl bg-white/95 p-6 sm:p-8 border border-ink/10 shadow-2xs space-y-5">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-ink/10 pb-4">
           <div>
             <h3 class="font-display text-xl font-bold text-ink">Editor Case Study & Narasi Desain</h3>
@@ -621,27 +626,27 @@ function validateAndSubmit() {
           </div>
 
           <!-- View Switcher (Write / Preview / Split) -->
-          <div class="flex items-center rounded-2xl bg-ink/5 p-1 font-mono text-xs">
+          <div class="flex items-center rounded-xl bg-ink/5 p-1 font-mono text-xs">
             <button
               type="button"
-              class="rounded-xl px-3 py-1.5 font-bold transition-all cursor-pointer"
-              :class="markdownView === 'write' ? 'bg-ink text-paper shadow-xs' : 'text-mute hover:text-ink'"
+              class="rounded-lg px-3 py-1.5 font-bold transition-all cursor-pointer"
+              :class="markdownView === 'write' ? 'bg-ink text-paper shadow-2xs' : 'text-mute hover:text-ink'"
               @click="markdownView = 'write'"
             >
               Write
             </button>
             <button
               type="button"
-              class="rounded-xl px-3 py-1.5 font-bold transition-all cursor-pointer"
-              :class="markdownView === 'preview' ? 'bg-ink text-paper shadow-xs' : 'text-mute hover:text-ink'"
+              class="rounded-lg px-3 py-1.5 font-bold transition-all cursor-pointer"
+              :class="markdownView === 'preview' ? 'bg-ink text-paper shadow-2xs' : 'text-mute hover:text-ink'"
               @click="markdownView = 'preview'"
             >
               Preview
             </button>
             <button
               type="button"
-              class="hidden lg:block rounded-xl px-3 py-1.5 font-bold transition-all cursor-pointer"
-              :class="markdownView === 'split' ? 'bg-ink text-paper shadow-xs' : 'text-mute hover:text-ink'"
+              class="hidden lg:block rounded-lg px-3 py-1.5 font-bold transition-all cursor-pointer"
+              :class="markdownView === 'split' ? 'bg-ink text-paper shadow-2xs' : 'text-mute hover:text-ink'"
               @click="markdownView = 'split'"
             >
               Split View
@@ -649,21 +654,33 @@ function validateAndSubmit() {
           </div>
         </div>
 
-        <!-- Markdown Formatting Toolbar -->
-        <div v-show="markdownView !== 'preview'" class="flex flex-wrap items-center gap-1.5 p-2 rounded-2xl bg-ink/[0.03] border border-ink/10 font-mono text-xs">
-          <button type="button" class="px-2.5 py-1 rounded-lg hover:bg-ink/10 font-bold" title="Tebal" @click="insertMarkdown('bold')">B</button>
-          <button type="button" class="px-2.5 py-1 rounded-lg hover:bg-ink/10 italic font-serif" title="Miring" @click="insertMarkdown('italic')">I</button>
-          <span class="text-ink/20">|</span>
-          <button type="button" class="px-2.5 py-1 rounded-lg hover:bg-ink/10 font-bold" title="Heading 2" @click="insertMarkdown('h2')">H2</button>
-          <button type="button" class="px-2.5 py-1 rounded-lg hover:bg-ink/10 font-bold" title="Heading 3" @click="insertMarkdown('h3')">H3</button>
-          <span class="text-ink/20">|</span>
-          <button type="button" class="px-2.5 py-1 rounded-lg hover:bg-ink/10" title="Kutipan" @click="insertMarkdown('quote')">" Quote</button>
-          <button type="button" class="px-2.5 py-1 rounded-lg hover:bg-ink/10" title="Kode Baris" @click="insertMarkdown('code')">`Code`</button>
-          <button type="button" class="px-2.5 py-1 rounded-lg hover:bg-ink/10" title="Blok Kode" @click="insertMarkdown('codeblock')">``` Block</button>
-          <button type="button" class="px-2.5 py-1 rounded-lg hover:bg-ink/10" title="Tautan Link" @click="insertMarkdown('link')">🔗 Link</button>
-          <button type="button" class="px-2.5 py-1 rounded-lg hover:bg-ink/10" title="Gambar" @click="insertMarkdown('image')">🖼️ Img</button>
-          <button type="button" class="px-2.5 py-1 rounded-lg hover:bg-ink/10" title="Daftar Poin" @click="insertMarkdown('list')">• List</button>
-          <button type="button" class="px-2.5 py-1 rounded-lg hover:bg-ink/10" title="Garis Pembatas" @click="insertMarkdown('hr')">— HR</button>
+        <!-- Markdown Formatting Toolbar with SVG Icons -->
+        <div v-show="markdownView !== 'preview'" class="flex flex-wrap items-center gap-1 p-1.5 rounded-xl bg-ink/[0.03] border border-ink/10 font-mono text-xs">
+          <button type="button" class="p-2 rounded-lg hover:bg-ink/10 font-bold" title="Tebal" @click="insertMarkdown('bold')">
+            <AdminIcon name="bold" size="13" />
+          </button>
+          <button type="button" class="p-2 rounded-lg hover:bg-ink/10" title="Miring" @click="insertMarkdown('italic')">
+            <AdminIcon name="italic" size="13" />
+          </button>
+          <span class="text-ink/20 mx-1">|</span>
+          <button type="button" class="px-2 py-1 rounded-lg hover:bg-ink/10 font-bold text-xs" title="Heading 2" @click="insertMarkdown('h2')">H2</button>
+          <button type="button" class="px-2 py-1 rounded-lg hover:bg-ink/10 font-bold text-xs" title="Heading 3" @click="insertMarkdown('h3')">H3</button>
+          <span class="text-ink/20 mx-1">|</span>
+          <button type="button" class="p-2 rounded-lg hover:bg-ink/10" title="Kutipan" @click="insertMarkdown('quote')">
+            <AdminIcon name="quote" size="13" />
+          </button>
+          <button type="button" class="p-2 rounded-lg hover:bg-ink/10" title="Kode" @click="insertMarkdown('code')">
+            <AdminIcon name="code" size="13" />
+          </button>
+          <button type="button" class="p-2 rounded-lg hover:bg-ink/10" title="Tautan Link" @click="insertMarkdown('link')">
+            <AdminIcon name="link" size="13" />
+          </button>
+          <button type="button" class="p-2 rounded-lg hover:bg-ink/10" title="Gambar" @click="insertMarkdown('image')">
+            <AdminIcon name="image" size="13" />
+          </button>
+          <button type="button" class="p-2 rounded-lg hover:bg-ink/10" title="Daftar List" @click="insertMarkdown('list')">
+            <AdminIcon name="list" size="13" />
+          </button>
         </div>
 
         <!-- Editor Work Area -->
@@ -674,7 +691,7 @@ function validateAndSubmit() {
               id="project-markdown-editor"
               v-model="form.description"
               rows="18"
-              class="field font-mono text-xs sm:text-sm leading-relaxed p-4 !min-h-[420px] resize-y"
+              class="field font-mono text-xs sm:text-sm leading-relaxed p-4 !min-h-[420px] resize-y !rounded-xl"
               placeholder="Tulis narasi desain di sini...&#10;&#10;## Latar Belakang & Masalah&#10;Jelaskan konteks pembuatan project...&#10;&#10;## Keputusan Desain & Frontend&#10;Jelaskan solusi dan keunikan interaksi..."
             />
           </div>
@@ -682,7 +699,7 @@ function validateAndSubmit() {
           <!-- HTML Preview Pane -->
           <div
             v-show="markdownView === 'preview' || markdownView === 'split'"
-            class="rounded-2xl border border-ink/10 bg-[#faf8f5] p-6 sm:p-8 min-h-[420px] max-h-[600px] overflow-y-auto"
+            class="rounded-xl border border-ink/10 bg-[#faf8f5] p-6 sm:p-8 min-h-[420px] max-h-[600px] overflow-y-auto"
           >
             <div class="prose prose-ink max-w-none text-sm font-sans leading-relaxed" v-html="renderedMarkdown" />
           </div>
@@ -703,7 +720,7 @@ function validateAndSubmit() {
     <!-- TAB 4: SEO & SERP SIMULATOR                                    -->
     <!-- ============================================================== -->
     <div v-show="activeTab === 'seo'" class="space-y-6">
-      <div class="rounded-3xl bg-white/85 p-6 sm:p-8 border border-ink/10 shadow-xs space-y-6">
+      <div class="rounded-2xl bg-white/95 p-6 sm:p-8 border border-ink/10 shadow-2xs space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-ink/10 pb-4">
           <div>
             <h3 class="font-display text-xl font-bold text-ink">SEO Health & SERP Simulator</h3>
@@ -713,7 +730,7 @@ function validateAndSubmit() {
           <div class="flex items-center gap-2">
             <span class="font-mono text-xs text-mute">Skor SEO Project:</span>
             <span
-              class="rounded-full px-3 py-1 font-mono text-xs font-bold border"
+              class="rounded-md px-3 py-1 font-mono text-xs font-bold border"
               :class="seoAnalysis.colorClass"
             >
               {{ seoAnalysis.score }} / 100 (Grade {{ seoAnalysis.grade }})
@@ -731,7 +748,7 @@ function validateAndSubmit() {
               id="p-keyword"
               v-model="form.focusKeyword"
               type="text"
-              class="field font-mono text-xs sm:text-sm"
+              class="field font-mono text-xs sm:text-sm !rounded-xl"
               placeholder="Contoh: financial dashboard frontend case study"
             >
             <p class="font-sans text-xs text-mute">
@@ -754,7 +771,7 @@ function validateAndSubmit() {
               v-model="form.seoTitle"
               type="text"
               maxlength="100"
-              class="field font-sans text-sm"
+              class="field font-sans text-sm !rounded-xl"
               :placeholder="form.title ? `${form.title} — Rumah Design` : 'Judul yang tampil di tab browser & Google'"
             >
           </div>
@@ -774,23 +791,23 @@ function validateAndSubmit() {
               v-model="form.seoDescription"
               rows="3"
               maxlength="200"
-              class="field font-sans text-sm leading-relaxed"
+              class="field font-sans text-sm leading-relaxed !rounded-xl"
               placeholder="Deskripsi ringkas yang menarik klik pembaca saat muncul di hasil pencarian Google..."
             />
           </div>
         </div>
 
         <!-- Google SERP Simulator -->
-        <div class="rounded-2xl border border-ink/10 bg-[#f8f9fa] p-5 sm:p-6 space-y-3">
+        <div class="rounded-xl border border-ink/10 bg-[#f8f9fa] p-5 sm:p-6 space-y-3">
           <div class="flex items-center justify-between">
             <span class="font-mono text-xs font-bold text-ink uppercase tracking-wider flex items-center gap-2">
-              <span>🌐</span>
+              <AdminIcon name="globe" size="14" />
               <span>Google SERP Preview</span>
             </span>
             <div class="flex items-center gap-1 font-mono text-[0.68rem]">
               <button
                 type="button"
-                class="px-2.5 py-1 rounded-lg font-bold"
+                class="px-2.5 py-1 rounded-md font-bold"
                 :class="serpDevice === 'desktop' ? 'bg-ink text-paper' : 'text-mute hover:text-ink'"
                 @click="serpDevice = 'desktop'"
               >
@@ -798,7 +815,7 @@ function validateAndSubmit() {
               </button>
               <button
                 type="button"
-                class="px-2.5 py-1 rounded-lg font-bold"
+                class="px-2.5 py-1 rounded-md font-bold"
                 :class="serpDevice === 'mobile' ? 'bg-ink text-paper' : 'text-mute hover:text-ink'"
                 @click="serpDevice = 'mobile'"
               >
@@ -807,11 +824,11 @@ function validateAndSubmit() {
             </div>
           </div>
 
-          <!-- Google Search Snippet -->
-          <div class="bg-white p-4 rounded-xl border border-black/5 shadow-xs max-w-xl font-sans space-y-1">
+          <!-- Google Search Snippet Card -->
+          <div class="bg-white p-4 rounded-xl border border-black/5 shadow-2xs max-w-xl font-sans space-y-1">
             <div class="flex items-center gap-2 text-xs text-[#202124]">
-              <span class="rounded-full bg-ink/10 size-4 flex items-center justify-center text-[0.6rem]">R</span>
-              <span class="truncate">https://rumah-design.vercel.app › project › {{ form.slug || 'slug-project' }}</span>
+              <span class="rounded-full bg-ink/10 size-4 flex items-center justify-center text-[0.6rem] font-bold">R</span>
+              <span class="truncate text-[0.72rem]">https://rumah-design.vercel.app › project › {{ form.slug || 'slug-project' }}</span>
             </div>
             <h4 class="text-[#1a0dab] hover:underline text-base sm:text-lg font-medium leading-snug cursor-pointer truncate">
               {{ form.seoTitle || form.title || 'Judul Project Portofolio — Rumah Design' }}
@@ -823,7 +840,7 @@ function validateAndSubmit() {
         </div>
 
         <!-- Real-time SEO Diagnostic Checklist -->
-        <div class="rounded-2xl bg-ink/[0.02] p-5 border border-ink/10 space-y-3">
+        <div class="rounded-xl bg-ink/[0.02] p-5 border border-ink/10 space-y-3">
           <span class="font-mono text-xs font-bold text-ink uppercase tracking-wider block">
             Diagnosa Kualitas SEO:
           </span>
@@ -838,9 +855,11 @@ function validateAndSubmit() {
                 'bg-rose-50/80 border-rose-200 text-rose-900': check.status === 'fail',
               }"
             >
-              <span class="font-bold text-sm shrink-0 leading-none mt-0.5">
-                {{ check.status === 'pass' ? '✓' : check.status === 'warn' ? '!' : '✕' }}
-              </span>
+              <AdminIcon
+                :name="check.status === 'pass' ? 'check' : 'alert'"
+                size="14"
+                class="mt-0.5"
+              />
               <div>
                 <span class="font-bold font-mono text-[0.7rem] uppercase block">{{ check.label }}</span>
                 <span class="text-[0.75rem] opacity-90">{{ check.message }}</span>
@@ -854,23 +873,26 @@ function validateAndSubmit() {
     <!-- ============================================================== -->
     <!-- STICKY ACTION BAR AT BOTTOM                                    -->
     <!-- ============================================================== -->
-    <div class="sticky bottom-4 z-30 flex items-center justify-between gap-4 rounded-3xl bg-paper/95 backdrop-blur-md p-4 border border-ink/15 shadow-xl font-mono text-xs">
+    <div class="sticky bottom-4 z-30 flex items-center justify-between gap-4 rounded-2xl bg-paper/95 backdrop-blur-md p-3.5 border border-ink/15 shadow-xl font-mono text-xs">
       <div class="flex items-center gap-3">
-        <NuxtLink to="/admin/projects" class="rounded-full bg-ink/5 hover:bg-ink/10 px-4 py-2.5 font-bold uppercase tracking-wider text-mute hover:text-ink transition-all">
-          ← Batal
+        <NuxtLink to="/admin/projects" class="rounded-xl bg-ink/5 hover:bg-ink/10 px-3.5 py-2 font-bold uppercase tracking-wider text-mute hover:text-ink transition-all inline-flex items-center gap-1.5">
+          <AdminIcon name="arrow-left" size="12" />
+          <span>Batal</span>
         </NuxtLink>
-        <span class="hidden sm:inline text-mute">
-          {{ form.status === 'published' ? '🟢 Siap dipublikasikan' : '⚪ Disimpan sebagai Draft' }}
+        <span class="hidden sm:inline-flex items-center gap-1.5 text-mute">
+          <span class="size-2 rounded-full" :class="form.status === 'published' ? 'bg-emerald-500' : 'bg-mute'" />
+          <span>{{ form.status === 'published' ? 'Siap dipublikasikan' : 'Disimpan sebagai Draft' }}</span>
         </span>
       </div>
 
       <div class="flex items-center gap-3">
         <button
           type="submit"
-          class="rounded-full bg-signal text-white hover:bg-[#e63d10] px-6 py-2.5 font-bold uppercase tracking-wider shadow-md transition-all cursor-pointer hover:scale-105 active:scale-95 disabled:opacity-50"
+          class="inline-flex items-center gap-2 rounded-xl bg-signal text-white hover:bg-[#e63d10] px-5 py-2 font-bold uppercase tracking-wider shadow-sm transition-all cursor-pointer hover:scale-102 active:scale-98 disabled:opacity-50"
           :disabled="busy"
         >
-          {{ busy ? 'Menyimpan ke Supabase…' : (project ? 'Perbarui Project ↗' : 'Terbitkan Project ↗') }}
+          <AdminIcon :name="busy ? 'refresh' : 'check'" size="13" :class="busy ? 'animate-spin' : ''" />
+          <span>{{ busy ? 'Menyimpan…' : (project ? 'Perbarui Project' : 'Terbitkan Project') }}</span>
         </button>
       </div>
     </div>
