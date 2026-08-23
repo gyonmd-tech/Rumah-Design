@@ -29,7 +29,7 @@ interface CommandAction {
   subtitle?: string
   iconName: string
   category: 'Workspace' | 'Project' | 'Tautan'
-  action: () => void | Promise<void>
+  action: () => unknown | Promise<unknown>
 }
 
 const staticActions: CommandAction[] = [

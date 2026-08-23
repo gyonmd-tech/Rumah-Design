@@ -208,11 +208,10 @@ function validateAndSubmit() {
     errors.value.push('Thumbnail project wajib diunggah.')
   }
 
-  const techError = validateTags(techStack, 'Tech stack')
-  if (techError) errors.value.push(techError)
-
-  const styleError = validateTags(styleTags, 'Style tags')
-  if (styleError) errors.value.push(styleError)
+  errors.value.push(
+    ...validateTags(techStack, 'Tech stack'),
+    ...validateTags(styleTags, 'Style tags'),
+  )
 
   if (errors.value.length > 0) {
     if (errors.value.some(e => e.includes('Thumbnail'))) activeTab.value = 'media'
@@ -223,15 +222,14 @@ function validateAndSubmit() {
   emit('submit', {
     title,
     slug,
-    description: form.description.trim() || undefined,
+    description: form.description.trim(),
     liveUrl,
-    repoUrl: repoUrl || undefined,
+    repoUrl,
     category: form.category,
     styleTags,
     techStack,
     status: form.status,
-    thumbnailFile: thumbnailFile.value ?? undefined,
-    thumbnailUrl: thumbnailPreview.value || undefined,
+    thumbnailFile: thumbnailFile.value,
     previewMediaUrl: form.previewMediaUrl.trim() || undefined,
     seoTitle: form.seoTitle.trim() || undefined,
     seoDescription: form.seoDescription.trim() || undefined,
@@ -851,7 +849,7 @@ function validateAndSubmit() {
               class="flex items-start gap-2.5 p-2.5 rounded-xl border text-xs font-sans"
               :class="{
                 'bg-emerald-50/80 border-emerald-200 text-emerald-900': check.status === 'pass',
-                'bg-amber-50/80 border-amber-200 text-amber-900': check.status === 'warn',
+                'bg-amber-50/80 border-amber-200 text-amber-900': check.status === 'warning',
                 'bg-rose-50/80 border-rose-200 text-rose-900': check.status === 'fail',
               }"
             >

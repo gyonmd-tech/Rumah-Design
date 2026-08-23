@@ -1,5 +1,7 @@
 <script setup lang="ts">
 defineProps<{ error: { statusCode?: number, statusMessage?: string } }>()
+
+useSeoMeta({ robots: 'noindex, nofollow' })
 </script>
 
 <template>

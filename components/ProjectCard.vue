@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { Project } from '~/types/database.types'
+import type { ProjectSummary } from '~/types/database.types'
 import { categoryLabel } from '~/utils/project'
 
 defineProps<{
-  project: Project
+  project: ProjectSummary
   index: number
 }>()
 </script>

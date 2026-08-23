@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AdminIcon from '~/components/admin/AdminIcon.vue'
 import type { Database } from '~/types/database.types'
+import { isValidHttpsUrl } from '~/utils/project'
 
 definePageMeta({ middleware: 'admin', layout: 'admin' })
 useSeoMeta({ title: 'Pengaturan Platform — Studio Admin Rumah Design', robots: 'noindex, nofollow' })
@@ -62,9 +63,47 @@ watch(
   { immediate: true },
 )
 
+function validateSettings(tab: 'general' | 'seo' | 'socials') {
+  const errors: string[] = []
+
+  if (tab === 'general') {
+    if (!generalForm.site_name.trim() || generalForm.site_name.length > 80) {
+      errors.push('Nama situs wajib diisi dan maksimal 80 karakter.')
+    }
+    if (generalForm.tagline.length > 160) errors.push('Tagline maksimal 160 karakter.')
+    if (generalForm.bio.length > 1000) errors.push('Bio maksimal 1.000 karakter.')
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(generalForm.contact_email.trim())) {
+      errors.push('Email kontak tidak valid.')
+    }
+  }
+
+  if (tab === 'seo') {
+    if (!seoForm.default_title.trim() || seoForm.default_title.length > 100) {
+      errors.push('Default SEO title wajib diisi dan maksimal 100 karakter.')
+    }
+    if (!seoForm.default_description.trim() || seoForm.default_description.length > 200) {
+      errors.push('Default meta description wajib diisi dan maksimal 200 karakter.')
+    }
+    if (seoForm.default_og_image && !isValidHttpsUrl(seoForm.default_og_image)) {
+      errors.push('Default OG image harus berupa URL HTTPS yang valid.')
+    }
+  }
+
+  if (tab === 'socials') {
+    for (const [platform, url] of Object.entries(socialsForm)) {
+      if (url && !isValidHttpsUrl(url)) {
+        errors.push(`URL ${platform} harus berupa HTTPS yang valid.`)
+      }
+    }
+  }
+
+  if (errors.length) throw new Error(errors.join(' '))
+}
+
 async function saveSettings(tab: 'general' | 'seo' | 'socials') {
   busy.value = true
   try {
+    validateSettings(tab)
     let payload = {}
     if (tab === 'general') payload = { ...generalForm }
     else if (tab === 'seo') payload = { ...seoForm }

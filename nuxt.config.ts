@@ -7,9 +7,36 @@ const googleSiteVerification =
   process.env['google-site-verification'] ||
   ''
 
+const supabaseOrigins = (() => {
+  try {
+    const origin = new URL(process.env.SUPABASE_URL || '').origin
+    const realtimeOrigin = origin.replace(/^https:/, 'wss:')
+    return [origin, realtimeOrigin]
+  }
+  catch {
+    return []
+  }
+})()
+
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "frame-ancestors 'none'",
+  "form-action 'self'",
+  "script-src 'self' 'unsafe-inline'",
+  "script-src-attr 'none'",
+  "style-src 'self' 'unsafe-inline' https://api.fontshare.com https://fonts.googleapis.com",
+  "font-src 'self' data: https://cdn.fontshare.com https://fonts.gstatic.com",
+  "img-src 'self' data: blob: https:",
+  "media-src 'self' blob: https:",
+  `connect-src 'self' ${supabaseOrigins.join(' ')}`,
+  ...(siteUrl.startsWith('https://') ? ['upgrade-insecure-requests'] : []),
+].join('; ')
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
-  devtools: { enabled: true },
+  devtools: { enabled: process.env.NODE_ENV !== 'production' },
   ssr: true,
   runtimeConfig: {
     public: {
@@ -37,6 +64,9 @@ export default defineNuxtConfig({
     description: 'Kumpulan karya frontend dan cerita proses desain.',
     defaultLocale: 'id',
   },
+  ogImage: {
+    enabled: false,
+  },
   sitemap: {
     sources: ['/api/__sitemap__/urls'],
   },
@@ -54,6 +84,7 @@ export default defineNuxtConfig({
     pageTransition: { name: 'page', mode: 'out-in' },
     layoutTransition: { name: 'layout', mode: 'out-in' },
     head: {
+      titleTemplate: '%s',
       htmlAttrs: { lang: 'id' },
       meta: [
         { name: 'theme-color', content: '#0c0b0a' },
@@ -75,11 +106,19 @@ export default defineNuxtConfig({
         'X-Frame-Options': 'DENY',
         'Referrer-Policy': 'strict-origin-when-cross-origin',
         'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+        'Content-Security-Policy': contentSecurityPolicy,
+        'Cross-Origin-Opener-Policy': 'same-origin',
+        'X-DNS-Prefetch-Control': 'off',
       },
     },
-    '/admin/**': { robots: false },
+    '/admin/**': {
+      robots: false,
+      headers: {
+        'Cache-Control': 'private, no-store, max-age=0',
+      },
+    },
     '/hubungi': { redirect: '/contact' },
     '/api/__sitemap__/**': { cache: { maxAge: 3600 } },
-    '/api/projects/**': { cache: { maxAge: 60 } },
+    '/api/site-settings': { cache: { maxAge: 300 } },
   },
 })

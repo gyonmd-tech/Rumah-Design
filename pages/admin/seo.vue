@@ -339,7 +339,7 @@ const infraChecks = [
                   <template v-for="issue in analysis.auditItems.filter(a => a.status !== 'pass').slice(0, 2)" :key="issue.id">
                     <div
                       class="flex items-start gap-1.5 rounded-lg px-2 py-1 font-mono text-[0.65rem] leading-tight"
-                      :class="issue.status === 'warn' ? 'bg-amber-50 text-amber-900' : 'bg-rose-50 text-rose-900'"
+                      :class="issue.status === 'warning' ? 'bg-amber-50 text-amber-900' : 'bg-rose-50 text-rose-900'"
                     >
                       <AdminIcon name="alert" size="11" class="mt-px shrink-0" />
                       <span class="line-clamp-2">{{ issue.message }}</span>

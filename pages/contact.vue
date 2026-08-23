@@ -35,7 +35,8 @@ const timelineList = [
   'Fleksibel / Diskusi Lanjut',
 ]
 
-const studioEmail = 'hello@rumahdesign.dev'
+const siteSettings = usePublicSiteSettings()
+const studioEmail = computed(() => siteSettings.value.general.contact_email || 'hello@rumahdesign.dev')
 const whatsappNumber = '6281234567890'
 
 // Generate mailto link
@@ -56,7 +57,7 @@ ${projectBrief.value || '(Belum diisi)'}
 
 Terima kasih!`
   )
-  return `mailto:${studioEmail}?subject=${subject}&body=${body}`
+  return `mailto:${studioEmail.value}?subject=${subject}&body=${body}`
 })
 
 // WhatsApp href
@@ -69,7 +70,7 @@ const whatsappHref = computed(() => {
 
 const copyEmail = async () => {
   try {
-    await navigator.clipboard.writeText(studioEmail)
+    await navigator.clipboard.writeText(studioEmail.value)
     isCopied.value = true
     showToast('Alamat email berhasil disalin!')
     setTimeout(() => {
@@ -140,6 +141,8 @@ useSeoMeta({
   ogDescription: 'Kirim brief singkat atau hubungi langsung untuk mewujudkan landing page, web app, dan sistem desain produk Anda.',
   ogType: 'website',
   twitterCard: 'summary_large_image',
+  twitterTitle: 'Hubungi Studio — Rumah Design',
+  twitterDescription: 'Kirim brief singkat atau hubungi langsung untuk mewujudkan landing page, web app, dan sistem desain produk Anda.',
 })
 
 useHead({
@@ -155,7 +158,7 @@ useHead({
       mainEntity: {
         '@type': 'Organization',
         name: 'Rumah Design',
-        email: studioEmail,
+        email: studioEmail.value,
         address: {
           '@type': 'PostalAddress',
           addressLocality: 'Jakarta',

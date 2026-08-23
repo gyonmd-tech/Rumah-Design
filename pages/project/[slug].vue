@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Project } from '~/types/database.types'
+import type { Project, ProjectSummary } from '~/types/database.types'
 import { categoryLabel, excerpt } from '~/utils/project'
 
 const route = useRoute()
@@ -11,7 +11,7 @@ const { data: project, error } = await useAsyncData(`project-${slug.value}`, asy
 
 // Fetch other projects for next project navigation
 const { data: allProjects } = await useAsyncData('all-projects-nav', async () => {
-  return await $fetch<Project[]>('/api/projects')
+  return await $fetch<ProjectSummary[]>('/api/projects')
 })
 
 const nextProject = computed(() => {
@@ -84,7 +84,12 @@ useSeoMeta({
   ogDescription: () => project.value?.seo_description || excerpt(project.value?.description ?? null),
   ogImage: () => project.value?.thumbnail_url,
   ogType: 'article',
+  articlePublishedTime: () => project.value?.created_at,
+  articleModifiedTime: () => project.value?.updated_at,
   twitterCard: 'summary_large_image',
+  twitterTitle: () => project.value?.seo_title || project.value?.title,
+  twitterDescription: () => project.value?.seo_description || excerpt(project.value?.description ?? null),
+  twitterImage: () => project.value?.thumbnail_url,
 })
 
 const siteConfig = useSiteConfig()

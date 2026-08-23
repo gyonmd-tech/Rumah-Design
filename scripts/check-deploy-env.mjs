@@ -1,3 +1,14 @@
+import { loadEnvFile } from 'node:process'
+
+if (process.env.VERCEL !== '1') {
+  try {
+    loadEnvFile('.env')
+  }
+  catch {
+    // .env is optional outside local development.
+  }
+}
+
 const isForce = process.argv.includes('--force')
 const isVercel = process.env.VERCEL === '1'
 

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Rumah Design</title>
+  <desc id="desc">Selected digital work, product design, and frontend engineering.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0c0b0a"/>
+      <stop offset="1" stop-color="#1d1916"/>
+    </linearGradient>
+    <radialGradient id="signal" cx="0" cy="0" r="1" gradientTransform="translate(960 120) rotate(135) scale(520 420)">
+      <stop offset="0" stop-color="#ff4d00" stop-opacity=".72"/>
+      <stop offset=".55" stop-color="#ff4d00" stop-opacity=".16"/>
+      <stop offset="1" stop-color="#ff4d00" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#background)"/>
+  <rect width="1200" height="630" fill="url(#signal)"/>
+  <path d="M72 72h1056v486H72z" fill="none" stroke="#f5f3ef" stroke-opacity=".14"/>
+  <path d="M72 168h1056M72 462h1056" stroke="#f5f3ef" stroke-opacity=".08"/>
+  <circle cx="1085" cy="116" r="10" fill="#ff4d00"/>
+  <text x="112" y="132" fill="#ff4d00" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" letter-spacing="4">SELECTED DIGITAL WORK</text>
+  <text x="104" y="322" fill="#f5f3ef" font-family="Arial, Helvetica, sans-serif" font-size="94" font-weight="700" letter-spacing="-5">Rumah Design</text>
+  <text x="112" y="395" fill="#c8c1b7" font-family="Arial, Helvetica, sans-serif" font-size="30" letter-spacing=".5">Product design × frontend engineering</text>
+  <text x="112" y="514" fill="#8f887f" font-family="Courier New, monospace" font-size="19" letter-spacing="2">CASE STUDIES · LIVE PRODUCTS · JAKARTA, ID</text>
+</svg>

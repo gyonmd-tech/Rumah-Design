@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     .from('projects')
     .select('slug, updated_at')
     .eq('status', 'published')
-    .abortSignal(AbortSignal.timeout(5000))
+    .abortSignal(AbortSignal.timeout(10000))
 
   if (error) throw createError({ statusCode: 500, statusMessage: 'Sitemap gagal dibuat' })
 

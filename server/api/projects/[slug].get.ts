@@ -8,26 +8,41 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Slug tidak valid' })
   }
 
-  try {
-    const client = await serverSupabaseClient<Database>(event)
-    const { data, error } = await client
-      .from('projects')
-      .select('*')
-      .eq('slug', slug)
-      .eq('status', 'published')
-      .abortSignal(AbortSignal.timeout(5000))
-      .maybeSingle()
+  const client = await serverSupabaseClient<Database>(event)
+  let lastError: unknown
 
-    if (data && !error) {
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const { data, error } = await client
+        .from('projects')
+        .select('*')
+        .eq('slug', slug)
+        .eq('status', 'published')
+        .abortSignal(AbortSignal.timeout(10000))
+        .maybeSingle()
+
+      if (error) throw error
+      if (!data) {
+        throw createError({ statusCode: 404, statusMessage: 'Project tidak ditemukan' })
+      }
+
       const project = data as Project
+      setResponseHeader(event, 'Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300')
       return {
         ...project,
         description_html: await renderSafeMarkdown(project.description || ''),
       }
     }
-  } catch (err) {
-    console.error(`Error querying database for slug "${slug}":`, err)
+    catch (error) {
+      if (isError(error) && error.statusCode === 404) throw error
+      lastError = error
+      if (attempt < 2) await new Promise(resolve => setTimeout(resolve, 250))
+    }
   }
 
-  throw createError({ statusCode: 404, statusMessage: 'Project tidak ditemukan' })
+  console.error(`Error querying database for slug "${slug}" after retry:`, lastError)
+  throw createError({
+    statusCode: 503,
+    statusMessage: 'Detail project sementara tidak tersedia',
+  })
 })

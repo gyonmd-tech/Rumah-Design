@@ -54,6 +54,8 @@ useSeoMeta({
   ogDescription: 'Menghubungkan visi desain produk dan arsitektur kode frontend yang hidup, presisi, dan terukur.',
   ogType: 'profile',
   twitterCard: 'summary_large_image',
+  twitterTitle: 'Tentang Studio — Rumah Design',
+  twitterDescription: 'Menghubungkan visi desain produk dan arsitektur kode frontend yang hidup, presisi, dan terukur.',
 })
 
 useHead({

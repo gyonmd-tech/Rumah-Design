@@ -1,16 +1,12 @@
 <script setup lang="ts">
-import type { Project, ProjectCategory } from '~/types/database.types'
+import type { ProjectCategory, ProjectSummary } from '~/types/database.types'
 
-const { data: dbProjects, status, error, refresh } = await useAsyncData('published-projects', async () => {
-  try {
-    return await $fetch<Project[]>('/api/projects')
-  } catch (err) {
-    console.error('Gagal memuat projects dari server:', err)
-    return [] as Project[]
-  }
-})
+const { data: dbProjects, status, error, refresh } = await useAsyncData(
+  'published-projects',
+  () => $fetch<ProjectSummary[]>('/api/projects'),
+)
 
-const allProjects = computed<Project[]>(() => dbProjects.value ?? [])
+const allProjects = computed<ProjectSummary[]>(() => dbProjects.value ?? [])
 
 const category = ref<ProjectCategory | 'all'>('all')
 const searchQuery = ref('')
@@ -114,6 +110,7 @@ useSeoMeta({
   ogType: 'website',
   ogImage: `${siteUrl}/og-image.png`,
   twitterCard: 'summary_large_image',
+  twitterImage: `${siteUrl}/og-image.png`,
   twitterTitle: 'Rumah Design — Selected Digital Work',
   twitterDescription: 'Project frontend terpilih, lengkap dengan proses desain dan live demo.',
 })
@@ -251,6 +248,19 @@ useSeoMeta({
             :project="project"
             :index="index"
           />
+        </div>
+
+        <!-- Service Error State -->
+        <div v-else-if="error" class="my-8 sm:my-12 border border-signal/30 p-8 sm:p-12 text-center rounded-3xl bg-signal/5" role="alert">
+          <p class="font-display text-lg sm:text-xl font-semibold text-ink">
+            Katalog sedang sulit dimuat.
+          </p>
+          <p class="mt-1 sm:mt-2 font-mono text-xs text-mute uppercase">
+            Silakan coba lagi. Karya yang sudah dipublikasikan tetap aman.
+          </p>
+          <button type="button" class="button-secondary mt-5 sm:mt-6 text-xs" @click="refresh()">
+            Muat Ulang
+          </button>
         </div>
 
         <!-- Empty State -->

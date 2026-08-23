@@ -6,7 +6,18 @@ definePageMeta({ middleware: 'admin', layout: 'admin' })
 useSeoMeta({ title: 'Media Library — Studio Admin Rumah Design', robots: 'noindex, nofollow' })
 
 const client = useSupabaseClient<Database>()
+const user = useSupabaseUser()
 const { success, error: toastError } = useToast()
+
+const MAX_MEDIA_SIZE = 10 * 1024 * 1024
+const ALLOWED_MEDIA_TYPES: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/gif': 'gif',
+  'video/mp4': 'mp4',
+  'video/webm': 'webm',
+}
 
 const isUploading = ref(false)
 const isDragOver = ref(false)
@@ -17,6 +28,7 @@ const lightboxItem = ref<{ url: string; name: string } | null>(null)
 interface MediaFile {
   id: string
   name: string
+  path: string
   url: string
   size: number
   created_at: string
@@ -24,20 +36,25 @@ interface MediaFile {
 }
 
 const { data: files, refresh } = await useAsyncData('admin-media-files', async () => {
+  const userId = user.value?.id
+  if (!userId) return []
+
   const { data, error } = await client.storage
     .from('project-media')
-    .list('', { sortBy: { column: 'created_at', order: 'desc' }, limit: 100 })
+    .list(userId, { sortBy: { column: 'created_at', order: 'desc' }, limit: 100 })
 
   if (error) throw error
 
   return await Promise.all(
     (data ?? []).map(async (file) => {
+      const path = userId + '/' + file.name
       const { data: urlData } = client.storage
         .from('project-media')
-        .getPublicUrl(file.name)
+        .getPublicUrl(path)
       return {
-        id: file.id ?? file.name,
+        id: file.id ?? path,
         name: file.name,
+        path,
         url: urlData.publicUrl,
         size: file.metadata?.size ?? 0,
         created_at: file.created_at ?? '',
@@ -63,24 +80,44 @@ function formatBytes(bytes: number): string {
 
 function isImage(file: MediaFile): boolean {
   const ext = file.name.split('.').pop()?.toLowerCase() ?? ''
-  return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'avif'].includes(ext)
+  return ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)
 }
 
 async function uploadFiles(rawFiles: File[]) {
   if (!rawFiles.length) return
+
+  const userId = user.value?.id
+  if (!userId) {
+    toastError('Sesi admin tidak ditemukan. Silakan login ulang.')
+    return
+  }
+
   isUploading.value = true
   uploadProgress.value = 0
 
   let successCount = 0
   for (let i = 0; i < rawFiles.length; i++) {
     const file = rawFiles[i]
-    const ext = file.name.split('.').pop()
+    const extension = ALLOWED_MEDIA_TYPES[file.type]
+    if (!extension) {
+      toastError(`Format "${file.name}" tidak didukung.`)
+      continue
+    }
+    if (file.size > MAX_MEDIA_SIZE) {
+      toastError(`Ukuran "${file.name}" melebihi 10 MB.`)
+      continue
+    }
+
     const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-z0-9-]/gi, '-').toLowerCase()
-    const path = `${baseName}-${Date.now()}.${ext}`
+    const path = `${userId}/${baseName || 'media'}-${crypto.randomUUID()}.${extension}`
 
     const { error } = await client.storage
       .from('project-media')
-      .upload(path, file, { upsert: false })
+      .upload(path, file, {
+        cacheControl: '31536000',
+        contentType: file.type,
+        upsert: false,
+      })
 
     if (!error) {
       successCount++
@@ -149,7 +186,7 @@ async function confirmDeleteFile() {
   isDeleting.value = true
   const { error } = await client.storage
     .from('project-media')
-    .remove([fileToDelete.value.name])
+    .remove([fileToDelete.value.path])
 
   if (error) {
     toastError(`Gagal menghapus: ${error.message}`)

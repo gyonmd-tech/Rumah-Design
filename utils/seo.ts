@@ -13,6 +13,7 @@ export interface SeoAnalysisResult {
   colorClass: string
   wordCount: number
   readingTimeMinutes: number
+  keywordCount: number
   auditItems: SeoAuditItem[]
   serpTitle: string
   serpDescription: string
@@ -82,6 +83,10 @@ export function analyzeSeoQuality(params: {
   const effectiveTitle = (seoTitle?.trim() || title?.trim())
   const effectiveDescription = (seoDescription?.trim() || stripMarkdown(description)).slice(0, 300)
   const normalizedKeyword = focusKeyword?.trim().toLowerCase() || ''
+  const searchableContent = [effectiveTitle, effectiveDescription, stripMarkdown(description)]
+    .join(' ')
+    .toLowerCase()
+  const keywordCount = normalizedKeyword ? searchableContent.split(normalizedKeyword).length - 1 : 0
 
   const { wordCount, readingTimeMinutes } = calculateContentMetrics(description)
   const auditItems: SeoAuditItem[] = []
@@ -352,6 +357,7 @@ export function analyzeSeoQuality(params: {
     wordCount,
     readingTimeMinutes,
     auditItems,
+    keywordCount,
     serpTitle,
     serpDescription,
   }

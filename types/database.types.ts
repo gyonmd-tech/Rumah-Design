@@ -14,6 +14,19 @@ export type ProjectCategory
     | 'lainnya'
 export type ProjectStatus = 'draft' | 'published'
 
+export type ProjectSummary = Pick<
+  Project,
+  | 'id'
+  | 'title'
+  | 'slug'
+  | 'description'
+  | 'category'
+  | 'style_tags'
+  | 'tech_stack'
+  | 'thumbnail_url'
+  | 'preview_media_url'
+>
+
 export type Project = {
   id: string
   title: string

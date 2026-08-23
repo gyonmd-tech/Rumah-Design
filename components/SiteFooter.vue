@@ -7,6 +7,8 @@ import linkedinIcon from '~/assets/linkedin.svg'
 const { setupFooterUncover } = useMotion()
 const { success: showToast } = useToast()
 
+const siteSettings = usePublicSiteSettings()
+const publicEmail = computed(() => siteSettings.value.general.contact_email || 'hello@rumahdesign.dev')
 const footerRef = ref<HTMLElement | null>(null)
 const footerInnerRef = ref<HTMLElement | null>(null)
 
@@ -24,36 +26,36 @@ const scrollToTop = () => {
 
 const copyEmail = async () => {
   try {
-    await navigator.clipboard.writeText('hello@rumahdesign.dev')
-    showToast('Alamat email hello@rumahdesign.dev berhasil disalin!')
+    await navigator.clipboard.writeText(publicEmail.value)
+    showToast(`Alamat email ${publicEmail.value} berhasil disalin!`)
   } catch (err) {
     console.error('Gagal menyalin email:', err)
   }
 }
 
 // Prominent Social Media Logos
-const socialChannels = [
+const socialChannels = computed(() => [
   {
     name: 'GitHub',
-    url: 'https://github.com',
+    url: siteSettings.value.socials.github,
     icon: githubIcon,
   },
   {
     name: 'LinkedIn',
-    url: 'https://linkedin.com',
+    url: siteSettings.value.socials.linkedin,
     icon: linkedinIcon,
   },
   {
     name: 'Instagram',
-    url: 'https://instagram.com',
+    url: siteSettings.value.socials.instagram,
     icon: instagramIcon,
   },
   {
     name: 'Gmail',
-    url: 'mailto:hello@rumahdesign.dev',
+    url: `mailto:${publicEmail.value}`,
     icon: gmailIcon,
   },
-]
+].filter(channel => Boolean(channel.url)))
 </script>
 
 <template>
