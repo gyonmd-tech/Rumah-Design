@@ -264,7 +264,7 @@ function validateAndSubmit() {
           type="button"
           class="snap-start cursor-pointer rounded-xl px-4 py-2 transition-all whitespace-nowrap flex items-center gap-2"
           :class="activeTab === 'general' ? 'bg-ink text-paper shadow-2xs' : 'text-mute hover:text-ink'"
-          @click="activeTab === 'general'"
+          @click="activeTab = 'general'"
         >
           <AdminIcon name="projects" size="13" />
           <span>Informasi & Taksonomi</span>
@@ -274,7 +274,7 @@ function validateAndSubmit() {
           type="button"
           class="snap-start cursor-pointer rounded-xl px-4 py-2 transition-all whitespace-nowrap flex items-center gap-2"
           :class="activeTab === 'media' ? 'bg-ink text-paper shadow-2xs' : 'text-mute hover:text-ink'"
-          @click="activeTab === 'media'"
+          @click="activeTab = 'media'"
         >
           <AdminIcon name="media" size="13" />
           <span>Visual & Media</span>
@@ -285,7 +285,7 @@ function validateAndSubmit() {
           type="button"
           class="snap-start cursor-pointer rounded-xl px-4 py-2 transition-all whitespace-nowrap flex items-center gap-2"
           :class="activeTab === 'content' ? 'bg-ink text-paper shadow-2xs' : 'text-mute hover:text-ink'"
-          @click="activeTab === 'content'"
+          @click="activeTab = 'content'"
         >
           <AdminIcon name="edit" size="13" />
           <span>Case Study Editorial</span>
@@ -295,7 +295,7 @@ function validateAndSubmit() {
           type="button"
           class="snap-start cursor-pointer rounded-xl px-4 py-2 transition-all whitespace-nowrap flex items-center gap-2"
           :class="activeTab === 'seo' ? 'bg-ink text-paper shadow-2xs' : 'text-mute hover:text-ink'"
-          @click="activeTab === 'seo'"
+          @click="activeTab = 'seo'"
         >
           <AdminIcon name="seo" size="13" />
           <span>SEO & SERP Simulator</span>

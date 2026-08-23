@@ -44,17 +44,17 @@ function openCommandPalette() {
       <div class="space-y-6">
         <!-- Logo & Studio Tag & Status Radar -->
         <div class="border-b border-white/[0.08] pb-5 space-y-3.5">
-          <div class="flex items-center justify-between">
-            <NuxtLink to="/admin/projects" class="group flex items-center gap-2.5">
-              <SiteLogo :dark="true" />
-              <span class="rounded-full bg-white/[0.08] border border-white/[0.08] px-2.5 py-0.5 font-mono text-[0.62rem] font-bold uppercase tracking-wider text-[#8a8478] group-hover:text-white transition-colors">
+          <div class="flex items-center justify-between gap-2 min-w-0">
+            <NuxtLink to="/admin/projects" class="group flex items-center gap-2 min-w-0 shrink">
+              <SiteLogo :dark="true" class="shrink-0" />
+              <span class="rounded-full bg-white/[0.08] border border-white/[0.08] px-2 py-0.5 font-mono text-[0.6rem] font-bold uppercase tracking-wider text-[#8a8478] group-hover:text-white transition-colors truncate">
                 Studio
               </span>
             </NuxtLink>
 
-            <span class="flex items-center gap-1.5 rounded-full bg-emerald-950/80 px-2 py-0.5 font-mono text-[0.62rem] font-bold text-emerald-400 border border-emerald-500/30">
+            <span class="shrink-0 inline-flex items-center gap-1 rounded-full bg-emerald-950/80 px-2 py-0.5 font-mono text-[0.6rem] font-bold text-emerald-400 border border-emerald-500/30">
               <span class="size-1.5 rounded-full bg-emerald-400 animate-ping opacity-75" />
-              <span class="relative size-1.5 -ml-3 rounded-full bg-emerald-400" />
+              <span class="size-1.5 -ml-2.5 rounded-full bg-emerald-400 relative" />
               <span>LIVE</span>
             </span>
           </div>
