@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import gsap from 'gsap'
+
 const route = useRoute()
 const { setupNavScroll } = useMotion()
 
@@ -17,8 +19,19 @@ const handleScroll = () => {
   }
 }
 
+// Reset header visibility on route/hash changes
+watch(
+  () => [route.path, route.hash],
+  () => {
+    if (headerRef.value) {
+      gsap.to(headerRef.value, { y: 0, duration: 0.28, ease: 'power2.out', overwrite: 'auto' })
+    }
+  }
+)
+
 onMounted(() => {
   if (headerRef.value) {
+    gsap.set(headerRef.value, { y: 0 })
     setupNavScroll(headerRef.value)
   }
   handleScroll()
@@ -39,7 +52,7 @@ onUnmounted(() => {
   >
     <!-- Top Notch / Dynamic Island container hanging flush from the top edge -->
     <div
-      class="pointer-events-auto flex items-center justify-between gap-2.5 sm:gap-6 md:gap-10 bg-[#0e0d0c]/95 text-white px-3.5 sm:px-6 md:px-8 py-2.5 sm:py-3 rounded-b-2xl sm:rounded-b-3xl border-b border-x border-white/12 shadow-[0_16px_40px_rgba(0,0,0,0.55)] backdrop-blur-xl w-full max-w-2xl md:max-w-3xl"
+      class="pointer-events-auto flex items-center justify-between gap-2.5 sm:gap-6 md:gap-10 bg-[#0e100f]/95 text-white px-3.5 sm:px-6 md:px-8 py-2.5 sm:py-3 rounded-b-2xl sm:rounded-b-3xl border-b border-x border-white/12 shadow-[0_16px_40px_rgba(0,0,0,0.55)] backdrop-blur-xl w-full max-w-2xl md:max-w-3xl"
     >
       <!-- Left Logo Badge -->
       <NuxtLink to="/" class="group flex items-center gap-2 shrink-0" aria-label="Rumah Design, ke beranda">
@@ -64,6 +77,15 @@ onUnmounted(() => {
         >
           Tentang
           <span v-if="route.path === '/about'" class="absolute -bottom-0.5 left-0 right-0 h-[2px] bg-signal rounded-full" />
+        </NuxtLink>
+
+        <NuxtLink
+          to="/#faq"
+          class="relative px-1 py-1 text-white/80 transition-colors hover:text-signal font-medium"
+          :class="route.hash === '#faq' ? 'text-signal !font-bold' : ''"
+        >
+          FAQ
+          <span v-if="route.hash === '#faq'" class="absolute -bottom-0.5 left-0 right-0 h-[2px] bg-signal rounded-full" />
         </NuxtLink>
       </nav>
 

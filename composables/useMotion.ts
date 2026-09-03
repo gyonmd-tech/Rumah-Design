@@ -145,19 +145,19 @@ export const useMotion = () => {
   }
 
   /**
-   * Hide nav on scroll down, show on scroll up
+   * Hide nav on deep scroll down, show immediately on scroll up or top
    */
   const setupNavScroll = (navEl: HTMLElement) => {
     if (isReducedMotion()) return null
 
     let lastScroll = 0
     const trigger = ScrollTrigger.create({
-      start: 160,
+      start: 'top top',
       onUpdate: (self) => {
         const currentScroll = self.scroll()
-        if (currentScroll > 160 && self.direction === 1 && currentScroll > lastScroll + 4) {
+        if (currentScroll > 420 && self.direction === 1 && currentScroll > lastScroll + 8) {
           gsap.to(navEl, { y: -130, duration: tokens.duration.fast, ease: 'power2.out', overwrite: 'auto' })
-        } else if (self.direction === -1 || currentScroll <= 60) {
+        } else if (self.direction === -1 || currentScroll <= 150) {
           gsap.to(navEl, { y: 0, duration: tokens.duration.fast, ease: 'power2.out', overwrite: 'auto' })
         }
         lastScroll = currentScroll
@@ -274,21 +274,26 @@ export const useMotion = () => {
   }
 
   /**
-   * Footer Curtain Uncover Parallax
+   * Footer Curtain Uncover Parallax (Crisp & Fully Visible on all pages)
    */
   const setupFooterUncover = (footerEl: HTMLElement, innerContentEl: HTMLElement) => {
-    if (isReducedMotion()) return null
+    if (isReducedMotion()) {
+      gsap.set(innerContentEl, { opacity: 1, y: 0 })
+      return null
+    }
+
+    gsap.set(innerContentEl, { opacity: 1, y: 0 })
 
     const trigger = ScrollTrigger.create({
       trigger: footerEl,
       start: 'top bottom',
       end: 'bottom bottom',
-      scrub: 0.4,
+      scrub: 0.3,
       onUpdate: (self) => {
         const p = self.progress
         gsap.set(innerContentEl, {
-          y: (1 - p) * 45,
-          opacity: 0.6 + p * 0.4,
+          y: (1 - p) * 20,
+          opacity: 1,
         })
       },
     })

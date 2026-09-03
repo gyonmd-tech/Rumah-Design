@@ -1,0 +1,9 @@
+/* Webfont: ARQINO-Regular */@font-face {
+    font-family: 'ARQINO';
+    src: url('ARQINO.woff2') format('woff2'), /* Modern Browsers */
+         url('ARQINO.otf') format('opentype'); /* Safari, Android, iOS */
+             font-style: normal;
+    font-weight: normal;
+    text-rendering: optimizeLegibility;
+}
+

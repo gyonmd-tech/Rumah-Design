@@ -26,30 +26,10 @@ const filteredProjects = computed(() => allProjects.value.filter((project) => {
   return matchesCategory && (matchesTitle || matchesDesc || matchesTech || matchesTags)
 }))
 
-// Motion system hooks
-const { animateHeroReveal, setupHeroParallax, setupCardsBatch, isReducedMotion } = useMotion()
+// Motion system hooks for cards
+const { setupCardsBatch } = useMotion()
 
-const heroSectionRef = ref<HTMLElement | null>(null)
-const heroContentRef = ref<HTMLElement | null>(null)
-const headlineLine1 = ref<HTMLElement | null>(null)
-const headlineLine2 = ref<HTMLElement | null>(null)
-const headlineLine3 = ref<HTMLElement | null>(null)
-const introRef = ref<HTMLElement | null>(null)
-const statsRef = ref<HTMLElement | null>(null)
-const scrollCueRef = ref<HTMLElement | null>(null)
 const cardsContainerRef = ref<HTMLElement | null>(null)
-
-let scrollTicking = false
-const handleScroll = () => {
-  if (typeof window === 'undefined') return
-  if (!scrollTicking) {
-    window.requestAnimationFrame(() => {
-      isScrolled.value = window.scrollY > 40
-      scrollTicking = false
-    })
-    scrollTicking = true
-  }
-}
 
 // Keep a ref to the cards gsap.Context so we can revert (prevents ScrollTrigger accumulation)
 let cardsCtx: ReturnType<typeof setupCardsBatch> | null = null
@@ -65,30 +45,11 @@ const refreshCards = () => {
 }
 
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll, { passive: true })
-
-  // 1. Hero Reveal on Load
-  const lines = [headlineLine1.value, headlineLine2.value, headlineLine3.value].filter(Boolean) as HTMLElement[]
-  animateHeroReveal({
-    headlineLines: lines,
-    intro: introRef.value,
-    stats: statsRef.value,
-    scrollCue: scrollCueRef.value,
-  })
-
-  // 2. Setup Smooth Hero Parallax
-  if (heroSectionRef.value && heroContentRef.value) {
-    setupHeroParallax(heroSectionRef.value, heroContentRef.value)
-  }
-
-  // 3. Batch Stagger for Cards
+  // Batch Stagger for Cards
   nextTick(refreshCards)
 })
 
 onUnmounted(() => {
-  if (typeof window !== 'undefined') {
-    window.removeEventListener('scroll', handleScroll)
-  }
   if (cardsCtx) {
     cardsCtx.revert()
     cardsCtx = null
@@ -100,78 +61,118 @@ watch([category, searchQuery], () => {
   nextTick(refreshCards)
 })
 
+const faqData = {
+  mainTitle: 'Tanya Jawab',
+  mainSubtitle: 'Informasi ringkas mengenai alur kerja, teknologi, dan cara berkolaborasi.',
+  rows: [
+    {
+      id: 'row1',
+      speed: '48s',
+      direction: 'left' as const,
+      faqItems: [
+        {
+          id: 'q1',
+          question: 'Bagaimana alur proses kerja?',
+          answer: 'Eksplorasi konsep di Figma, perancangan prototipe interaktif, lalu implementasi kode frontend yang responsif, cepat, dan teruji.'
+        },
+        {
+          id: 'q2',
+          question: 'Teknologi apa yang digunakan?',
+          answer: 'Fokus utama pada Nuxt 3, Vue 3, React, TypeScript, Tailwind CSS, GSAP Motion, serta Supabase untuk database.'
+        },
+        {
+          id: 'q3',
+          question: 'Apakah karya bisa dicoba langsung?',
+          answer: 'Ya, seluruh karya memiliki tautan live demo eksternal yang aktif dan bisa langsung dieksplorasi.'
+        },
+        {
+          id: 'q4',
+          question: 'Apakah menyertakan dokumentasi kode?',
+          answer: 'Setiap komponen dibangun secara modular dengan TypeScript, dokumentasi props, dan arsitektur kode yang bersih.'
+        }
+      ]
+    },
+    {
+      id: 'row2',
+      speed: '40s',
+      direction: 'right' as const,
+      faqItems: [
+        {
+          id: 'q5',
+          question: 'Menerima proyek freelance & kolaborasi?',
+          answer: 'Sangat terbuka! Melayani perancangan landing page interaktif, web application, dashboard, dan design system.'
+        },
+        {
+          id: 'q6',
+          question: 'Berapa lama estimasi pengerjaan?',
+          answer: 'Landing page umumnya berkisar 1–2 minggu. Web app atau dashboard interaktif rata-rata membutuhkan 3–5 minggu.'
+        },
+        {
+          id: 'q7',
+          question: 'Bagaimana cara berdiskusi awal?',
+          answer: 'Kirim pesan via halaman Kontak untuk menjadwalkan obrolan singkat seputar kebutuhan dan tujuan proyekmu.'
+        },
+        {
+          id: 'q8',
+          question: 'Apakah ada revisi dalam pengerjaan?',
+          answer: 'Tentu, setiap tahapan mulai dari wireframe, visual design, hingga tahap implementasi frontend mencakup sesi iterasi.'
+        }
+      ]
+    },
+    {
+      id: 'row3',
+      speed: '52s',
+      direction: 'left' as const,
+      faqItems: [
+        {
+          id: 'q9',
+          question: 'Apakah kode sumber bisa dipelajari?',
+          answer: 'Sebagian besar project menyertakan link repositori GitHub publik untuk referensi arsitektur dan praktik terbaik.'
+        },
+        {
+          id: 'q10',
+          question: 'Bagaimana standar performa & aksesibilitas?',
+          answer: 'Setiap project dioptimalkan dengan rendering SSR cepat, aset ringan, transisi ramah reduced-motion, dan SEO terstruktur.'
+        },
+        {
+          id: 'q11',
+          question: 'Apakah desain responsif di semua perangkat?',
+          answer: 'Semua antarmuka dirancang mobile-first dan diuji menyeluruh di smartphone, tablet, laptop, hingga layar ultra-wide.'
+        },
+        {
+          id: 'q12',
+          question: 'Bagaimana dukungan pasca peluncuran?',
+          answer: 'Dukungan teknis dan pemantauan performa disediakan untuk memastikan peluncuran berjalan mulus tanpa hambatan.'
+        }
+      ]
+    }
+  ]
+}
+
 const siteUrl = useRuntimeConfig().public.siteUrl as string || ''
 
 useSeoMeta({
-  title: 'Rumah Design — Selected Digital Work',
-  description: 'Kumpulan karya frontend dan cerita proses desain dari seorang product designer yang membangun produknya sendiri.',
-  ogTitle: 'Rumah Design — Selected Digital Work',
-  ogDescription: 'Project frontend terpilih, lengkap dengan proses desain dan live demo.',
+  title: 'Rumah Design — Digital Product & Frontend Craft',
+  description: 'Kurasi karya product design & frontend engineering—dari eksplorasi visual tajam hingga aplikasi fungsional yang hidup di browser.',
+  ogTitle: 'Rumah Design — Digital Product & Frontend Craft',
+  ogDescription: 'Karya terpilih product design & frontend engineering dengan live demo dan proses desain mendalam.',
   ogType: 'website',
   ogImage: `${siteUrl}/og-image.png`,
   twitterCard: 'summary_large_image',
   twitterImage: `${siteUrl}/og-image.png`,
-  twitterTitle: 'Rumah Design — Selected Digital Work',
-  twitterDescription: 'Project frontend terpilih, lengkap dengan proses desain dan live demo.',
+  twitterTitle: 'Rumah Design — Digital Product & Frontend Craft',
+  twitterDescription: 'Karya terpilih product design & frontend engineering dengan live demo dan proses desain mendalam.',
 })
 </script>
 
 <template>
   <div class="relative min-h-screen bg-void">
-    <!-- HERO SECTION (DARK VOID + UNCLIPPED CLEAN PARALLAX) -->
-    <section
-      id="hero-section"
-      ref="heroSectionRef"
-      class="relative z-10 flex min-h-[92vh] sm:min-h-screen flex-col justify-between pt-28 sm:pt-36 pb-20 sm:pb-32 bg-void text-paper overflow-hidden"
-    >
-      <!-- Background Ambient Glow (reduced size to ease GPU paint cost) -->
-      <div class="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[340px] sm:w-[500px] h-[220px] sm:h-[280px] bg-signal/12 rounded-full blur-[80px] sm:blur-[100px]" />
+    <!-- MAIN HERO (CLEAN INTERACTIVE FLOATING ICONS HERO) -->
+    <FloatingIconsHero />
 
-      <div ref="heroContentRef" class="page-shell-wide relative z-10 flex flex-col justify-center my-auto grow py-4 sm:py-6">
-        <!-- Headline Display XL with Safe Padding for Descenders -->
-        <div class="py-4 sm:py-6 md:py-12">
-          <h1 class="max-w-[15ch] font-display text-display-xl tracking-tight text-paper select-none">
-            <span class="block overflow-hidden pt-0.5 sm:pt-1 pb-2 sm:pb-3 -mb-2 sm:-mb-3">
-              <span ref="headlineLine1" class="inline-block will-change-transform">Ide yang</span>
-            </span>
-            <span class="block overflow-hidden pt-0.5 sm:pt-1 pb-2 sm:pb-3 -mb-2 sm:-mb-3">
-              <span ref="headlineLine2" class="inline-block will-change-transform">dirancang untuk</span>
-            </span>
-            <span class="block overflow-hidden pt-0.5 sm:pt-1 pb-2 sm:pb-3 -mb-2 sm:-mb-3">
-              <span ref="headlineLine3" class="inline-block text-signal will-change-transform">benar-benar hidup.</span>
-            </span>
-          </h1>
-        </div>
-
-        <!-- Bottom Intro & Stat Strip -->
-        <div class="grid gap-4 sm:gap-8 border-t border-paper/15 pt-6 sm:pt-8 md:grid-cols-[1.4fr_1fr] md:items-end">
-          <p ref="introRef" class="max-w-2xl text-body-l text-paper/90 font-sans leading-relaxed">
-            Saya merancang pengalaman dan membangun frontend-nya—dari alur pertama sampai produk yang bisa dicoba langsung.
-          </p>
-          <div ref="statsRef" class="md:text-right">
-            <p class="font-mono text-[0.7rem] sm:text-xs text-paper/60 uppercase tracking-[0.1em] sm:tracking-[0.14em]">
-              {{ allProjects.length }} Project · Nuxt 3 SSR · GSAP · Jakarta
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Scroll Cue Indicator (fades on scroll) -->
-      <div
-        ref="scrollCueRef"
-        class="pointer-events-none absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 sm:gap-2 text-center transition-opacity duration-300 z-10"
-        :class="isScrolled ? 'opacity-0' : 'opacity-100'"
-      >
-        <span class="font-mono text-[0.62rem] sm:text-[0.65rem] tracking-[0.2em] text-paper/50 uppercase">Scroll</span>
-        <div class="h-6 sm:h-8 w-[1.5px] overflow-hidden rounded-full bg-paper/20">
-          <div class="h-full w-full bg-signal animate-bounce" />
-        </div>
-      </div>
-    </section>
-
-    <!-- THIN COLORED MARQUEE TICKER -->
+    <!-- THIN COLORED MARQUEE TICKER (GSAP Signature Electric Green) -->
     <div
-      class="relative z-30 w-full overflow-hidden bg-signal text-white py-2 sm:py-2.5 border-y border-white/20 select-none shadow-[0_4px_24px_rgba(255,74,28,0.25)]"
+      class="relative z-30 w-full overflow-hidden bg-signal text-ink py-2 sm:py-2.5 border-y border-black/15 select-none shadow-[0_4px_24px_rgba(10,228,72,0.25)] font-bold"
       aria-label="Studio Highlights Marquee"
     >
       <div class="flex w-max animate-marquee gap-8 whitespace-nowrap font-mono text-[0.68rem] sm:text-xs font-semibold uppercase tracking-[0.18em]">
@@ -218,7 +219,7 @@ useSeoMeta({
     <!-- WORK SECTION -->
     <section
       id="work"
-      class="relative z-20 bg-paper text-ink shadow-[0_25px_80px_rgba(0,0,0,0.5)] pt-12 sm:pt-20 pb-16 sm:pb-28 border-b border-ink/10"
+      class="relative z-20 bg-paper text-ink shadow-[0_25px_80px_rgba(0,0,0,0.5)] pt-12 sm:pt-20 pb-12 sm:pb-16"
     >
       <div class="page-shell-wide">
         <!-- Minimalist Filter Header (Bracket Title + Search Bar + Category Tabs) -->
@@ -228,12 +229,8 @@ useSeoMeta({
         />
 
         <!-- Loading State Skeleton -->
-        <div v-if="status === 'pending' && !allProjects.length" class="grid gap-4 sm:gap-6 py-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          <div v-for="item in 8" :key="item" class="animate-pulse space-y-3">
-            <div class="aspect-[16/10] bg-ink/10 rounded-2xl" />
-            <div class="h-4 w-2/3 bg-ink/10 rounded-full" />
-            <div class="h-3 w-1/3 bg-ink/10 rounded-full" />
-          </div>
+        <div v-if="status === 'pending' && !allProjects.length" class="grid gap-5 sm:gap-6 md:gap-7 py-3 sm:py-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <ProjectCardSkeleton v-for="item in 8" :key="item" />
         </div>
 
         <!-- 4-Column Multi-Row Card Grid (Curated Cards) -->
@@ -281,6 +278,11 @@ useSeoMeta({
           </button>
         </div>
       </div>
+    </section>
+
+    <!-- FAQ SCROLLER SECTION (SEAMLESS LIGHT FLOW & WIDE EDGE-TO-EDGE) -->
+    <section id="faq" class="relative z-20 bg-paper text-ink overflow-hidden pb-16 sm:pb-24">
+      <HabitFaqScroller :data="faqData" theme="light" />
     </section>
   </div>
 </template>

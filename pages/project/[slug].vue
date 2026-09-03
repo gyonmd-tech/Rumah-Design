@@ -333,4 +333,7 @@ useHead(() => ({
       <NuxtLink to="/" class="button-primary inline-flex mt-4">Kembali ke Beranda</NuxtLink>
     </div>
   </div>
+
+  <!-- Loading Skeleton -->
+  <ProjectDetailSkeleton v-else />
 </template>

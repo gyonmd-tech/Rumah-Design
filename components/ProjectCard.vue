@@ -6,6 +6,15 @@ defineProps<{
   project: ProjectSummary
   index: number
 }>()
+
+const imgRef = ref<HTMLImageElement | null>(null)
+const isImageLoaded = ref(false)
+
+onMounted(() => {
+  if (imgRef.value?.complete) {
+    isImageLoaded.value = true
+  }
+})
 </script>
 
 <template>
@@ -16,16 +25,30 @@ defineProps<{
       :aria-label="`Lihat project ${project.title}`"
     >
       <!-- Media Frame with 16:10 aspect ratio and rounded-2xl -->
-      <div class="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-[#e5e1d8] border border-ink/10 shadow-xs transition-all duration-500 group-hover:shadow-2xl group-hover:border-ink/25">
+      <div class="relative aspect-[16/10] w-full overflow-hidden rounded-2xl bg-[#eae5d9] border border-ink/10 shadow-xs transition-all duration-500 group-hover:shadow-[0_16px_36px_rgba(14,16,15,0.08)] group-hover:border-signal/40">
+        <!-- Shimmer Skeleton Base while loading -->
+        <div
+          v-if="!isImageLoaded"
+          class="absolute inset-0 animate-pulse bg-ink/[0.06] overflow-hidden"
+        >
+          <div class="pointer-events-none absolute inset-0 -translate-x-full animate-[shimmer_1.8s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+        </div>
+
         <!-- Project Thumbnail Seamlessly Integrated -->
         <img
+          ref="imgRef"
           :src="project.preview_media_url || project.thumbnail_url"
           :alt="`Tampilan ${project.title}`"
-          class="h-full w-full object-cover object-top filter contrast-[103%] brightness-[98%] saturate-[96%] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:filter-none group-hover:saturate-[106%] group-hover:scale-105"
-          :loading="index === 0 ? 'eager' : 'lazy'"
+          :class="[
+            'h-full w-full object-cover object-top filter contrast-[103%] brightness-[98%] saturate-[96%] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:filter-none group-hover:saturate-[106%] group-hover:scale-105',
+            isImageLoaded ? 'opacity-100' : 'opacity-90'
+          ]"
+          :loading="index < 4 ? 'eager' : 'lazy'"
           :fetchpriority="index === 0 ? 'high' : 'auto'"
           width="1200"
           height="750"
+          @load="isImageLoaded = true"
+          @error="isImageLoaded = true"
         >
 
         <!-- Subtle Editorial Tone Vignette -->

@@ -87,15 +87,15 @@ export default defineNuxtConfig({
       titleTemplate: '%s',
       htmlAttrs: { lang: 'id' },
       meta: [
-        { name: 'theme-color', content: '#0c0b0a' },
+        { name: 'theme-color', content: '#0e100f' },
         ...(googleSiteVerification ? [{ name: 'google-site-verification', content: googleSiteVerification }] : []),
       ],
       link: [
         { rel: 'preconnect', href: 'https://api.fontshare.com', crossorigin: '' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-        { rel: 'stylesheet', href: 'https://api.fontshare.com/v2/css?f[]=general-sans@500,600,700&display=swap' },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap' },
+        { rel: 'stylesheet', href: 'https://api.fontshare.com/v2/css?f[]=clash-display@600,700&f[]=general-sans@500,600,700&display=swap' },
+        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap' },
       ],
     },
   },

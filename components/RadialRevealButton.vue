@@ -54,37 +54,37 @@ const variantColors = computed(() => {
     case 'primary':
       return {
         fill: props.fill ?? 'transparent',
-        textColor: props.textColor ?? 'var(--color-signal, #ff4a1c)',
-        hoverFill: props.hoverFill ?? 'var(--color-signal, #ff4a1c)',
-        hoverTextColor: props.hoverTextColor ?? '#ffffff',
-        borderColor: props.borderColor ?? 'var(--color-signal, #ff4a1c)',
-        hoverBorderColor: props.hoverBorderColor ?? 'var(--color-signal, #ff4a1c)',
+        textColor: props.textColor ?? 'var(--color-signal, #0ae448)',
+        hoverFill: props.hoverFill ?? 'var(--color-signal, #0ae448)',
+        hoverTextColor: props.hoverTextColor ?? '#0e100f',
+        borderColor: props.borderColor ?? 'var(--color-signal, #0ae448)',
+        hoverBorderColor: props.hoverBorderColor ?? 'var(--color-signal, #0ae448)',
       }
     case 'glass':
     case 'secondary':
       return {
         fill: props.fill ?? 'transparent',
-        textColor: props.textColor ?? 'var(--color-paper, #f3ede6)',
-        hoverFill: props.hoverFill ?? 'var(--color-signal, #ff4a1c)',
-        hoverTextColor: props.hoverTextColor ?? '#ffffff',
-        borderColor: props.borderColor ?? 'rgba(255, 255, 255, 0.28)',
-        hoverBorderColor: props.hoverBorderColor ?? 'var(--color-signal, #ff4a1c)',
+        textColor: props.textColor ?? 'var(--color-paper, #f4f0e6)',
+        hoverFill: props.hoverFill ?? 'var(--color-signal, #0ae448)',
+        hoverTextColor: props.hoverTextColor ?? '#0e100f',
+        borderColor: props.borderColor ?? 'rgba(244, 240, 230, 0.28)',
+        hoverBorderColor: props.hoverBorderColor ?? 'var(--color-signal, #0ae448)',
       }
     case 'dark':
       return {
         fill: props.fill ?? 'transparent',
-        textColor: props.textColor ?? 'var(--color-ink, #14120f)',
-        hoverFill: props.hoverFill ?? 'var(--color-ink, #14120f)',
-        hoverTextColor: props.hoverTextColor ?? '#ffffff',
-        borderColor: props.borderColor ?? 'rgba(20, 18, 15, 0.35)',
-        hoverBorderColor: props.hoverBorderColor ?? 'var(--color-ink, #14120f)',
+        textColor: props.textColor ?? 'var(--color-ink, #0e100f)',
+        hoverFill: props.hoverFill ?? 'var(--color-ink, #0e100f)',
+        hoverTextColor: props.hoverTextColor ?? '#f4f0e6',
+        borderColor: props.borderColor ?? 'rgba(14, 16, 15, 0.35)',
+        hoverBorderColor: props.hoverBorderColor ?? 'var(--color-ink, #0e100f)',
       }
     case 'white':
       return {
         fill: props.fill ?? 'transparent',
         textColor: props.textColor ?? '#ffffff',
         hoverFill: props.hoverFill ?? '#ffffff',
-        hoverTextColor: props.hoverTextColor ?? '#0c0b0a',
+        hoverTextColor: props.hoverTextColor ?? '#0e100f',
         borderColor: props.borderColor ?? 'rgba(255, 255, 255, 0.35)',
         hoverBorderColor: props.hoverBorderColor ?? '#ffffff',
       }
@@ -92,10 +92,10 @@ const variantColors = computed(() => {
       return {
         fill: props.fill ?? 'transparent',
         textColor: props.textColor ?? '#ffffff',
-        hoverFill: props.hoverFill ?? '#ff4a1c',
-        hoverTextColor: props.hoverTextColor ?? '#ffffff',
+        hoverFill: props.hoverFill ?? 'var(--color-signal, #0ae448)',
+        hoverTextColor: props.hoverTextColor ?? '#0e100f',
         borderColor: props.borderColor ?? 'rgba(255, 255, 255, 0.35)',
-        hoverBorderColor: props.hoverBorderColor ?? '#ff4a1c',
+        hoverBorderColor: props.hoverBorderColor ?? 'var(--color-signal, #0ae448)',
       }
   }
 })
@@ -165,7 +165,6 @@ const commonStyle = computed(() => ({
   borderWidth: props.borderWidth !== undefined ? (typeof props.borderWidth === 'number' ? `${props.borderWidth}px` : props.borderWidth) : '1px',
   borderStyle: 'solid',
   padding: props.padding || '0.75rem 1.6rem',
-  fontSize: '0.75rem',
   lineHeight: '1.2',
 }))
 </script>
@@ -176,7 +175,7 @@ const commonStyle = computed(() => ({
     v-if="isNuxtLink"
     ref="rootRef"
     :to="destination"
-    class="radial-btn group relative inline-flex items-center justify-center font-mono font-bold uppercase tracking-wider select-none cursor-pointer overflow-hidden transition-transform duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+    class="radial-btn group relative inline-flex items-center justify-center font-mono font-bold uppercase tracking-wider text-xs select-none cursor-pointer overflow-hidden transition-transform duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
     :class="customClass"
     :style="commonStyle"
     @pointerenter="onPointerEnter"
@@ -225,7 +224,7 @@ const commonStyle = computed(() => ({
     :href="destination"
     :target="newTab ? '_blank' : undefined"
     :rel="newTab ? 'noopener noreferrer' : undefined"
-    class="radial-btn group relative inline-flex items-center justify-center font-mono font-bold uppercase tracking-wider select-none cursor-pointer overflow-hidden transition-transform duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+    class="radial-btn group relative inline-flex items-center justify-center font-mono font-bold uppercase tracking-wider text-xs select-none cursor-pointer overflow-hidden transition-transform duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
     :class="customClass"
     :style="commonStyle"
     @pointerenter="onPointerEnter"
@@ -273,7 +272,7 @@ const commonStyle = computed(() => ({
     ref="rootRef"
     :type="type || 'button'"
     :disabled="disabled"
-    class="radial-btn group relative inline-flex items-center justify-center font-mono font-bold uppercase tracking-wider select-none cursor-pointer overflow-hidden transition-transform duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+    class="radial-btn group relative inline-flex items-center justify-center font-mono font-bold uppercase tracking-wider text-xs select-none cursor-pointer overflow-hidden transition-transform duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
     :class="customClass"
     :style="commonStyle"
     @pointerenter="onPointerEnter"

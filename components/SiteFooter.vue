@@ -4,8 +4,11 @@ import gmailIcon from '~/assets/gmail.svg'
 import instagramIcon from '~/assets/instagram.svg'
 import linkedinIcon from '~/assets/linkedin.svg'
 
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
 const { setupFooterUncover } = useMotion()
 const { success: showToast } = useToast()
+const route = useRoute()
 
 const siteSettings = usePublicSiteSettings()
 const publicEmail = computed(() => siteSettings.value.general.contact_email || 'hello@rumahdesign.dev')
@@ -16,6 +19,13 @@ onMounted(() => {
   if (footerRef.value && footerInnerRef.value) {
     setupFooterUncover(footerRef.value, footerInnerRef.value)
   }
+})
+
+// Watch route changes to refresh ScrollTrigger layout
+watch(() => route.fullPath, () => {
+  nextTick(() => {
+    ScrollTrigger.refresh()
+  })
 })
 
 const scrollToTop = () => {
@@ -59,19 +69,19 @@ const socialChannels = computed(() => [
 </script>
 
 <template>
-  <!-- Full 1-Screen Editorial Footer -->
+  <!-- Full Editorial Footer (Responsive Adaptive Height on Mobile, Full Screen on Desktop) -->
   <footer
     ref="footerRef"
-    class="relative z-20 w-full min-h-[100dvh] bg-[#0c0b0a] text-paper py-8 sm:py-12 border-t border-white/10 overflow-hidden flex flex-col justify-between shadow-[0_-20px_60px_rgba(0,0,0,0.6)]"
+    class="relative z-20 w-full min-h-[auto] lg:min-h-screen bg-[#0e100f] text-paper pt-14 sm:pt-20 lg:pt-14 pb-8 sm:pb-12 border-t border-white/10 overflow-hidden flex flex-col justify-between shadow-[0_-20px_60px_rgba(0,0,0,0.6)]"
   >
     <!-- Background Ambient Glow Center Spotlight -->
-    <div class="pointer-events-none absolute -bottom-36 left-1/2 -translate-x-1/2 w-[360px] sm:w-[680px] h-[220px] sm:h-[340px] bg-signal/14 rounded-full blur-[100px] sm:blur-[130px]" />
+    <div class="pointer-events-none absolute -bottom-36 left-1/2 -translate-x-1/2 w-[360px] sm:w-[680px] h-[220px] sm:h-[340px] bg-signal/16 rounded-full blur-[100px] sm:blur-[130px]" />
 
-    <div ref="footerInnerRef" class="page-shell-wide relative z-10 flex flex-col justify-between grow w-full">
+    <div ref="footerInnerRef" class="page-shell-wide relative z-10 flex flex-col justify-between grow w-full opacity-100">
       <!-- Top / Center Hero Content -->
-      <div class="my-auto text-center max-w-5xl mx-auto space-y-6 sm:space-y-8 py-6 sm:py-8">
+      <div class="my-auto text-center max-w-5xl mx-auto space-y-5 sm:space-y-8 py-4 sm:py-8">
         <!-- Big Balanced Headline -->
-        <h2 class="font-display text-[clamp(2.25rem,4.5vw,4.5rem)] text-paper tracking-tight font-bold leading-[1.08] text-balance">
+        <h2 class="font-display text-[clamp(1.85rem,5.5vw,4.5rem)] text-paper tracking-tight font-bold leading-[1.1] text-balance">
           <span class="block">Mari wujudkan karya digital</span>
           <span class="block text-signal">berikutnya bersama kami.</span>
         </h2>
