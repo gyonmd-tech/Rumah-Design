@@ -1,3 +1,4 @@
+import { stripMarkdown } from './seo'
 import type { ProjectCategory } from '~/types/database.types'
 
 export const PROJECT_CATEGORIES: Array<{ value: ProjectCategory, label: string }> = [
@@ -118,10 +119,7 @@ export function validateTags(tags: string[], label: string) {
 }
 
 export function excerpt(value: string | null, length = 155) {
-  if (!value) return 'Project frontend pilihan dari Rumah Design.'
-  const plain = value
-    .replace(/[#*_>`~\[\]()!-]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
+  if (!value) return 'Project frontend pilihan dari Hygione Darriyan.'
+  const plain = stripMarkdown(value).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
   return plain.length > length ? `${plain.slice(0, length - 1).trim()}…` : plain
 }

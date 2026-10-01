@@ -4,7 +4,7 @@ import type { Database, Project } from '~/types/database.types'
 import type { ProjectFormPayload } from '~/types/project-form'
 
 definePageMeta({ middleware: 'admin', layout: 'admin' })
-useSeoMeta({ title: 'Edit Project — Studio Admin Rumah Design', robots: 'noindex, nofollow' })
+useSeoMeta({ title: 'Edit Project — Studio Admin Hygione Darriyan', robots: 'noindex, nofollow' })
 
 const route = useRoute()
 const client = useSupabaseClient<Database>()

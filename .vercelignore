@@ -1,0 +1,18 @@
+# Deployment includes source only; credentials and local artifacts stay local.
+.git
+.vercel
+.env
+.env.*
+node_modules
+.nuxt
+.output
+.nitro
+.data
+.cache
+dist
+.codex-staging
+.codex
+.agents
+*.log
+
+supabase/.temp

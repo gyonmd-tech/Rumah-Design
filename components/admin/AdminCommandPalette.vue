@@ -210,7 +210,7 @@ defineExpose({
         @click.self="closePalette"
       >
         <div
-          class="w-full max-w-2xl overflow-hidden rounded-2xl bg-[#121110] text-[#f5f3ef] shadow-2xl border border-white/[0.12] transform transition-all flex flex-col max-h-[85vh] sm:max-h-[70vh]"
+          class="w-full max-w-2xl overflow-hidden rounded-2xl bg-[#0b1020] text-[#f5f3ef] shadow-2xl border border-white/[0.12] transform transition-all flex flex-col max-h-[85vh] sm:max-h-[70vh]"
         >
           <!-- Search Header Input -->
           <div class="relative flex items-center border-b border-white/[0.08] px-4 sm:px-5 py-3.5 bg-white/[0.02]">
@@ -282,7 +282,7 @@ defineExpose({
               <span><kbd class="rounded bg-white/[0.08] border border-white/[0.08] px-1.5 py-0.5 font-bold text-white/70">↵</kbd> Pilih</span>
               <span><kbd class="rounded bg-white/[0.08] border border-white/[0.08] px-1.5 py-0.5 font-bold text-white/70">ESC</kbd> Tutup</span>
             </div>
-            <span class="hidden sm:inline">Rumah Design Command Studio</span>
+            <span class="hidden sm:inline">Hygione Darriyan Command Studio</span>
           </div>
         </div>
       </div>

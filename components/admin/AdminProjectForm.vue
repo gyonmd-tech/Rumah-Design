@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const publicSiteUrl = useRuntimeConfig().public.siteUrl
 import AdminIcon from '~/components/admin/AdminIcon.vue'
 import type { Project, ProjectCategory, ProjectStatus } from '~/types/database.types'
 import type { ProjectFormPayload } from '~/types/project-form'
@@ -559,7 +560,7 @@ function validateAndSubmit() {
                 </label>
                 <button
                   type="button"
-                  class="rounded-lg bg-rose-50 hover:bg-signal hover:text-white px-3.5 py-1.5 font-bold text-signal transition-all cursor-pointer inline-flex items-center gap-1.5"
+                  class="rounded-lg bg-rose-50 hover:bg-rose-600 hover:text-white px-3.5 py-1.5 font-bold text-rose-600 transition-all cursor-pointer inline-flex items-center gap-1.5"
                   @click="removeThumbnail"
                 >
                   <AdminIcon name="trash" size="12" />
@@ -581,7 +582,7 @@ function validateAndSubmit() {
                   atau pilih berkas gambar dari perangkat Anda
                 </p>
               </div>
-              <label class="inline-flex items-center gap-1.5 rounded-xl bg-signal text-white hover:bg-[#e63d10] px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider cursor-pointer transition-all shadow-2xs">
+              <label class="inline-flex items-center gap-1.5 rounded-xl bg-signal text-ink hover:bg-signal/90 px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider cursor-pointer transition-all shadow-2xs shadow-signal/20">
                 <AdminIcon name="image" size="13" />
                 <input type="file" accept="image/*" class="hidden" @change="onFileSelect">
                 <span>Pilih Berkas Gambar</span>
@@ -750,8 +751,16 @@ function validateAndSubmit() {
               placeholder="Contoh: financial dashboard frontend case study"
             >
             <p class="font-sans text-xs text-mute">
-              Kata kunci utama yang ingin ditargetkan agar project mudah ditemukan di Google.
+              Topik utama sebagai panduan menulis. Gunakan secara alami; skor internal tidak mengukur ranking atau status indeks Google.
             </p>
+          </div>
+
+          <div class="sm:col-span-2 rounded-xl border border-ink/10 p-4 space-y-2 text-sm">
+            <h3 class="font-semibold">Topik pendukung untuk case study</h3>
+            <p class="text-mute">Jelaskan masalah pengguna, peran Anda, proses desain, keputusan teknis, dan hasil yang benar-benar terukur.
+              Gunakan kategori, tech stack, dan style tags sebagai konteks; tidak perlu mengulang kata kunci.</p>
+            <p class="text-mute">Contoh yang dapat disesuaikan: user flow, wireframe, prototype Figma, desain responsif,
+              aksesibilitas, design system, integrasi API, autentikasi, dan database. Pilih hanya yang dikerjakan di project ini.</p>
           </div>
 
           <!-- SEO Meta Title -->
@@ -770,7 +779,7 @@ function validateAndSubmit() {
               type="text"
               maxlength="100"
               class="field font-sans text-sm !rounded-xl"
-              :placeholder="form.title ? `${form.title} — Rumah Design` : 'Judul yang tampil di tab browser & Google'"
+              :placeholder="form.title ? `${form.title} — Hygione Darriyan` : 'Judul yang tampil di tab browser & Google'"
             >
           </div>
 
@@ -825,14 +834,14 @@ function validateAndSubmit() {
           <!-- Google Search Snippet Card -->
           <div class="bg-white p-4 rounded-xl border border-black/5 shadow-2xs max-w-xl font-sans space-y-1">
             <div class="flex items-center gap-2 text-xs text-[#202124]">
-              <span class="rounded-full bg-ink/10 size-4 flex items-center justify-center text-[0.6rem] font-bold">R</span>
-              <span class="truncate text-[0.72rem]">https://rumah-design.vercel.app › project › {{ form.slug || 'slug-project' }}</span>
+              <span class="rounded-full bg-ink/10 size-4 flex items-center justify-center text-[0.6rem] font-bold">HD</span>
+              <span class="truncate text-[0.72rem]">{{ publicSiteUrl }} › project › {{ form.slug || 'slug-project' }}</span>
             </div>
             <h4 class="text-[#1a0dab] hover:underline text-base sm:text-lg font-medium leading-snug cursor-pointer truncate">
-              {{ form.seoTitle || form.title || 'Judul Project Portofolio — Rumah Design' }}
+              {{ seoAnalysis.serpTitle }}
             </h4>
             <p class="text-[#4d5156] text-xs sm:text-sm leading-relaxed line-clamp-2">
-              {{ form.seoDescription || form.description?.slice(0, 150) || 'Kumpulan karya frontend dan narasi proses desain portofolio Rumah Design.' }}
+              {{ seoAnalysis.serpDescription }}
             </p>
           </div>
         </div>
@@ -886,7 +895,7 @@ function validateAndSubmit() {
       <div class="flex items-center gap-3">
         <button
           type="submit"
-          class="inline-flex items-center gap-2 rounded-xl bg-signal text-white hover:bg-[#e63d10] px-5 py-2 font-bold uppercase tracking-wider shadow-sm transition-all cursor-pointer hover:scale-102 active:scale-98 disabled:opacity-50"
+          class="inline-flex items-center gap-2 rounded-xl bg-signal text-ink hover:bg-signal/90 px-5 py-2 font-bold uppercase tracking-wider shadow-sm shadow-signal/20 transition-all cursor-pointer hover:scale-102 active:scale-98 disabled:opacity-50"
           :disabled="busy"
         >
           <AdminIcon :name="busy ? 'refresh' : 'check'" size="13" :class="busy ? 'animate-spin' : ''" />

@@ -3,7 +3,7 @@ import AdminIcon from '~/components/admin/AdminIcon.vue'
 import type { ProjectFormPayload } from '~/types/project-form'
 
 definePageMeta({ middleware: 'admin', layout: 'admin' })
-useSeoMeta({ title: 'Tambah Project Baru — Studio Admin Rumah Design', robots: 'noindex, nofollow' })
+useSeoMeta({ title: 'Tambah Project Baru — Studio Admin Hygione Darriyan', robots: 'noindex, nofollow' })
 
 const { saveProject } = useProjectAdmin()
 const { success, error: toastError } = useToast()

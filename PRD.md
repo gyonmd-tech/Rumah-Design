@@ -1,9 +1,15 @@
-# PRD — Rumah Design
+# PRD — Hygione Darriyan
+
+## Pembaruan scope — 11 September 2026
+
+Brand resmi: **Hygione Darriyan**. Platform desain dan portofolio pribadi untuk UI/UX designer, designer, frontend developer, dan fullstack developer. Email kontak: **paroarro07@gmail.com**. Domain utama: https://hygionedarriyan.vercel.app. Domain lama https://rumah-design.vercel.app diarahkan permanen ke path yang sama pada domain baru. Nuxt 3 SSR, Supabase, Vercel, project link-based, serta otorisasi admin tetap menjadi batas arsitektur.
+
+SEO mencakup konten semantik yang relevan, identitas Person, CollectionPage/ProfilePage, CreativeWork dan breadcrumb, canonical, metadata dinamis, sitemap project published, serta respons HTTP yang benar. Kata kunci pendukung berasal dari proses, kategori, dan teknologi yang benar-benar digunakan.
 
 ## 1. Ringkasan & Visi
-Rumah Design adalah platform portofolio pribadi untuk menampilkan project-project frontend (landing page, web app) yang telah dibangun dan di-deploy ke Vercel/Netlify. Alih-alih meng-hosting ulang tiap project, Rumah Design berfungsi sebagai "etalase" terpusat: tiap entri berisi link ke live demo, penjelasan proses desain, dan konteks teknis dari project tersebut.
+Hygione Darriyan adalah platform portofolio pribadi untuk menampilkan project-project frontend (landing page, web app) yang telah dibangun dan di-deploy ke Vercel/Netlify. Alih-alih meng-hosting ulang tiap project, Hygione Darriyan berfungsi sebagai "etalase" terpusat: tiap entri berisi link ke live demo, penjelasan proses desain, dan konteks teknis dari project tersebut.
 
-Referensi visual utama adalah platform showcase seperti **Awwwards** dan **Onepagelove** — visual-first, preview besar, teks minim di permukaan. Bedanya, kurasi di Rumah Design sepenuhnya personal: seluruh karya yang ditampilkan adalah project milik sendiri, bukan submission dari orang lain, sehingga tidak perlu sistem rating/voting/review seperti platform aslinya.
+Referensi visual utama adalah platform showcase seperti **Awwwards** dan **Onepagelove** — visual-first, preview besar, teks minim di permukaan. Bedanya, kurasi di Hygione Darriyan sepenuhnya personal: seluruh karya yang ditampilkan adalah project milik sendiri, bukan submission dari orang lain, sehingga tidak perlu sistem rating/voting/review seperti platform aslinya.
 
 ## 2. Latar Belakang & Masalah
 - Sebagai product designer yang juga membangun frontend sendiri, project-project yang dikerjakan tersebar di berbagai deployment (Vercel, Netlify) tanpa satu tempat terpusat untuk menunjukkan portofolio dengan konteks & narasi proses.
@@ -40,7 +46,7 @@ Referensi visual utama adalah platform showcase seperti **Awwwards** dan **Onepa
 ### Out of scope (v1)
 - Multi-user/kolaborasi (hanya single admin)
 - Komentar/reaksi publik
-- Hosting langsung project frontend di dalam Rumah Design (tetap eksternal via Vercel/Netlify)
+- Hosting langsung project frontend di dalam Hygione Darriyan (tetap eksternal via Vercel/Netlify)
 
 ## 6. User Stories
 - Sebagai admin, saya ingin menambah project baru lewat form sederhana, supaya saya tidak perlu sentuh kode tiap kali ada karya baru.
@@ -57,3 +63,11 @@ Referensi visual utama adalah platform showcase seperti **Awwwards** dan **Onepa
 ## 8. Risiko & Asumsi
 - Asumsi: link live demo project akan tetap aktif (tanggung jawab pemilik untuk maintain deployment masing-masing project).
 - Risiko: broken link kalau project lama di-take down dari Vercel/Netlify → perlu mekanisme "cek status link" di masa depan (v2).
+
+## Perluasan konten yang disetujui — 11 September 2026
+
+Tambahkan /layanan, tiga halaman fokus /layanan/ui-ux-design, /layanan/frontend-development, /layanan/fullstack-development, dan /proses. Konten disimpan sebagai TypeScript terstruktur, dirender SSR, memiliki metadata unik dan sitemap. Referensi karya hanya berasal dari API published. Beranda mendapat section layanan, pendekatan kerja, dan FAQ yang dapat dibaca tanpa JavaScript. Hindari klaim ranking, metrik hasil, biaya, dan jadwal yang belum disepakati.
+
+## Identitas personal yang disetujui — 12 September 2026
+
+Nama profesional produk adalah **Hygione Darriyan**, dengan nama lengkap **Hygione Heparre Paro Arro Darriyan** sebagai identitas pemilik dan author. Homepage dan halaman profil harus menyebut nama lengkap secara terlihat; seluruh halaman publik memakai metadata yang konsisten, sedangkan schema Person memuat nama alternatif, lokasi, keahlian, dan profil resmi. Favicon memakai monogram HD dan aset sosial memakai identitas visual Midnight Indigo.

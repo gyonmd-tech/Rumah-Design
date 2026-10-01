@@ -1,4 +1,4 @@
-# Deployment Rumah Design
+# Deployment Hygione Darriyan
 
 ## Akses yang dibutuhkan
 
@@ -30,3 +30,7 @@ Service-role key tidak diperlukan oleh aplikasi dan tidak boleh dimasukkan ke Ve
 - Markdown berbahaya tidak dirender sebagai HTML/script.
 - Metadata OG memakai thumbnail project.
 - Lighthouse Performance dan SEO mencapai target >90 pada deployment production.
+
+## Domain utama — 11 September 2026
+
+Gunakan `NUXT_PUBLIC_SITE_URL=https://hygionedarriyan.vercel.app` pada Production, Preview, dan Development Vercel. Domain lama `rumah-design.vercel.app` tetap terhubung sebagai redirect 301 permanen ke path yang sama. Setelah perubahan environment, build dan deploy ulang agar canonical, sitemap, robots, dan structured data konsisten. Lihat [catatan migrasi domain](DOMAIN_MIGRATION.md).

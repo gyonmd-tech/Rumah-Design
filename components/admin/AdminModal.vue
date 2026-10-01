@@ -59,7 +59,7 @@ onUnmounted(() => {
           <div class="flex items-start gap-3 sm:gap-4">
             <div
               v-if="danger"
-              class="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-signal/15 text-signal text-xs font-bold font-mono"
+              class="flex size-8 sm:size-9 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-rose-100 text-rose-600 text-xs font-bold font-mono"
             >
               DEL
             </div>
@@ -91,7 +91,7 @@ onUnmounted(() => {
             <button
               type="button"
               class="text-xs font-mono font-bold uppercase tracking-wider px-5 py-2.5 rounded-full cursor-pointer transition-all disabled:opacity-50 text-center"
-              :class="danger ? 'bg-signal text-white hover:bg-[#e63d10] shadow-md shadow-signal/20' : 'bg-ink text-paper hover:bg-black'"
+              :class="danger ? 'bg-rose-600 text-white hover:bg-rose-700 shadow-md shadow-rose-600/20' : 'bg-ink text-paper hover:bg-black'"
               :disabled="busy"
               @click="emit('confirm')"
             >

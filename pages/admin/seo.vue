@@ -4,7 +4,7 @@ import type { Database, Project } from '~/types/database.types'
 import { analyzeSeoQuality } from '~/utils/seo'
 
 definePageMeta({ middleware: 'admin', layout: 'admin' })
-useSeoMeta({ title: 'SEO Health Center — Studio Admin Rumah Design', robots: 'noindex, nofollow' })
+useSeoMeta({ title: 'SEO Health Center — Studio Admin Hygione Darriyan', robots: 'noindex, nofollow' })
 
 const client = useSupabaseClient<Database>()
 const searchQuery = ref('')
@@ -65,31 +65,27 @@ const filteredProjects = computed(() => {
   return list
 })
 
-// Infra checks — these are always static for the studio
+// Installed features, not measured runtime health or Google indexing status.
 const infraChecks = [
   {
     id: 'ssr',
     label: 'SSR Hydration',
     description: 'Seluruh HTML dirender di server sebelum dikirim ke bot pencari.',
-    status: 'pass' as const,
   },
   {
     id: 'sitemap',
     label: 'Sitemap Dinamis',
     description: 'Slug project published terdaftar otomatis di /sitemap.xml.',
-    status: 'pass' as const,
   },
   {
     id: 'og',
     label: 'Open Graph & Twitter',
     description: 'Kartu share multimedia kaya untuk WhatsApp, Twitter, dan LinkedIn.',
-    status: 'pass' as const,
   },
   {
     id: 'schema',
     label: 'JSON-LD Schema.org',
     description: 'Structured data CreativeWork terpasang di tiap halaman project.',
-    status: 'pass' as const,
   },
 ]
 </script>
@@ -107,7 +103,7 @@ const infraChecks = [
           SEO Health Center
         </h1>
         <p class="mt-1 font-sans text-xs sm:text-sm text-mute">
-          Pantau kesehatan metadata, audit kata kunci, dan performa indeks mesin pencari portofolio.
+          Audit kualitas konten dan metadata project. Skor ini adalah panduan internal; status indeks, impresi, dan klik perlu diperiksa di Google Search Console.
         </p>
       </div>
 
@@ -170,8 +166,8 @@ const infraChecks = [
             <AdminIcon name="globe" size="14" />
           </div>
         </div>
-        <p class="font-display text-2xl font-bold text-emerald-600 tracking-tight">Robots OK</p>
-        <p class="font-mono text-[0.65rem] text-mute">Publik terindeks, admin privat</p>
+        <p class="font-display text-2xl font-bold text-emerald-600 tracking-tight">Perlu verifikasi</p>
+        <p class="font-mono text-[0.65rem] text-mute">Cek indeks di Search Console</p>
       </div>
     </div>
 
@@ -183,7 +179,7 @@ const infraChecks = [
         </div>
         <div>
           <h2 class="font-display text-lg font-bold text-ink">Infrastruktur SEO & Arsitektur Mesin Pencari</h2>
-          <p class="font-mono text-[0.68rem] text-mute">Komponen teknis yang terpasang otomatis untuk mempercepat crawling Google.</p>
+          <p class="font-mono text-[0.68rem] text-mute">Fitur yang dikonfigurasi. Verifikasi respons production; daftar ini bukan hasil audit otomatis.</p>
         </div>
       </div>
 
@@ -193,10 +189,9 @@ const infraChecks = [
           :key="check.id"
           class="bg-white/95 p-5 flex items-start gap-3.5"
         >
-          <div class="size-8 shrink-0 rounded-xl flex items-center justify-center mt-0.5"
-            :class="check.status === 'pass' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-amber-50 text-amber-600 border border-amber-200'"
+          <div class="size-8 shrink-0 rounded-xl flex items-center justify-center mt-0.5 bg-ink/5 text-ink/70 border border-ink/10"
           >
-            <AdminIcon :name="check.status === 'pass' ? 'check' : 'alert'" size="14" />
+            <AdminIcon name="globe" size="14" />
           </div>
           <div>
             <p class="font-mono text-xs font-bold text-ink uppercase tracking-wider">{{ check.label }}</p>
@@ -359,7 +354,7 @@ const infraChecks = [
               <td class="py-4 px-4 text-right whitespace-nowrap">
                 <NuxtLink
                   :to="`/admin/projects/${project.id}/edit`"
-                  class="inline-flex items-center gap-1.5 rounded-lg bg-signal/10 hover:bg-signal hover:text-white text-signal px-3 py-1.5 font-mono text-[0.7rem] font-bold uppercase transition-all"
+                  class="inline-flex items-center gap-1.5 rounded-lg bg-signal/10 hover:bg-signal hover:text-ink text-ink font-bold px-3 py-1.5 font-mono text-[0.7rem] uppercase transition-all"
                 >
                   <AdminIcon name="seo" size="11" />
                   <span>Optimasi</span>

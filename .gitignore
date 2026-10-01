@@ -31,3 +31,9 @@ logs
 # Temporary files / screenshots / raw font packs
 WhatsApp Image*
 assets/Arqino Font/
+
+# Local audit screenshots, browser scripts and build logs
+.codex-staging/
+
+# Supabase CLI local metadata
+supabase/.temp/
