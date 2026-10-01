@@ -1,0 +1,19 @@
+// Hand-drawn underline strokes (310×40 viewBox). A new one is picked for every
+// draw so repeated hovers never look identical.
+export const SQUIGGLES = [
+  'M5 22C30 17 56 13 82 15C102 17 118 24 138 24C156 24 168 15 186 14C204 13 216 21 236 21C258 21 282 17 305 18',
+  'M5 25C40 20 76 14 112 11C142 9 174 8 204 12C214 14 224 18 220 23C214 30 194 33 176 32C164 31 160 25 170 21C190 13 228 10 262 10C278 10 294 11 305 13',
+  'M5 28C12 21 18 16 28 17C40 18 44 27 56 26C70 25 76 15 90 16C104 17 108 26 122 25C136 24 142 13 158 14C172 15 176 24 190 23C204 22 210 12 226 13C240 14 244 22 258 21C272 20 278 13 292 14C298 15 302 17 305 19',
+  'M14 31C60 31 98 32 104 30C110 27 82 21 62 16C50 13 40 8 54 6C70 4 120 7 170 8C214 9 258 11 300 14',
+  'M5 21C68 17 128 13 188 12C228 12 266 13 305 14',
+  'M5 29C52 26 98 21 144 17C152 16 162 15 164 17C160 22 154 27 152 31C152 35 162 33 170 31C204 23 240 13 278 8C288 7 298 6 305 6',
+] as const
+
+let cursor = Math.floor(Math.random() * SQUIGGLES.length)
+
+/** Next stroke in rotation, shared across the page like a single pen. */
+export function nextSquiggle() {
+  const path = SQUIGGLES[cursor]
+  cursor = (cursor + 1) % SQUIGGLES.length
+  return path
+}

@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { DEFAULT_SITE_SETTINGS, mergeSiteSettings } from '~/utils/site-settings'
 import AdminIcon from '~/components/admin/AdminIcon.vue'
 import type { Database } from '~/types/database.types'
 import { isValidHttpsUrl } from '~/utils/project'
 
 definePageMeta({ middleware: 'admin', layout: 'admin' })
-useSeoMeta({ title: 'Pengaturan Platform — Studio Admin Rumah Design', robots: 'noindex, nofollow' })
+useSeoMeta({ title: 'Pengaturan Platform — Studio Admin Hygione Darriyan', robots: 'noindex, nofollow' })
 
 const client = useSupabaseClient<Database>()
 const user = useSupabaseUser()
@@ -16,28 +17,11 @@ const testingConnection = ref(false)
 const dbStatus = ref<'online' | 'error' | 'idle'>('idle')
 const dbLatency = ref<number | null>(null)
 
-const generalForm = reactive({
-  site_name: 'Rumah Design',
-  tagline: 'Showcase karya frontend & narasi proses desain',
-  bio: 'Product designer & frontend engineer yang fokus pada kerajinan visual, interaksi presisi, dan arsitektur web modern.',
-  contact_email: 'hello@rumahdesign.dev',
-})
+const generalForm = reactive({ ...DEFAULT_SITE_SETTINGS.general })
 
-const seoForm = reactive({
-  default_title: 'Rumah Design — Portofolio & Case Study Frontend',
-  default_description: 'Kumpulan karya frontend, landing page interaktif, dan case study proses desain produk oleh desainer & engineer.',
-  default_og_image: '',
-  indexing: true,
-})
+const seoForm = reactive({ ...DEFAULT_SITE_SETTINGS.seo })
 
-const socialsForm = reactive({
-  github: 'https://github.com',
-  linkedin: 'https://linkedin.com',
-  dribbble: 'https://dribbble.com',
-  twitter: 'https://x.com',
-  instagram: 'https://instagram.com',
-  medium: '',
-})
+const socialsForm = reactive({ ...DEFAULT_SITE_SETTINGS.socials })
 
 const { data: settingsData, refresh } = await useAsyncData('admin-site-settings', async () => {
   try {
@@ -54,11 +38,10 @@ watch(
   settingsData,
   (loaded) => {
     if (!loaded?.length) return
-    loaded.forEach((item) => {
-      if (item.key === 'general' && item.value) Object.assign(generalForm, item.value)
-      if (item.key === 'seo' && item.value) Object.assign(seoForm, item.value)
-      if (item.key === 'socials' && item.value) Object.assign(socialsForm, item.value)
-    })
+    const settings = mergeSiteSettings(loaded)
+    Object.assign(generalForm, settings.general)
+    Object.assign(seoForm, settings.seo)
+    Object.assign(socialsForm, settings.socials)
   },
   { immediate: true },
 )
@@ -169,7 +152,7 @@ const tabs = [
           Pengaturan Platform
         </h1>
         <p class="mt-1 font-sans text-xs sm:text-sm text-mute">
-          Sesuaikan profil studio, konfigurasi SEO bawaan, tautan sosial, dan kesehatan sistem.
+          Sesuaikan profil pribadi, konfigurasi SEO bawaan, tautan sosial, dan kesehatan sistem.
         </p>
       </div>
     </div>
@@ -196,27 +179,27 @@ const tabs = [
     <!-- ============================= -->
     <div v-show="activeTab === 'general'" class="rounded-2xl bg-white/95 border border-ink/10 shadow-2xs">
       <div class="px-6 sm:px-8 py-6 border-b border-ink/10">
-        <h2 class="font-display text-xl font-bold text-ink">Identitas & Profil Studio</h2>
+        <h2 class="font-display text-xl font-bold text-ink">Identitas & Profil Pribadi</h2>
         <p class="text-xs text-mute font-sans mt-0.5">Nama situs, tagline, bio singkat, dan kontak utama.</p>
       </div>
 
       <form class="p-6 sm:p-8 space-y-5" @submit.prevent="saveSettings('general')">
         <div class="space-y-2">
           <label for="s-site-name" class="font-mono text-xs font-bold text-ink uppercase tracking-wider block">
-            Nama Situs Studio
+            Nama Situs
           </label>
           <input
             id="s-site-name"
             v-model="generalForm.site_name"
             type="text"
             class="field font-display font-bold text-base !rounded-xl"
-            placeholder="Rumah Design"
+            placeholder="Hygione Darriyan"
           >
         </div>
 
         <div class="space-y-2">
           <label for="s-tagline" class="font-mono text-xs font-bold text-ink uppercase tracking-wider block">
-            Tagline Studio
+            Tagline
           </label>
           <input
             id="s-tagline"
@@ -236,7 +219,7 @@ const tabs = [
             v-model="generalForm.bio"
             rows="3"
             class="field font-sans leading-relaxed !rounded-xl"
-            placeholder="Deskripsi singkat studio Anda..."
+            placeholder="Deskripsi singkat diri Anda..."
           />
         </div>
 
@@ -256,7 +239,7 @@ const tabs = [
         <div class="flex justify-end pt-2">
           <button
             type="submit"
-            class="inline-flex items-center gap-2 rounded-xl bg-signal text-white hover:bg-[#e63d10] px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer disabled:opacity-50"
+            class="inline-flex items-center gap-2 rounded-xl bg-signal text-ink hover:bg-signal/90 px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider shadow-sm shadow-signal/20 transition-all cursor-pointer disabled:opacity-50"
             :disabled="busy"
           >
             <AdminIcon :name="busy ? 'refresh' : 'check'" size="13" :class="busy ? 'animate-spin' : ''" />
@@ -346,7 +329,7 @@ const tabs = [
         <div class="flex justify-end pt-2">
           <button
             type="submit"
-            class="inline-flex items-center gap-2 rounded-xl bg-signal text-white hover:bg-[#e63d10] px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer disabled:opacity-50"
+            class="inline-flex items-center gap-2 rounded-xl bg-signal text-ink hover:bg-signal/90 px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider shadow-sm shadow-signal/20 transition-all cursor-pointer disabled:opacity-50"
             :disabled="busy"
           >
             <AdminIcon :name="busy ? 'refresh' : 'check'" size="13" :class="busy ? 'animate-spin' : ''" />
@@ -389,7 +372,7 @@ const tabs = [
         <div class="flex justify-end pt-2">
           <button
             type="submit"
-            class="inline-flex items-center gap-2 rounded-xl bg-signal text-white hover:bg-[#e63d10] px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer disabled:opacity-50"
+            class="inline-flex items-center gap-2 rounded-xl bg-signal text-ink hover:bg-signal/90 px-5 py-2 font-mono text-xs font-bold uppercase tracking-wider shadow-sm shadow-signal/20 transition-all cursor-pointer disabled:opacity-50"
             :disabled="busy"
           >
             <AdminIcon :name="busy ? 'refresh' : 'check'" size="13" :class="busy ? 'animate-spin' : ''" />

@@ -37,7 +37,7 @@ function openCommandPalette() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#edeae4] text-ink font-body selection:bg-signal selection:text-white flex flex-col lg:flex-row">
+  <div class="min-h-screen bg-[#edeae4] text-ink font-body selection:bg-signal selection:text-ink flex flex-col lg:flex-row">
     <!-- Desktop Sidebar (Dark Studio Aesthetic) -->
     <aside class="hidden lg:flex lg:w-72 lg:flex-col lg:fixed lg:inset-y-0 lg:z-40 border-r border-ink/12 bg-[#0d0c0b] text-[#f5f3ef] justify-between p-6 shadow-2xl">
       <!-- Top Brand & Navigation -->

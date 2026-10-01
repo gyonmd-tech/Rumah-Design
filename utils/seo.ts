@@ -30,8 +30,8 @@ export function stripMarkdown(markdown: string | null | undefined): string {
     .replace(/\*([^*]+)\*/g, '$1') // italic
     .replace(/__([^_]+)__/g, '$1') // bold
     .replace(/_([^_]+)_/g, '$1') // italic
+    .replace(/```[\s\S]*?```/g, '') // code blocks before inline code
     .replace(/`([^`]+)`/g, '$1') // inline code
-    .replace(/```[\s\S]*?```/g, '') // code blocks
     .replace(/!\[([^\]]*)\]\(([^)]*)\)/g, '') // images
     .replace(/\[([^\]]+)\]\(([^)]*)\)/g, '$1') // links
     .replace(/^\s*[-*+]\s+/gm, '') // lists
@@ -347,7 +347,7 @@ export function analyzeSeoQuality(params: {
     colorClass = 'text-amber-700 bg-amber-50 border-amber-300'
   }
 
-  const serpTitle = effectiveTitle ? `${effectiveTitle} — Rumah Design` : 'Judul Project — Rumah Design'
+  const serpTitle = seoTitle?.trim() || (title?.trim() ? `${title.trim()} — Hygione Darriyan` : 'Judul Project — Hygione Darriyan')
   const serpDescription = effectiveDescription || 'Showcase karya frontend dan narasi proses desain produk.'
 
   return {

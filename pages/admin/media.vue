@@ -3,7 +3,7 @@ import AdminIcon from '~/components/admin/AdminIcon.vue'
 import type { Database } from '~/types/database.types'
 
 definePageMeta({ middleware: 'admin', layout: 'admin' })
-useSeoMeta({ title: 'Media Library — Studio Admin Rumah Design', robots: 'noindex, nofollow' })
+useSeoMeta({ title: 'Media Library — Studio Admin Hygione Darriyan', robots: 'noindex, nofollow' })
 
 const client = useSupabaseClient<Database>()
 const user = useSupabaseUser()
@@ -258,7 +258,7 @@ async function confirmDeleteFile() {
             Atau klik tombol di bawah untuk memilih dari perangkat Anda
           </p>
         </div>
-        <label class="inline-flex items-center gap-2 rounded-xl bg-signal text-white hover:bg-[#e63d10] px-5 py-2.5 font-mono text-xs font-bold uppercase tracking-wider cursor-pointer transition-all shadow-sm hover:scale-[1.02] active:scale-98">
+        <label class="inline-flex items-center gap-2 rounded-xl bg-signal text-ink hover:bg-signal/90 px-5 py-2.5 font-mono text-xs font-bold uppercase tracking-wider cursor-pointer transition-all shadow-sm shadow-signal/20 hover:scale-[1.02] active:scale-98">
           <AdminIcon name="upload" size="13" />
           <span>Pilih Berkas</span>
           <input type="file" multiple accept="image/*,video/*,.gif" class="hidden" @change="onFileInput">
@@ -346,7 +346,7 @@ async function confirmDeleteFile() {
               </button>
               <button
                 type="button"
-                class="rounded-lg bg-rose-50 hover:bg-signal hover:text-white p-1 text-signal transition-all cursor-pointer"
+                class="rounded-lg bg-rose-50 hover:bg-rose-600 hover:text-white p-1 text-rose-600 transition-all cursor-pointer"
                 title="Hapus berkas"
                 @click="promptDeleteFile(file)"
               >

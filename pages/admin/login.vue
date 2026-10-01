@@ -3,7 +3,7 @@ import AdminIcon from '~/components/admin/AdminIcon.vue'
 import type { Database } from '~/types/database.types'
 
 definePageMeta({ layout: false })
-useSeoMeta({ title: 'Studio Portal Login — Rumah Design', robots: 'noindex, nofollow' })
+useSeoMeta({ title: 'Studio Portal Login — Hygione Darriyan', robots: 'noindex, nofollow' })
 
 const route = useRoute()
 const client = useSupabaseClient<Database>()
@@ -45,11 +45,11 @@ async function login() {
 </script>
 
 <template>
-  <main class="min-h-screen bg-[#edeae4] text-ink font-body selection:bg-signal selection:text-white lg:grid lg:grid-cols-2">
+  <main class="min-h-screen bg-[#edeae4] text-ink font-body selection:bg-signal selection:text-ink lg:grid lg:grid-cols-2">
     <!-- Left: Dark Visual Panel -->
     <section class="relative hidden lg:flex lg:flex-col lg:justify-between overflow-hidden bg-[#0d0c0b] p-12">
       <!-- Ambient Background -->
-      <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_20%_40%,rgba(255,75,20,0.07),transparent)]" />
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_20%_40%,rgba(10,228,72,0.08),transparent)]" />
 
       <!-- Brand Header -->
       <div class="relative z-10">
@@ -69,7 +69,7 @@ async function login() {
             <span>Studio Management System</span>
           </div>
           <h1 class="font-display text-4xl xl:text-5xl font-bold text-white tracking-tight leading-[1.1]">
-            Rumah Design<br />
+            Hygione Darriyan<br />
             <span class="text-[#8a8478]">Content Studio</span>
           </h1>
           <p class="font-sans text-sm leading-relaxed text-[#8a8478] max-w-sm">
@@ -191,7 +191,7 @@ async function login() {
           <!-- Submit Button -->
           <button
             type="submit"
-            class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-signal text-white hover:bg-[#e63d10] py-3 font-mono text-sm font-bold uppercase tracking-wider shadow-sm transition-all cursor-pointer disabled:opacity-60 hover:scale-[1.01] active:scale-[0.99] mt-2"
+            class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-signal text-ink hover:bg-signal/90 py-3 font-mono text-sm font-bold uppercase tracking-wider shadow-sm shadow-signal/20 transition-all cursor-pointer disabled:opacity-60 hover:scale-[1.01] active:scale-[0.99] mt-2"
             :disabled="busy"
           >
             <AdminIcon :name="busy ? 'refresh' : 'arrow-right'" size="16" :class="busy ? 'animate-spin' : ''" />

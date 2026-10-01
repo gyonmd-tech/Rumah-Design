@@ -6,7 +6,7 @@ import { PROJECT_CATEGORIES, categoryLabel } from '~/utils/project'
 import { analyzeSeoQuality } from '~/utils/seo'
 
 definePageMeta({ middleware: 'admin', layout: 'admin' })
-useSeoMeta({ title: 'Manajemen Projects — Studio Admin Rumah Design', robots: 'noindex, nofollow' })
+useSeoMeta({ title: 'Manajemen Projects — Studio Admin Hygione Darriyan', robots: 'noindex, nofollow' })
 
 const client = useSupabaseClient<Database>()
 const { toggleProjectStatus, deleteProject } = useProjectAdmin()
@@ -192,7 +192,7 @@ function exportJsonBackup() {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `rumah-design-projects-backup-${new Date().toISOString().slice(0, 10)}.json`
+  a.download = `hygione-darriyan-projects-backup-${new Date().toISOString().slice(0, 10)}.json`
   a.click()
   URL.revokeObjectURL(url)
   success('Backup data JSON project berhasil diunduh.')
@@ -229,7 +229,7 @@ function exportJsonBackup() {
 
         <NuxtLink
           to="/admin/projects/new"
-          class="inline-flex items-center gap-2 rounded-xl bg-signal text-white hover:bg-[#e63d10] px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider shadow-xs transition-all hover:scale-[1.02] active:scale-98"
+          class="inline-flex items-center gap-2 rounded-xl bg-signal text-ink hover:bg-signal/90 px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider shadow-xs shadow-signal/20 transition-all hover:scale-[1.02] active:scale-98"
         >
           <AdminIcon name="plus" size="14" stroke-width="2.5" />
           <span>Tambah Project</span>
@@ -512,7 +512,7 @@ function exportJsonBackup() {
                   </NuxtLink>
                   <button
                     type="button"
-                    class="cursor-pointer rounded-lg bg-rose-50 hover:bg-signal hover:text-white px-2.5 py-1.5 text-signal transition-all font-semibold text-[0.7rem]"
+                    class="cursor-pointer rounded-lg bg-rose-50 hover:bg-rose-600 hover:text-white px-2.5 py-1.5 text-rose-600 transition-all font-semibold text-[0.7rem]"
                     title="Hapus Project"
                     @click="promptDelete(project)"
                   >
@@ -613,7 +613,7 @@ function exportJsonBackup() {
             </NuxtLink>
             <button
               type="button"
-              class="cursor-pointer rounded-lg bg-rose-50 hover:bg-signal hover:text-white px-2 py-1 text-signal transition-all"
+              class="cursor-pointer rounded-lg bg-rose-50 hover:bg-rose-600 hover:text-white px-2 py-1 text-rose-600 transition-all"
               @click="promptDelete(project)"
             >
               <AdminIcon name="trash" size="11" />
@@ -678,7 +678,7 @@ function exportJsonBackup() {
             </NuxtLink>
             <button
               type="button"
-              class="rounded-lg bg-rose-50 hover:bg-signal hover:text-white px-2 py-1 text-signal transition-all cursor-pointer"
+              class="rounded-lg bg-rose-50 hover:bg-rose-600 hover:text-white px-2 py-1 text-rose-600 transition-all cursor-pointer"
               @click="promptDelete(project)"
             >
               <AdminIcon name="trash" size="11" />

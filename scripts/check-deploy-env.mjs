@@ -23,7 +23,7 @@ const required = ['NUXT_PUBLIC_SITE_URL', 'SUPABASE_URL', 'SUPABASE_KEY']
 
 for (const key of required) {
   if (!process.env[key]?.trim()) {
-    if (isForce) {
+    if (isForce || process.env.VERCEL_ENV === 'production') {
       errors.push(`${key} wajib diisi`)
     } else {
       warnings.push(`${key} belum diatur di Vercel Dashboard. Supabase client tidak dapat terhubung.`)
@@ -36,10 +36,11 @@ for (const key of ['NUXT_PUBLIC_SITE_URL', 'SUPABASE_URL']) {
   if (!value) continue
   try {
     const url = new URL(value)
-    if (url.protocol !== 'https:') warnings.push(`${key} sebaiknya memakai HTTPS`)
-    if (['localhost', '127.0.0.1'].includes(url.hostname)) warnings.push(`${key} tidak boleh memakai localhost di production`)
+    if (key === 'NUXT_PUBLIC_SITE_URL' && (url.pathname !== '/' || url.search || url.hash || url.username || url.password)) errors.push('NUXT_PUBLIC_SITE_URL harus berupa origin HTTPS tanpa path, query, atau kredensial')
+    if (url.protocol !== 'https:') errors.push(`${key} sebaiknya memakai HTTPS`)
+    if (['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)) errors.push(`${key} tidak boleh memakai localhost di production`)
   } catch {
-    warnings.push(`${key} bukan URL yang valid`)
+    errors.push(`${key} bukan URL yang valid`)
   }
 }
 

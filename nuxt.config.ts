@@ -1,6 +1,6 @@
 import tailwindcss from '@tailwindcss/vite'
 
-const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+const siteUrl = (process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/+$/, '')
 const googleSiteVerification =
   process.env.NUXT_PUBLIC_GOOGLE_SITE_VERIFICATION ||
   process.env.GOOGLE_SITE_VERIFICATION ||
@@ -42,13 +42,16 @@ export default defineNuxtConfig({
     public: {
       siteUrl,
       googleSiteVerification,
+      whatsappNumber: '',
     },
   },
   modules: [
     '@nuxtjs/supabase',
     '@nuxtjs/seo',
   ],
-  css: ['~/assets/css/tailwind.css'],
+  css: ['~/assets/css/tailwind.css', '~/assets/css/site.css'],
+  // React reference files are retained, but only Vue components enter this Nuxt app.
+  components: [{ path: '~/components', extensions: ['vue'] }],
   build: {
     transpile: ['gsap'],
   },
@@ -60,8 +63,8 @@ export default defineNuxtConfig({
   },
   site: {
     url: siteUrl,
-    name: 'Rumah Design',
-    description: 'Kumpulan karya frontend dan cerita proses desain.',
+    name: 'Hygione Darriyan',
+    description: 'Portofolio UI/UX design, desain visual, frontend dan fullstack development oleh Hygione Darriyan.',
     defaultLocale: 'id',
   },
   ogImage: {
@@ -69,6 +72,7 @@ export default defineNuxtConfig({
   },
   sitemap: {
     sources: ['/api/__sitemap__/urls'],
+    exclude: ['/admin/**', '/admin', '/hubungi'],
   },
   seo: {
     treeShakeUseSeoMeta: false,
@@ -87,15 +91,20 @@ export default defineNuxtConfig({
       titleTemplate: '%s',
       htmlAttrs: { lang: 'id' },
       meta: [
-        { name: 'theme-color', content: '#0e100f' },
+        { name: 'theme-color', content: '#f5f2ea' },
         ...(googleSiteVerification ? [{ name: 'google-site-verification', content: googleSiteVerification }] : []),
       ],
       link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'icon', type: 'image/png', sizes: '48x48', href: '/favicon-48x48.png' },
+        { rel: 'shortcut icon', href: '/favicon.ico' },
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
+        { rel: 'manifest', href: '/site.webmanifest' },
         { rel: 'preconnect', href: 'https://api.fontshare.com', crossorigin: '' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         { rel: 'stylesheet', href: 'https://api.fontshare.com/v2/css?f[]=clash-display@600,700&f[]=general-sans@500,600,700&display=swap' },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap' },
+        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter+Tight:ital,wght@0,100..900;1,100..900&family=Instrument+Serif:ital@0;1&display=swap' },
       ],
     },
   },
@@ -117,6 +126,7 @@ export default defineNuxtConfig({
         'Cache-Control': 'private, no-store, max-age=0',
       },
     },
+    '/admin': { robots: false, headers: { 'Cache-Control': 'private, no-store, max-age=0' } },
     '/hubungi': { redirect: '/contact' },
     '/api/__sitemap__/**': { cache: { maxAge: 3600 } },
     '/api/site-settings': { cache: { maxAge: 300 } },

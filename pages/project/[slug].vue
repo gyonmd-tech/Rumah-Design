@@ -1,339 +1,496 @@
 <script setup lang="ts">
-import type { Project, ProjectSummary } from '~/types/database.types'
+import { ArrowLeft } from 'lucide-vue-next'
+import type { Project } from '~/types/database.types'
 import { categoryLabel, excerpt } from '~/utils/project'
+import { serializeJsonLd } from '~/utils/structured-data'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
+const siteOrigin = String(useRuntimeConfig().public.siteUrl).replace(/\/+$/, '')
 
-const { data: project, error } = await useAsyncData(`project-${slug.value}`, async () => {
-  return await $fetch<Project & { description_html: string }>(`/api/projects/${encodeURIComponent(slug.value)}`)
-})
+const { data: project, error } = await useAsyncData(
+  () => `project-${slug.value}`,
+  () => $fetch<Project & { description_html: string }>(`/api/projects/${encodeURIComponent(slug.value)}`),
+)
 
-// Fetch other projects for next project navigation
-const { data: allProjects } = await useAsyncData('all-projects-nav', async () => {
-  return await $fetch<ProjectSummary[]>('/api/projects')
-})
-
-const nextProject = computed(() => {
-  if (!allProjects.value || !project.value) return null
-  const currentIndex = allProjects.value.findIndex(p => p.id === project.value?.id)
-  if (currentIndex === -1) return null
-  const nextIndex = (currentIndex + 1) % allProjects.value.length
-  return allProjects.value[nextIndex]
-})
-
-const { setupHorizontalGallery, isReducedMotion } = useMotion()
-const gallerySectionRef = ref<HTMLElement | null>(null)
-const galleryTrackRef = ref<HTMLElement | null>(null)
-const galleryCurrentIndex = ref(1)
-
-// Project showcase gallery items
-const galleryItems = computed(() => {
-  if (!project.value) return []
-  const items = [
-    { title: 'Tampilan Utama', url: project.value.thumbnail_url },
-  ]
-  if (project.value.preview_media_url && project.value.preview_media_url !== project.value.thumbnail_url) {
-    items.push({ title: 'Detail Interaksi', url: project.value.preview_media_url })
-  }
-  return items
-})
-
-const onGalleryScroll = () => {
-  if (!galleryTrackRef.value) return
-  const track = galleryTrackRef.value
-  const itemWidth = (track.firstElementChild as HTMLElement)?.clientWidth || track.clientWidth
-  if (itemWidth > 0) {
-    const current = Math.min(galleryItems.value.length, Math.max(1, Math.round(track.scrollLeft / itemWidth) + 1))
-    galleryCurrentIndex.value = current
-  }
+if (error.value || !project.value) {
+  const status = error.value?.statusCode ?? 404
+  throw createError({
+    statusCode: status,
+    statusMessage: status === 404 ? 'Project tidak ditemukan' : 'Detail project sementara tidak tersedia',
+    fatal: true,
+  })
 }
 
-onMounted(() => {
-  document.documentElement.classList.add('light-mode')
-
-  nextTick(() => {
-    if (gallerySectionRef.value && galleryTrackRef.value && galleryItems.value.length > 1 && !isReducedMotion()) {
-      setupHorizontalGallery({
-        sectionEl: gallerySectionRef.value,
-        trackEl: galleryTrackRef.value,
-        onIndexUpdate: (curr: number) => {
-          galleryCurrentIndex.value = curr
-        },
-      })
-    }
-  })
+const { data: projects } = await usePublishedProjects()
+const index = computed(() => Math.max(0, projects.value.findIndex(item => item.slug === slug.value)))
+const color = computed(() => frameColor(index.value))
+const next = computed(() => {
+  if (projects.value.length < 2) return null
+  return projects.value[(index.value + 1) % projects.value.length]
+})
+const previewIsVideo = computed(() => isVideoUrl(project.value?.preview_media_url))
+const previewImage = computed(() => {
+  const url = project.value?.preview_media_url
+  return url && !previewIsVideo.value && url !== project.value?.thumbnail_url ? url : null
 })
 
-onUnmounted(() => {
-  if (typeof document !== 'undefined') {
-    document.documentElement.classList.remove('light-mode')
-  }
-})
+const url = computed(() => `${siteOrigin}/project/${slug.value}`)
+const title = computed(() => project.value?.seo_title || `${project.value?.title} — Hygione Darriyan`)
+const description = computed(() => project.value?.seo_description || excerpt(project.value?.description ?? null))
 
 useSeoMeta({
-  title: () => {
-    if (!project.value) return 'Project — Rumah Design'
-    return project.value.seo_title || `${project.value.title} — Rumah Design`
-  },
-  description: () => {
-    if (!project.value) return 'Project frontend pilihan dari Rumah Design.'
-    return project.value.seo_description || excerpt(project.value.description ?? null)
-  },
-  ogTitle: () => project.value?.seo_title || project.value?.title,
-  ogDescription: () => project.value?.seo_description || excerpt(project.value?.description ?? null),
+  title,
+  description,
+  ogTitle: title,
+  ogDescription: description,
   ogImage: () => project.value?.thumbnail_url,
+  ogUrl: url,
   ogType: 'article',
   articlePublishedTime: () => project.value?.created_at,
   articleModifiedTime: () => project.value?.updated_at,
   twitterCard: 'summary_large_image',
-  twitterTitle: () => project.value?.seo_title || project.value?.title,
-  twitterDescription: () => project.value?.seo_description || excerpt(project.value?.description ?? null),
+  twitterTitle: title,
+  twitterDescription: description,
   twitterImage: () => project.value?.thumbnail_url,
 })
 
-const siteConfig = useSiteConfig()
-
 useHead(() => ({
-  link: project.value ? [{ rel: 'canonical', href: `${siteConfig.url}/project/${project.value.slug}` }] : [],
-  script: project.value ? [{
-    type: 'application/ld+json',
-    innerHTML: JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'CreativeWork',
-      name: project.value.seo_title || project.value.title,
-      description: project.value.seo_description || excerpt(project.value.description),
-      image: project.value.thumbnail_url,
-      url: `${siteConfig.url}/project/${project.value.slug}`,
-    }),
-  }] : [],
+  link: [{ rel: 'canonical', href: url.value }],
+  script: project.value
+    ? [{
+        key: 'project-jsonld',
+        type: 'application/ld+json',
+        innerHTML: serializeJsonLd({
+          '@context': 'https://schema.org',
+          '@graph': [
+            {
+              '@type': 'CreativeWork',
+              '@id': `${url.value}#work`,
+              name: project.value.title,
+              headline: title.value,
+              description: description.value,
+              image: project.value.thumbnail_url,
+              url: url.value,
+              genre: categoryLabel(project.value.category),
+              keywords: [...(project.value.tech_stack ?? []), ...(project.value.style_tags ?? [])].join(', '),
+              dateCreated: project.value.created_at,
+              dateModified: project.value.updated_at,
+              inLanguage: 'id',
+              author: { '@id': `${siteOrigin}/#person` },
+              ...(project.value.live_url ? { sameAs: project.value.live_url } : {}),
+            },
+            {
+              '@type': 'BreadcrumbList',
+              itemListElement: [
+                { '@type': 'ListItem', position: 1, name: 'Beranda', item: `${siteOrigin}/` },
+                { '@type': 'ListItem', position: 2, name: 'Karya', item: `${siteOrigin}/karya` },
+                { '@type': 'ListItem', position: 3, name: project.value.title, item: url.value },
+              ],
+            },
+          ],
+        }),
+      }]
+    : [],
 }))
+
+const root = ref<HTMLElement | null>(null)
+useSiteMotion(root, ({ gsap, reduced }) => {
+  if (reduced) return
+  const figures = gsap.utils.toArray<HTMLElement>('.case-hero__figure', root.value!)
+  gsap.from(figures, { yPercent: 18, rotation: (i: number) => (i % 2 ? 8 : -8), autoAlpha: 0, duration: 1.2, ease: 'expo.out', stagger: 0.15, delay: 0.2 })
+})
 </script>
 
 <template>
-  <div v-if="project" class="min-h-screen bg-paper text-ink pt-24 sm:pt-32 pb-20 sm:pb-28 relative z-20">
-    <article class="page-shell space-y-8 sm:space-y-12">
-      <!-- 1. Top Navigation Bar -->
-      <nav aria-label="Navigasi" class="flex items-center justify-between gap-4 border-b border-ink/10 pb-4 sm:pb-5">
-        <NuxtLink
-          to="/#work"
-          class="inline-flex items-center gap-2 font-mono text-[0.72rem] sm:text-xs font-semibold text-mute uppercase tracking-[0.14em] hover:text-signal transition-colors group"
-        >
-          <span class="transition-transform duration-200 group-hover:-translate-x-1">←</span>
-          <span>Kembali ke Karya</span>
-        </NuxtLink>
-
-        <span class="inline-flex items-center gap-1.5 rounded-full border border-ink/15 bg-white/70 px-3.5 py-1 font-mono text-[0.7rem] sm:text-xs font-medium text-ink/80">
-          <span class="size-1.5 rounded-full bg-signal" />
-          {{ categoryLabel(project.category) }}
-        </span>
-      </nav>
-
-      <!-- 2. Project Title & Primary Action Header -->
-      <header class="space-y-6 sm:space-y-8 max-w-4xl">
-        <h1 class="font-display text-[clamp(2.2rem,5vw,4.5rem)] font-bold tracking-tight text-ink leading-[1.04]">
-          {{ project.title }}
-        </h1>
-
-        <!-- Oval Border-Only Action Buttons -->
-        <div class="flex flex-wrap items-center gap-3 pt-1">
-          <RadialRevealButton
-            :href="project.live_url"
-            new-tab
-            variant="primary"
-            label="Buka Live Demo"
-            add-icon
-            :icon="{ symbol: '↗', size: 13, side: 'right' }"
-            padding="0.75rem 1.8rem"
-            custom-class="text-xs tracking-wider shadow-xs"
-          />
-          <RadialRevealButton
-            v-if="project.repo_url"
-            :href="project.repo_url"
-            new-tab
-            variant="dark"
-            label="Lihat Repository"
-            add-icon
-            :icon="{ symbol: '↗', size: 13, side: 'right' }"
-            padding="0.75rem 1.8rem"
-            custom-class="text-xs tracking-wider"
-          />
-        </div>
-      </header>
-
-      <!-- 3. Clean Browser Mockup Frame Showcase -->
-      <section aria-label="Tampilan Utama Aplikasi">
-        <div class="overflow-hidden rounded-2xl sm:rounded-3xl bg-[#141210] border border-ink/15 shadow-[0_20px_60px_rgba(0,0,0,0.18)]">
-          <!-- Top Window Simulation Bar -->
-          <div class="flex items-center justify-between px-4 sm:px-6 py-2.5 sm:py-3 border-b border-white/10 bg-[#1c1a17] text-white/60 font-mono text-[0.65rem] sm:text-xs">
-            <div class="flex items-center gap-1.5 sm:gap-2">
-              <span class="size-2.5 rounded-full bg-[#ff5f56]/80" />
-              <span class="size-2.5 rounded-full bg-[#ffbd2e]/80" />
-              <span class="size-2.5 rounded-full bg-[#27c93f]/80" />
-            </div>
-            <div class="hidden sm:flex items-center gap-2 rounded-full bg-black/40 px-4 py-1 border border-white/5 text-[0.7rem] text-white/70">
-              <span class="text-signal">https://</span>
-              <span>rumahdesign.dev/preview/{{ project.slug }}</span>
-            </div>
-            <a
-              :href="project.live_url"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="hover:text-signal transition-colors inline-flex items-center gap-1 uppercase tracking-wider text-[0.68rem]"
-            >
-              <span>Live Preview</span>
-              <span>↗</span>
-            </a>
-          </div>
-
-          <!-- Main Image Canvas (Flush fit without letterboxing bars) -->
-          <div class="relative w-full overflow-hidden bg-[#141210]">
-            <img
-              :src="project.thumbnail_url"
-              :alt="`Tampilan utama ${project.title}`"
-              class="w-full h-auto block object-cover"
-              width="1600"
-              height="1000"
-              fetchpriority="high"
-            >
-          </div>
-        </div>
-      </section>
-
-      <!-- 4. Horizontal Gallery Showcase (if multiple media) -->
-      <section
-        v-if="galleryItems.length > 1"
-        ref="gallerySectionRef"
-        aria-label="Galeri Visual Tambahan"
-        class="overflow-hidden rounded-2xl sm:rounded-3xl bg-ink p-5 sm:p-10 text-paper shadow-xl"
-      >
-        <div class="flex items-center justify-between border-b border-paper/15 pb-4">
-          <p class="font-mono text-xs text-paper/70 uppercase tracking-widest">
-            Visual Showcase
+  <main v-if="project" id="main" ref="root">
+    <article>
+      <section class="case-hero">
+        <div class="case-hero__text">
+          <NuxtLink to="/karya" class="case-hero__back label">
+            <ArrowLeft :stroke-width="2.5" aria-hidden="true" />
+            Kembali ke karya
+          </NuxtLink>
+          <p class="kicker" data-reveal>
+            {{ categoryLabel(project.category) }} oleh Hygione Darriyan.
           </p>
-          <p class="font-mono text-xs text-signal font-bold tracking-widest rounded-full bg-signal/15 px-3 py-1">
-            {{ String(galleryCurrentIndex).padStart(2, '0') }} / {{ String(galleryItems.length).padStart(2, '0') }}
+          <h1 class="title-l case-hero__title" data-reveal>
+            {{ project.title }}
+          </h1>
+          <p class="p-l case-hero__lede" data-reveal>
+            {{ excerpt(project.description, 220) }}
           </p>
-        </div>
-        <div
-          ref="galleryTrackRef"
-          class="mt-6 sm:mt-8 flex gap-4 sm:gap-8 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory"
-          @scroll.passive="onGalleryScroll"
-        >
-          <div
-            v-for="(item, i) in galleryItems"
-            :key="i"
-            class="relative w-[88vw] sm:w-[80vw] max-w-[1000px] shrink-0 snap-center overflow-hidden rounded-xl sm:rounded-2xl bg-[#141210] border border-white/10"
-          >
-            <img
-              :src="item.url"
-              :alt="item.title"
-              class="w-full h-auto block object-cover"
-              loading="lazy"
-            >
-            <span class="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 rounded-full bg-void/80 px-3 sm:px-4 py-1 sm:py-1.5 font-mono text-[0.65rem] sm:text-[0.7rem] uppercase tracking-wider text-paper backdrop-blur-md">
-              {{ item.title }}
-            </span>
+          <div class="case-hero__actions" data-reveal="el">
+            <SiteButton label="Buka live demo" :href="project.live_url" icon="external" />
+            <SiteButton v-if="project.repo_url" label="Lihat repository" :href="project.repo_url" icon="external" variant="ink" />
           </div>
+
+          <dl class="facts" data-reveal="el">
+            <div>
+              <dt class="label">
+                Kategori
+              </dt>
+              <dd>{{ categoryLabel(project.category) }}</dd>
+            </div>
+            <div v-if="project.tech_stack?.length">
+              <dt class="label">
+                Tech stack
+              </dt>
+              <dd>
+                <ul class="tags">
+                  <li v-for="tech in project.tech_stack" :key="tech">
+                    {{ tech }}
+                  </li>
+                </ul>
+              </dd>
+            </div>
+            <div v-if="project.style_tags?.length">
+              <dt class="label">
+                Pendekatan
+              </dt>
+              <dd>
+                <ul class="tags tags--alt">
+                  <li v-for="tag in project.style_tags" :key="tag">
+                    <NuxtLink :to="{ path: '/karya', query: { gaya: tag } }">
+                      {{ tag }}
+                    </NuxtLink>
+                  </li>
+                </ul>
+              </dd>
+            </div>
+          </dl>
+        </div>
+
+        <div :class="['case-hero__panel', `panel--${color}`]">
+          <figure class="case-hero__figure frame frame--paper">
+            <img :src="project.thumbnail_url" :alt="`Tampilan utama ${project.title}`" fetchpriority="high" decoding="async">
+            <figcaption class="label">
+              Tampilan utama
+            </figcaption>
+          </figure>
+          <figure v-if="previewImage || previewIsVideo" class="case-hero__figure case-hero__figure--second frame frame--paper">
+            <video v-if="previewIsVideo" :src="project.preview_media_url!" autoplay muted loop playsinline aria-label="Detail interaksi" />
+            <img v-else :src="previewImage!" :alt="`Detail interaksi ${project.title}`" loading="lazy" decoding="async">
+            <figcaption class="label">
+              Detail interaksi
+            </figcaption>
+          </figure>
+          <a :href="project.live_url" target="_blank" rel="noopener noreferrer" class="sticker sticker--paper case-hero__sticker" style="--sticker-rotate: 8deg">
+            Live demo ↗<span class="sr-only"> (tab baru)</span>
+          </a>
         </div>
       </section>
 
-      <!-- 5. Structured Content Grid (Redesigned Editorial Stack & Kategori + Case Study) -->
-      <section class="grid gap-10 sm:gap-14 border-t border-ink/10 pt-10 sm:pt-14 lg:grid-cols-[1fr_2.4fr] lg:items-start">
-        <!-- Clean Editorial Metadata Sidebar -->
-        <aside class="space-y-6 lg:sticky lg:top-28">
-          <div class="border-t border-ink/15 space-y-1">
-            <!-- Row 1: Kategori -->
-            <div class="flex items-center justify-between py-3.5 border-b border-ink/10 font-mono">
-              <span class="text-[0.68rem] text-mute uppercase tracking-[0.14em]">Kategori</span>
-              <span class="text-xs font-semibold text-ink uppercase tracking-wider flex items-center gap-1.5">
-                <span class="size-1.5 rounded-full bg-signal" />
-                {{ categoryLabel(project.category) }}
-              </span>
-            </div>
-
-            <!-- Row 2: Tech Stack -->
-            <div class="py-3.5 border-b border-ink/10 space-y-2.5">
-              <span class="font-mono text-[0.68rem] text-mute uppercase tracking-[0.14em] block">Tech Stack</span>
-              <div class="flex flex-wrap gap-1.5">
-                <span
-                  v-for="tech in project.tech_stack"
-                  :key="tech"
-                  class="rounded-full border border-ink/18 bg-transparent px-2.5 py-0.5 font-mono text-[0.7rem] font-medium text-ink/90 hover:border-signal hover:text-signal transition-colors duration-200"
-                >
-                  {{ tech }}
-                </span>
-              </div>
-            </div>
-
-            <!-- Row 3: Topik & Pendekatan -->
-            <div v-if="project.style_tags?.length" class="py-3.5 border-b border-ink/10 space-y-1.5">
-              <span class="font-mono text-[0.68rem] text-mute uppercase tracking-[0.14em] block">Pendekatan</span>
-              <p class="font-mono text-xs text-ink/80 leading-relaxed">
-                {{ project.style_tags.join(' · ') }}
-              </p>
-            </div>
-
-            <!-- Direct Action CTA Button -->
-            <div class="pt-4">
-              <RadialRevealButton
-                :href="project.live_url"
-                new-tab
-                variant="primary"
-                label="Buka Live Demo"
-                add-icon
-                :icon="{ symbol: '↗', size: 13, side: 'right' }"
-                padding="0.75rem 1.6rem"
-                custom-class="w-full text-xs"
-              />
-            </div>
-          </div>
-        </aside>
-
-        <!-- Case Study Article -->
-        <main aria-labelledby="case-study-title" class="max-w-3xl min-w-0">
-          <CaseStudyBlock :html="project.description_html" />
-        </main>
+      <section v-if="project.description_html" class="case-study section wrap" aria-labelledby="case-title">
+        <h2 id="case-title" class="title-xl case-study__title" data-scroll-reveal>
+          Case study <span class="alt">{{ project.title }}</span>
+        </h2>
+        <!-- description_html is sanitized server-side (utils/markdown.ts) -->
+        <div class="prose case-study__body" v-html="project.description_html" />
       </section>
-
-      <!-- 6. Next Project Navigation Footer -->
-      <footer class="pt-8 border-t border-ink/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <RadialRevealButton
-          to="/#work"
-          variant="dark"
-          label="Semua Karya"
-          add-icon
-          :icon="{ symbol: '←', size: 14, side: 'left' }"
-          padding="0.75rem 1.6rem"
-          custom-class="text-xs"
-        />
-
-        <NuxtLink
-          v-if="nextProject"
-          :to="`/project/${nextProject.slug}`"
-          class="group inline-flex items-center gap-3 font-mono text-right rounded-full border border-ink/15 bg-white/60 hover:border-signal px-5 py-2.5 transition-all duration-200"
-        >
-          <div class="text-right">
-            <p class="text-[0.65rem] text-mute uppercase tracking-widest">Berikutnya</p>
-            <p class="font-display text-sm sm:text-base font-bold text-ink group-hover:text-signal transition-colors">
-              {{ nextProject.title }}
-            </p>
-          </div>
-          <span class="text-sm font-bold text-signal transition-transform duration-200 group-hover:translate-x-1">→</span>
-        </NuxtLink>
-      </footer>
     </article>
-  </div>
 
-  <!-- Fallback Not Found -->
-  <div v-else-if="error" class="page-shell py-36 text-center">
-    <div class="max-w-md mx-auto rounded-3xl bg-white/80 p-10 border border-ink/10 shadow-md space-y-4">
-      <p class="font-display text-3xl font-bold text-ink">Project tidak ditemukan</p>
-      <p class="font-mono text-xs text-mute">Karya yang Anda cari tidak tersedia atau belum dipublikasikan.</p>
-      <NuxtLink to="/" class="button-primary inline-flex mt-4">Kembali ke Beranda</NuxtLink>
-    </div>
-  </div>
-
-  <!-- Loading Skeleton -->
-  <ProjectDetailSkeleton v-else />
+    <nav v-if="next" class="next theme-dark" data-nav-theme="dark" aria-label="Project berikutnya">
+      <NuxtLink :to="`/project/${next.slug}`" class="next__link wrap" data-cursor="Project berikutnya →">
+        <span class="kicker">Berikutnya</span>
+        <span class="title-xl next__title">{{ next.title }}</span>
+        <img :src="next.thumbnail_url" alt="" class="next__img" loading="lazy" decoding="async">
+      </NuxtLink>
+      <div class="next__all">
+        <SiteArrowLink label="Semua karya" to="/karya" />
+      </div>
+    </nav>
+  </main>
 </template>
+
+<style scoped>
+.case-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100svh;
+}
+
+.case-hero__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: calc(1.25 * var(--u));
+  padding: calc(8 * var(--u)) var(--gutter) calc(4 * var(--u));
+}
+
+.case-hero__back {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(0.4 * var(--u));
+  margin-bottom: var(--u);
+}
+
+.case-hero__back svg {
+  width: calc(1 * var(--u));
+  height: calc(1 * var(--u));
+  transition: translate 0.4s var(--ease-site);
+}
+
+.case-hero__back:hover svg {
+  translate: -0.3em 0;
+}
+
+.case-hero__title {
+  max-width: 12ch;
+  overflow-wrap: anywhere;
+}
+
+.case-hero__lede {
+  max-width: 34ch;
+}
+
+.case-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(0.75 * var(--u));
+}
+
+.facts {
+  display: grid;
+  gap: calc(1 * var(--u));
+  width: 100%;
+  max-width: calc(32 * var(--u));
+  margin-top: var(--u);
+  padding-top: calc(1.25 * var(--u));
+  border-top: 1px solid var(--c-line);
+}
+
+.facts > div {
+  display: grid;
+  grid-template-columns: calc(8 * var(--u)) 1fr;
+  gap: var(--u);
+}
+
+.facts dt {
+  padding-top: 0.25em;
+  color: var(--c-ink-soft);
+}
+
+.facts dd {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--fs-p-l);
+  line-height: 1.1;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(0.35 * var(--u));
+}
+
+.tags li {
+  padding: calc(0.3 * var(--u)) calc(0.55 * var(--u));
+  background: var(--c-ink);
+  color: var(--c-paper);
+  font-family: var(--font-grotesk);
+  font-size: var(--fs-p-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.tags--alt li {
+  padding: 0;
+  background: none;
+  color: inherit;
+}
+
+.tags--alt a {
+  display: inline-block;
+  padding: calc(0.3 * var(--u)) calc(0.55 * var(--u));
+  border: 1.5px solid var(--c-ink);
+  font-family: var(--font-serif);
+  font-size: var(--fs-p-m);
+  font-weight: 400;
+  text-transform: none;
+}
+
+.tags--alt a:hover {
+  background: var(--c-signal);
+  border-color: var(--c-signal);
+  color: var(--c-white);
+}
+
+.case-hero__panel {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(2 * var(--u));
+  height: 100svh;
+  padding: calc(6 * var(--u)) calc(3 * var(--u)) calc(3 * var(--u));
+  overflow: hidden;
+  background: var(--panel);
+}
+
+.panel--signal { --panel: var(--c-signal); }
+.panel--violet { --panel: var(--c-violet); }
+.panel--pink { --panel: var(--c-pink); }
+.panel--cyan { --panel: var(--c-cyan); }
+.panel--amber { --panel: var(--c-amber); }
+
+.frame--paper {
+  --frame: var(--c-paper);
+  padding: calc(0.6 * var(--u)) calc(0.6 * var(--u)) calc(0.4 * var(--u));
+}
+
+.case-hero__figure {
+  width: 100%;
+  max-width: calc(36 * var(--u));
+  margin: 0;
+  rotate: -2deg;
+  box-shadow: 0 calc(1 * var(--u)) calc(3 * var(--u)) rgba(11, 16, 32, 0.25);
+}
+
+.case-hero__figure img,
+.case-hero__figure video {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top center;
+  background: var(--c-ink);
+}
+
+.case-hero__figure figcaption {
+  padding-top: calc(0.4 * var(--u));
+  color: var(--c-ink-soft);
+}
+
+.case-hero__figure--second {
+  max-width: calc(26 * var(--u));
+  align-self: flex-end;
+  margin-top: calc(-6 * var(--u));
+  rotate: 3deg;
+}
+
+.case-hero__sticker {
+  position: absolute;
+  top: calc(6 * var(--u));
+  right: calc(3 * var(--u));
+}
+
+.case-study {
+  display: grid;
+  grid-template-columns: 1fr minmax(0, calc(44 * var(--u)));
+  gap: calc(3 * var(--u)) var(--gutter);
+  align-items: start;
+}
+
+.case-study__title {
+  position: sticky;
+  top: calc(7 * var(--u));
+}
+
+.case-study__title .alt {
+  display: block;
+  margin-top: 0.1em;
+  overflow-wrap: anywhere;
+  line-height: 0.9;
+}
+
+.next {
+  padding-block: calc(7 * var(--u)) calc(5 * var(--u));
+  overflow: hidden;
+}
+
+.next__link {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--u);
+  text-align: center;
+}
+
+.next__title {
+  position: relative;
+  z-index: 1;
+  max-width: 16ch;
+  transition: color 0.4s ease;
+}
+
+.next__img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(22 * var(--u));
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border: calc(0.5 * var(--u)) solid var(--c-paper);
+  translate: -50% -40%;
+  rotate: -6deg;
+  scale: 0.6;
+  opacity: 0;
+  transition: scale 0.6s var(--ease-site), opacity 0.4s ease, rotate 0.6s var(--ease-site);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .next__link:hover .next__img {
+    scale: 1;
+    opacity: 1;
+    rotate: 4deg;
+  }
+
+  .next__link:hover .next__title {
+    color: var(--c-cyan);
+  }
+}
+
+.next__all {
+  display: flex;
+  justify-content: center;
+  margin-top: calc(3 * var(--u));
+}
+
+.next__all :deep(.arrow-link) {
+  color: var(--c-paper);
+}
+
+@media (max-width: 991px) {
+  .case-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .case-hero__panel {
+    position: relative;
+    height: auto;
+    min-height: 70svh;
+    padding-top: calc(4 * var(--u));
+  }
+
+  .case-study {
+    grid-template-columns: 1fr;
+  }
+
+  .case-study__title {
+    position: static;
+  }
+}
+
+@media (max-width: 767px) {
+  .case-hero__text {
+    padding-top: calc(7 * var(--u));
+  }
+
+  .case-hero__panel {
+    padding-inline: var(--gutter);
+  }
+
+  .case-hero__figure--second {
+    margin-top: calc(-2 * var(--u));
+  }
+
+  .facts > div {
+    grid-template-columns: 1fr;
+    gap: calc(0.4 * var(--u));
+  }
+}
+</style>

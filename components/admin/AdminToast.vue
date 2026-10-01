@@ -21,7 +21,7 @@ const { toasts, dismiss } = useToast()
         :key="toast.id"
         class="pointer-events-auto flex w-full items-start gap-3.5 rounded-2xl p-4 shadow-xl border backdrop-blur-md transition-all"
         :class="{
-          'bg-[#121110]/95 text-paper border-white/15': toast.type === 'info',
+          'bg-[#0b1020]/95 text-paper border-white/15': toast.type === 'info',
           'bg-emerald-950/95 text-emerald-100 border-emerald-500/30': toast.type === 'success',
           'bg-rose-950/95 text-rose-100 border-rose-500/30': toast.type === 'error',
           'bg-amber-950/95 text-amber-100 border-amber-500/30': toast.type === 'warning',

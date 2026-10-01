@@ -23,23 +23,23 @@ export interface PublicSiteSettings {
 
 export const DEFAULT_SITE_SETTINGS: PublicSiteSettings = {
   general: {
-    site_name: 'Rumah Design',
-    tagline: 'Showcase karya frontend & narasi proses desain',
-    bio: 'Product designer & frontend engineer yang fokus pada kerajinan visual, interaksi presisi, dan arsitektur web modern.',
-    contact_email: 'hello@rumahdesign.dev',
+    site_name: 'Hygione Darriyan',
+    tagline: 'IT Support · UI/UX Designer · Frontend & Fullstack Developer',
+    bio: 'Hygione Heparre Paro Arro Darriyan, dikenal sebagai Hygione Darriyan, adalah praktisi IT support, UI/UX designer, frontend dan fullstack developer asal Citayam, Kota Depok, Indonesia. Ia merancang pengalaman digital dan membangun aplikasi web dari antarmuka hingga backend.',
+    contact_email: 'paroarro07@gmail.com',
   },
   seo: {
-    default_title: 'Rumah Design — Portofolio & Case Study Frontend',
-    default_description: 'Kumpulan karya frontend, landing page interaktif, dan case study proses desain produk oleh desainer & engineer.',
+    default_title: 'Hygione Darriyan — UI/UX & Fullstack Developer',
+    default_description: 'Portofolio Hygione Heparre Paro Arro Darriyan: IT support, UI/UX design, frontend, fullstack development, case study, dan aplikasi web.',
     default_og_image: '',
     indexing: true,
   },
   socials: {
-    github: 'https://github.com',
-    linkedin: 'https://linkedin.com',
-    dribbble: 'https://dribbble.com',
-    twitter: 'https://x.com',
-    instagram: 'https://instagram.com',
+    github: 'https://github.com/gyonmd-tech',
+    linkedin: 'https://www.linkedin.com/in/hygione-heparre-paro-arro-darriyan-910724327',
+    dribbble: '',
+    twitter: '',
+    instagram: 'https://www.instagram.com/gyon.md/',
     medium: '',
   },
 }
@@ -86,5 +86,23 @@ export function mergeSiteSettings(
     }
   }
 
+  if (settings.general.tagline === 'Showcase karya frontend & narasi proses desain') settings.general.tagline = DEFAULT_SITE_SETTINGS.general.tagline
+  if (settings.general.bio === 'Product designer & frontend engineer yang fokus pada kerajinan visual, interaksi presisi, dan arsitektur web modern.') settings.general.bio = DEFAULT_SITE_SETTINGS.general.bio
+  if (settings.seo.default_description === 'Kumpulan karya frontend, landing page interaktif, dan case study proses desain produk oleh desainer & engineer.') settings.seo.default_description = DEFAULT_SITE_SETTINGS.seo.default_description
+  if (settings.seo.default_og_image === 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&h=630&q=80') settings.seo.default_og_image = ''
+  // Compatibility while the additive branding migration is being rolled out.
+  for (const key of ['site_name', 'tagline', 'bio'] as const) {
+    if (/rumah design/i.test(settings.general[key])) settings.general[key] = DEFAULT_SITE_SETTINGS.general[key]
+  }
+  if (settings.general.contact_email === 'hello@rumahdesign.dev') settings.general.contact_email = DEFAULT_SITE_SETTINGS.general.contact_email
+  for (const key of ['default_title', 'default_description'] as const) {
+    if (/rumah design/i.test(settings.seo[key])) settings.seo[key] = DEFAULT_SITE_SETTINGS.seo[key]
+  }
+  for (const key of Object.keys(settings.socials) as Array<keyof PublicSiteSettings['socials']>) {
+    const value = settings.socials[key]
+    try {
+      if (value && new URL(value).pathname === '/') settings.socials[key] = ''
+    } catch { settings.socials[key] = '' }
+  }
   return settings
 }

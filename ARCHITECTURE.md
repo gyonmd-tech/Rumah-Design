@@ -1,4 +1,10 @@
-# Architecture — Rumah Design
+# Architecture — Hygione Darriyan
+
+## Pembaruan scope — 11 September 2026
+
+Brand resmi: **Hygione Darriyan**. Platform desain dan portofolio pribadi untuk UI/UX designer, designer, frontend developer, dan fullstack developer. Email kontak: **paroarro07@gmail.com**. Domain utama: https://hygionedarriyan.vercel.app. Domain lama https://rumah-design.vercel.app diarahkan permanen ke path yang sama pada domain baru. Nuxt 3 SSR, Supabase, Vercel, project link-based, serta otorisasi admin tetap menjadi batas arsitektur.
+
+SEO mencakup konten semantik yang relevan, identitas Person, CollectionPage/ProfilePage, CreativeWork dan breadcrumb, canonical, metadata dinamis, sitemap project published, serta respons HTTP yang benar. Kata kunci pendukung berasal dari proses, kategori, dan teknologi yang benar-benar digunakan.
 
 ## 1. Tech Stack
 - **Framework**: Nuxt 3 (SSR mode)
@@ -105,3 +111,11 @@ create policy "public read published"
 - Repo di-connect ke Vercel atau Netlify (pilih salah satu sebagai primary — disarankan konsisten, jangan dobel, supaya tidak bingung environment variable).
 - Environment variables: `SUPABASE_URL`, `SUPABASE_ANON_KEY` (dan service role key kalau dipakai di server route, disimpan sebagai secret, jangan di client).
 - Auto-deploy tiap push ke branch `main`.
+
+## Perluasan konten yang disetujui — 11 September 2026
+
+Tambahkan /layanan, tiga halaman fokus /layanan/ui-ux-design, /layanan/frontend-development, /layanan/fullstack-development, dan /proses. Konten disimpan sebagai TypeScript terstruktur, dirender SSR, memiliki metadata unik dan sitemap. Referensi karya hanya berasal dari API published. Beranda mendapat section layanan, pendekatan kerja, dan FAQ yang dapat dibaca tanpa JavaScript. Hindari klaim ranking, metrik hasil, biaya, dan jadwal yang belum disepakati.
+
+## Arsitektur identitas dan SEO personal — 12 September 2026
+
+`utils/identity.ts` menjadi sumber identitas terstruktur untuk schema Person. Nilai branding yang dapat dikelola admin tetap disimpan di `site_settings`; migration `202609110006_personal_identity_branding.sql` menyediakan nilai production yang selaras. Aset favicon, manifest, dan Open Graph disajikan dari `public/`, sementara Nuxt SSR menghasilkan canonical, metadata author, dan JSON-LD pada HTML awal. Vercel adalah environment deployment utama.
