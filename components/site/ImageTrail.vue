@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { imageUrl } from '~/utils/image'
 /**
  * Spawns project thumbnails along the pointer path inside the parent element.
  * Desktop + fine pointer only; decorative (aria-hidden, empty alt).
@@ -25,7 +26,7 @@ onMounted(() => {
   function spawn(x: number, y: number, dx: number, dy: number) {
     if (!props.images.length) return
     const img = document.createElement('img')
-    img.src = props.images[index % props.images.length]
+    img.src = imageUrl(props.images[index % props.images.length], 480)
     img.alt = ''
     img.decoding = 'async'
     img.className = 'trail-img'

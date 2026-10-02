@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { imageUrl, responsiveImage } from '~/utils/image'
 import { ArrowLeft } from 'lucide-vue-next'
 import type { Project } from '~/types/database.types'
 import { categoryLabel, excerpt } from '~/utils/project'
@@ -163,14 +164,14 @@ useSiteMotion(root, ({ gsap, reduced }) => {
 
         <div :class="['case-hero__panel', `panel--${color}`]">
           <figure class="case-hero__figure frame frame--paper">
-            <img :src="project.thumbnail_url" :alt="`Tampilan utama ${project.title}`" fetchpriority="high" decoding="async">
+            <img v-bind="responsiveImage(project.thumbnail_url, '(min-width: 992px) 42vw, 92vw', 1440)" :alt="`Tampilan utama ${project.title}`" fetchpriority="high" decoding="async">
             <figcaption class="label">
               Tampilan utama
             </figcaption>
           </figure>
           <figure v-if="previewImage || previewIsVideo" class="case-hero__figure case-hero__figure--second frame frame--paper">
             <video v-if="previewIsVideo" :src="project.preview_media_url!" autoplay muted loop playsinline aria-label="Detail interaksi" />
-            <img v-else :src="previewImage!" :alt="`Detail interaksi ${project.title}`" loading="lazy" decoding="async">
+            <img v-else v-bind="responsiveImage(previewImage!, '(min-width: 992px) 30vw, 80vw')" :alt="`Detail interaksi ${project.title}`" loading="lazy" decoding="async">
             <figcaption class="label">
               Detail interaksi
             </figcaption>
@@ -194,7 +195,7 @@ useSiteMotion(root, ({ gsap, reduced }) => {
       <NuxtLink :to="`/project/${next.slug}`" class="next__link wrap" data-cursor="Project berikutnya →">
         <span class="kicker">Berikutnya</span>
         <span class="title-xl next__title">{{ next.title }}</span>
-        <img :src="next.thumbnail_url" alt="" class="next__img" loading="lazy" decoding="async">
+        <img :src="imageUrl(next.thumbnail_url, 768)" alt="" class="next__img" loading="lazy" decoding="async">
       </NuxtLink>
       <div class="next__all">
         <SiteArrowLink label="Semua karya" to="/karya" />

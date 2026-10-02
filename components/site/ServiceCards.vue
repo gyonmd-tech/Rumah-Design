@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { responsiveImage } from '~/utils/image'
 import type { ProjectSummary } from '~/types/database.types'
 import { SERVICES, SERVICE_SHORT_NAMES } from '~/utils/portfolio-content'
 
@@ -29,7 +30,7 @@ const cards = computed(() => SERVICES.map((service, index) => {
         data-collage-inner
       >
         <span class="service__media">
-          <img v-if="card.image" :src="card.image" :alt="card.imageAlt" loading="lazy" decoding="async">
+          <img v-if="card.image" v-bind="responsiveImage(card.image, '(min-width: 768px) 22vw, 80vw')" :alt="card.imageAlt" loading="lazy" decoding="async">
         </span>
         <div class="service__body">
           <h3 class="title-m service__title">{{ card.title }}</h3>

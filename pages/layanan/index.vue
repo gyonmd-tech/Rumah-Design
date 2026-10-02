@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { responsiveImage } from '~/utils/image'
 import { SERVICES, SERVICE_SHORT_NAMES } from '~/utils/portfolio-content'
 
 usePortfolioPageSeo({
@@ -8,6 +9,7 @@ usePortfolioPageSeo({
 })
 
 const { data: projects } = await usePublishedProjects()
+const recent = computed(() => projects.value.slice(0, 3))
 const PANEL_COLORS = ['signal', 'pink', 'cyan'] as const
 
 const services = computed(() => SERVICES.map((service, index) => ({
@@ -78,7 +80,7 @@ useSiteMotion(root, ({ gsap, reduced, finePointer }) => {
     </header>
 
     <section class="manifesto section wrap" aria-label="Pengantar layanan">
-      <p class="p-xl manifesto__lead" data-scroll-reveal>
+      <p class="p-xl manifesto__lead" data-scroll-fade>
         Saya membantu menghubungkan kebutuhan pengguna, karakter visual, dan implementasi web. Mulai dari satu halaman hingga aplikasi berbasis data, kita memilih pendekatan sesuai masalah yang ingin diselesaikan.
       </p>
       <p class="label manifesto__label" data-scroll-reveal>
@@ -118,7 +120,7 @@ useSiteMotion(root, ({ gsap, reduced, finePointer }) => {
           :class="['service-step__shot', `service-step__shot--${pIndex}`]"
           data-cursor="Lihat case →"
         >
-          <img :src="project.thumbnail_url" :alt="`Contoh karya: ${project.title}`" loading="lazy" decoding="async">
+          <img v-bind="responsiveImage(project.thumbnail_url, '(min-width: 992px) 34vw, 85vw')" :alt="`Contoh karya: ${project.title}`" loading="lazy" decoding="async">
           <span class="label">{{ project.title }}</span>
         </NuxtLink>
       </div>
@@ -141,16 +143,23 @@ useSiteMotion(root, ({ gsap, reduced, finePointer }) => {
       </div>
     </section>
 
-    <section class="think section theme-dark" data-nav-theme="dark" aria-labelledby="think-title">
-      <div class="wrap think__inner">
+    <section class="think section" aria-labelledby="think-title">
+      <div class="wrap think__head">
         <h2 id="think-title" class="title-xl" data-scroll-reveal>
           Lihat cara berpikirnya <span class="alt">lewat karya.</span>
         </h2>
-        <p class="p-m muted" data-scroll-reveal>
-          Portofolio ini memuat eksplorasi desain, implementasi antarmuka, dan aplikasi yang dapat dicoba melalui live demo. Gunakan case study untuk menilai kecocokan pendekatan saya dengan kebutuhan Anda.
-        </p>
-        <SiteButton label="Jelajahi project terpilih" to="/karya" variant="pink" />
+        <div class="think__side">
+          <p class="p-m muted" data-scroll-reveal>
+            Portofolio ini memuat eksplorasi desain, implementasi antarmuka, dan aplikasi yang dapat dicoba melalui live demo. Gunakan case study untuk menilai kecocokan pendekatan saya dengan kebutuhan Anda.
+          </p>
+          <SiteArrowLink label="Jelajahi project terpilih" to="/karya" />
+        </div>
       </div>
+      <ul class="wrap think__grid">
+        <li v-for="(project, index) in recent" :key="project.id" data-scroll-reveal="el">
+          <SiteWorkCard :project="project" :ratio="index === 1 ? '4 / 5' : '16 / 11'" />
+        </li>
+      </ul>
     </section>
   </main>
 </template>
@@ -336,26 +345,51 @@ useSiteMotion(root, ({ gsap, reduced, finePointer }) => {
   max-width: 48ch;
 }
 
-.think__inner {
+.think {
+  border-top: 1px solid var(--c-line);
+}
+
+.think__head {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  align-items: end;
+  gap: calc(2 * var(--u)) var(--gutter);
+  margin-bottom: calc(4 * var(--u));
+}
+
+.think__head .title-xl {
+  max-width: 12ch;
+}
+
+.think__side {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: calc(1.5 * var(--u));
-  text-align: center;
+  max-width: 44ch;
 }
 
-.think__inner .title-xl {
-  max-width: 14ch;
+.think__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gutter);
+  align-items: start;
 }
 
-.think__inner .p-m {
-  max-width: 46ch;
+.think__grid > li:nth-child(2) {
+  margin-top: calc(6 * var(--u));
 }
 
 @media (max-width: 991px) {
   .service-step,
-  .start {
+  .start,
+  .think__head,
+  .think__grid {
     grid-template-columns: 1fr;
+  }
+
+  .think__grid > li:nth-child(2) {
+    margin-top: 0;
   }
 
   .service-step__text {

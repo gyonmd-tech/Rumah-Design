@@ -26,6 +26,7 @@ const GROUP_GAP = 0.1
  *   data-scroll-reveal     same, when the element enters the viewport
  *   data-scroll-group      parent that staggers its scroll reveals
  *   data-reveal-delay      extra delay in seconds
+ *   data-scroll-fade       words brighten from faint to full, scrubbed by scroll
  *   data-draw              SVG paths drawn on scroll ("intro" draws on load)
  *   data-collage           hovering a [data-collage-item] lifts it and pushes,
  *                          shrinks and tilts its neighbours ([data-collage-inner])
@@ -64,6 +65,7 @@ export function useSiteMotion(
       if (!reduced && declarative) {
         revealIntro(el, gsap, SplitText)
         revealOnScroll(el, gsap, SplitText)
+        fadeOnScroll(el, gsap, SplitText)
         drawOnScroll(el, gsap)
         if (finePointer) collageCleanups = gsap.utils.toArray<HTMLElement>('[data-collage]', el).map(box => interactiveCollage(box, gsap))
       }
@@ -140,6 +142,25 @@ function revealOnScroll(root: HTMLElement, gsap: typeof gsapType, SplitText: typ
     splitAndAnimate(node, gsap, SplitText, {
       delay,
       scrollTrigger: { trigger, start: 'top 88%', once: true },
+    })
+  })
+}
+
+/** Scroll-linked reading effect: each word goes from faint to full opacity. */
+function fadeOnScroll(root: HTMLElement, gsap: typeof gsapType, SplitText: typeof SplitTextType) {
+  gsap.utils.toArray<HTMLElement>('[data-scroll-fade]', root).forEach((node) => {
+    SplitText.create(node, {
+      type: 'words',
+      wordsClass: 'fade-word',
+      autoSplit: true,
+      onSplit(self) {
+        return gsap.fromTo(self.words, { opacity: 0.12 }, {
+          opacity: 1,
+          ease: 'none',
+          stagger: 0.1,
+          scrollTrigger: { trigger: node, start: 'top 82%', end: 'bottom 45%', scrub: 0.6 },
+        })
+      },
     })
   })
 }

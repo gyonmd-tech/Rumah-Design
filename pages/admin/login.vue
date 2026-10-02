@@ -3,6 +3,7 @@ import AdminIcon from '~/components/admin/AdminIcon.vue'
 import type { Database } from '~/types/database.types'
 
 definePageMeta({ layout: false })
+useAdminFonts()
 useSeoMeta({ title: 'Studio Portal Login — Hygione Darriyan', robots: 'noindex, nofollow' })
 
 const route = useRoute()
