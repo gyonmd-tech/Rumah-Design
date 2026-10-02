@@ -3,6 +3,8 @@ import AdminCommandPalette from '~/components/admin/AdminCommandPalette.vue'
 import AdminIcon from '~/components/admin/AdminIcon.vue'
 import AdminToast from '~/components/admin/AdminToast.vue'
 
+useAdminFonts()
+
 const client = useSupabaseClient()
 const user = useSupabaseUser()
 const route = useRoute()

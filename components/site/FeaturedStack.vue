@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { responsiveImage } from '~/utils/image'
 import type { ProjectSummary } from '~/types/database.types'
 import { categoryLabel } from '~/utils/project'
 
@@ -102,7 +103,7 @@ useSiteMotion(root, ({ gsap, ScrollTrigger, reduced, finePointer }) => {
               data-cursor="Lihat case →"
             >
               <img
-                :src="project.thumbnail_url"
+                v-bind="responsiveImage(project.thumbnail_url, '(min-width: 992px) 52vw, 92vw')"
                 :alt="`Tampilan ${project.title}`"
                 :loading="index < 2 ? 'eager' : 'lazy'"
                 decoding="async"

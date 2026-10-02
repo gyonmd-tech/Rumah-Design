@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { imageUrl } from '~/utils/image'
 /**
  * A media card that trails the pointer across the hero and flips to the next
  * project image every stretch of travel. Desktop + fine pointer only; it hides
@@ -9,6 +10,8 @@ const props = defineProps<{ images: string[] }>()
 const card = ref<HTMLElement | null>(null)
 const active = ref(0)
 const visible = ref(false)
+// Images are only requested once the effect is actually enabled (desktop, fine pointer).
+const loaded = ref<string[]>([])
 const { $motion } = useNuxtApp()
 let cleanup: (() => void) | null = null
 
@@ -16,6 +19,7 @@ onMounted(() => {
   const host = card.value?.parentElement
   const fine = window.matchMedia('(min-width: 992px) and (hover: hover) and (pointer: fine)').matches
   if (!$motion || !card.value || !host || !fine || $motion.reducedMotion || props.images.length < 2) return
+  loaded.value = props.images
 
   const { gsap } = $motion
   const x = gsap.quickTo(card.value, 'x', { duration: 1, ease: 'power4' })
@@ -64,9 +68,9 @@ onBeforeUnmount(() => cleanup?.())
   <div ref="card" class="cursor-card" :data-visible="visible || undefined" aria-hidden="true">
     <div class="cursor-card__inner frame frame--amber">
       <img
-        v-for="(src, index) in images"
+        v-for="(src, index) in loaded"
         :key="src"
-        :src="src"
+        :src="imageUrl(src, 480)"
         alt=""
         loading="lazy"
         decoding="async"

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { responsiveImage } from '~/utils/image'
 import type { ProjectSummary } from '~/types/database.types'
 import { categoryLabel } from '~/utils/project'
 
@@ -39,12 +40,12 @@ function stop() {
   >
     <span class="work-card__media" :style="{ aspectRatio: ratio }">
       <img
-        :src="project.thumbnail_url"
+        v-bind="responsiveImage(project.thumbnail_url, '(min-width: 768px) 30vw, 92vw')"
         :alt="`Tampilan ${project.title}`"
         :loading="eager ? 'eager' : 'lazy'"
         decoding="async"
       >
-      <img v-if="hoverImage" class="work-card__alt" :src="hoverImage" alt="" loading="lazy" decoding="async">
+      <img v-if="hoverImage" class="work-card__alt" v-bind="responsiveImage(hoverImage, '(min-width: 768px) 30vw, 92vw')" alt="" loading="lazy" decoding="async">
       <video
         v-if="hasVideo"
         ref="video"

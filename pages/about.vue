@@ -65,7 +65,7 @@ useSiteMotion(root, ({ gsap, ScrollTrigger, reduced }) => {
     <section class="journey section wrap" aria-labelledby="journey-title">
       <div class="journey__media">
         <figure class="about-photo">
-          <img src="/images/hero-profile.webp" alt="Potret Hygione Heparre Paro Arro Darriyan" width="1254" height="1254" loading="lazy" decoding="async">
+          <img src="/images/hero-profile-960.webp" srcset="/images/hero-profile-640.webp 640w, /images/hero-profile-960.webp 960w, /images/hero-profile.webp 1254w" sizes="(min-width: 992px) 36vw, 80vw" alt="Potret Hygione Heparre Paro Arro Darriyan" width="1254" height="1254" loading="lazy" decoding="async">
         </figure>
         <span class="sticker sticker--cyan journey__sticker" style="--sticker-rotate: -8deg" aria-hidden="true">Citayam, Depok</span>
       </div>

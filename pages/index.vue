@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { responsiveImage } from '~/utils/image'
 import { HOME_FAQS, WORK_STEPS } from '~/utils/portfolio-content'
 
 usePortfolioPageSeo({
@@ -77,10 +78,10 @@ useSiteMotion(root, ({ gsap, finePointer }) => {
     <section class="intro section wrap" aria-labelledby="intro-title">
       <div class="intro__collage" aria-hidden="true" data-collage>
         <figure class="polaroid polaroid--a" data-collage-item>
-          <img src="/images/hero-profile.webp" alt="" width="1254" height="1254" loading="lazy" decoding="async">
+          <img src="/images/hero-profile-960.webp" srcset="/images/hero-profile-640.webp 640w, /images/hero-profile-960.webp 960w, /images/hero-profile.webp 1254w" sizes="(min-width: 992px) 26vw, 50vw" alt="" width="1254" height="1254" loading="lazy" decoding="async">
         </figure>
         <figure v-if="collageProject" class="polaroid polaroid--b" data-collage-item>
-          <img :src="collageProject.thumbnail_url" alt="" loading="lazy" decoding="async">
+          <img v-bind="responsiveImage(collageProject.thumbnail_url, '(min-width: 992px) 28vw, 60vw')" alt="" loading="lazy" decoding="async">
         </figure>
         <span class="sticker sticker--violet intro__sticker" style="--sticker-rotate: 9deg">Pixel & logic</span>
       </div>
