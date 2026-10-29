@@ -10,6 +10,7 @@
 - `security-patch-ci` — patch dependency + CI GitHub Actions (2026-10-29).
 - `public-perf` — Supabase SDK admin-only, payload ramping, ISR (2026-10-29, ADR-002).
 - `deps-tests` — hapus dependency mati + Vitest 24 test (2026-10-29, ADR-003).
+- `fonts-hero` — font publik self-host, throttle pointermove hero, Vitest 5 (2026-10-29, ADR-004).
 
 ## Branch aktif
 - `perf/images-layanan-refinements` (1 commit di atas main).

@@ -1,18 +1,17 @@
 # Status
 
-**Phase:** deps-tests — PR gyonmd-tech/Rumah-Design#7 terbuka (2026-10-29)
-**Branch:** `chore/deps-tests` (sudah di-rebase ke `main` f575da5)
+**Phase:** fonts-hero — Implementation + verifikasi lokal selesai (2026-10-29)
+**Branch:** `perf/fonts-hero`
 
 ## Selesai
 - Discovery + audit: `.10x/reviews/2026-10-29-codebase-audit.md`.
-- security-patch-ci: PR #5 merged (126b939).
-- public-perf (ADR-002): PR #6 merged (f575da5). Production terverifikasi: ISR aktif (`X-Vercel-Cache: HIT`), initial JS `/` 174 KB gzip, payload 1.7 KB, `/api/projects` 4.7 KB.
-- deps-tests (ADR-003): QUAL-4 + QUAL-2 — 6 dependency mati dihapus, 24 unit test, bug sanitasi `<style>` diperbaiki.
+- PR #5 security-patch-ci, PR #6 public-perf (ADR-002), PR #7 deps-tests (ADR-003) — semua merged & terverifikasi di production.
+- fonts-hero (ADR-004): PERF-6 font self-host, PERF-7 throttle hero, vitest 5 (tutup tinypool critical), audit CI termasuk devDependencies.
 
 ## Berikutnya
-- Merge PR #7 setelah CI hijau.
-- PERF-9: PageSpeed masih 429 (kuota anonim harian) — coba lagi besok atau via pagespeed.web.dev di browser pemilik.
-- Kandidat berikut: PERF-6 (font), PERF-7 (hero), lazy GSAP, SEC-2 (CSP nonce), hapus komponen mati.
+- PR untuk `perf/fonts-hero`; cek visual hover hero di preview (layar ≥992px).
+- PERF-9: PageSpeed (kuota API anonim habis — pakai pagespeed.web.dev).
+- Kandidat berikut: lazy GSAP, SEC-2 (CSP nonce), hapus komponen mati, rencana upgrade Nuxt 4 (menutup sisa moderate/low).
 
 ## Blocker
 - Tidak ada.
