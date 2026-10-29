@@ -22,6 +22,8 @@ const markdownSchema: SanitizeSchema = {
     href: ['http', 'https', 'mailto'],
     src: ['http', 'https'],
   },
+  // Drop these elements with their contents instead of unwrapping them into text.
+  strip: ['script', 'style', 'noscript', 'template'],
 }
 
 function secureRichContent() {
