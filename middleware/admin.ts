@@ -1,12 +1,11 @@
-import type { Database } from '~/types/database.types'
-
 export default defineNuxtRouteMiddleware(async (to) => {
-  const user = useSupabaseUser()
-  if (!user.value) {
+  const client = useSupabaseClient()
+  const { data: { session } } = await client.auth.getSession()
+  if (!session) {
     return navigateTo(`/admin/login?next=${encodeURIComponent(to.fullPath)}`)
   }
+  useSupabaseUser().value = session.user
 
-  const client = useSupabaseClient<Database>()
   const { data, error } = await client.rpc('is_admin')
   if (error || !data) {
     await client.auth.signOut()

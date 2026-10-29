@@ -43,10 +43,14 @@ export default defineNuxtConfig({
       siteUrl,
       googleSiteVerification,
       whatsappNumber: '',
+      // Publishable/anon key only; RLS is the access boundary.
+      supabase: {
+        url: process.env.SUPABASE_URL || '',
+        key: process.env.SUPABASE_KEY || '',
+      },
     },
   },
   modules: [
-    '@nuxtjs/supabase',
     '@nuxtjs/seo',
   ],
   css: ['~/assets/css/tailwind.css', '~/assets/css/site.css'],
@@ -57,6 +61,18 @@ export default defineNuxtConfig({
   },
   experimental: {
     appManifest: false,
+  },
+  hooks: {
+    // Public pages would otherwise prefetch the admin layout/middleware and,
+    // through them, the Supabase SDK. The manifest only drives SSR resource
+    // hints; lazy loading still works when the studio is opened.
+    'build:manifest'(manifest) {
+      for (const chunk of Object.values(manifest)) {
+        if (chunk.isEntry && chunk.dynamicImports) {
+          chunk.dynamicImports = chunk.dynamicImports.filter(id => !id.includes('admin'))
+        }
+      }
+    },
   },
   vite: {
     plugins: [tailwindcss()],
@@ -80,9 +96,6 @@ export default defineNuxtConfig({
   },
   robots: {
     disallow: ['/admin', '/admin/*'],
-  },
-  supabase: {
-    redirect: false,
   },
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
@@ -119,13 +132,24 @@ export default defineNuxtConfig({
         'X-DNS-Prefetch-Control': 'off',
       },
     },
+    // Public HTML carries no per-user state, so it is served from Vercel's cache (ADR-002).
+    '/': { isr: 60 },
+    '/karya': { isr: { expiration: 60, allowQuery: ['kategori', 'gaya', 'q'] } },
+    '/about': { isr: 60 },
+    '/contact': { isr: 60 },
+    '/proses': { isr: 60 },
+    '/layanan': { isr: 60 },
+    '/layanan/**': { isr: 60 },
+    '/project/**': { isr: 60 },
+    // The studio is a client-only SPA; its Supabase client never reaches public bundles.
     '/admin/**': {
+      ssr: false,
       robots: false,
       headers: {
         'Cache-Control': 'private, no-store, max-age=0',
       },
     },
-    '/admin': { robots: false, headers: { 'Cache-Control': 'private, no-store, max-age=0' } },
+    '/admin': { ssr: false, robots: false, headers: { 'Cache-Control': 'private, no-store, max-age=0' } },
     '/hubungi': { redirect: '/contact' },
     '/api/__sitemap__/**': { cache: { maxAge: 3600 } },
     '/api/site-settings': { cache: { maxAge: 300 } },

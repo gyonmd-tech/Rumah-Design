@@ -1,5 +1,5 @@
-import { serverSupabaseClient } from '#supabase/server'
-import type { Database, Project } from '~/types/database.types'
+import type { Project, ProjectDetail } from '~/types/database.types'
+import { excerpt } from '~/utils/project'
 import { renderSafeMarkdown } from '../../utils/markdown'
 
 export default defineEventHandler(async (event) => {
@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Slug tidak valid' })
   }
 
-  const client = await serverSupabaseClient<Database>(event)
+  const client = useServerSupabase()
   let lastError: unknown
 
   for (let attempt = 1; attempt <= 2; attempt++) {
@@ -26,12 +26,14 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 404, statusMessage: 'Project tidak ditemukan' })
       }
 
-      const project = data as Project
+      // The raw markdown stays on the server: pages get a plain summary and sanitized HTML.
+      const { description, ...project } = data as Project
       setResponseHeader(event, 'Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300')
       return {
         ...project,
-        description_html: await renderSafeMarkdown(project.description || ''),
-      }
+        summary: excerpt(description, 220),
+        description_html: await renderSafeMarkdown(description || ''),
+      } satisfies ProjectDetail
     }
     catch (error) {
       if (isError(error) && error.statusCode === 404) throw error

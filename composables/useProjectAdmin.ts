@@ -47,10 +47,10 @@ export function useProjectAdmin() {
   async function uploadThumbnail(file: File) {
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) throw new Error('Gunakan gambar JPG, PNG, WebP, atau GIF.')
     if (file.size > MAX_IMAGE_SIZE) throw new Error('Ukuran thumbnail maksimal 10 MB.')
-    if (!user.value?.sub) throw new Error('Sesi admin tidak ditemukan.')
+    if (!user.value?.id) throw new Error('Sesi admin tidak ditemukan.')
 
     const extension = file.type === 'image/jpeg' ? 'jpg' : file.type.split('/')[1]
-    const path = `${user.value.sub}/${Date.now()}-${crypto.randomUUID()}.${extension}`
+    const path = `${user.value.id}/${Date.now()}-${crypto.randomUUID()}.${extension}`
     const { error } = await client.storage.from('project-media').upload(path, file, {
       cacheControl: '31536000',
       contentType: file.type,

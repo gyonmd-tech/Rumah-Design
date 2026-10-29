@@ -1,15 +1,14 @@
-import { serverSupabaseClient } from '#supabase/server'
-import type { Database, ProjectSummary } from '~/types/database.types'
+import type { ProjectSummary } from '~/types/database.types'
 
 export default defineEventHandler(async (event) => {
-  const client = await serverSupabaseClient<Database>(event)
+  const client = useServerSupabase()
   let lastError: unknown
 
   for (let attempt = 1; attempt <= 2; attempt++) {
     try {
       const { data, error } = await client
         .from('projects')
-        .select('id, title, slug, description, category, style_tags, tech_stack, thumbnail_url, preview_media_url')
+        .select('id, title, slug, category, style_tags, tech_stack, thumbnail_url, preview_media_url')
         .eq('status', 'published')
         .order('created_at', { ascending: false })
         .abortSignal(AbortSignal.timeout(10000))

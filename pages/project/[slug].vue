@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { imageUrl, responsiveImage } from '~/utils/image'
 import { ArrowLeft } from 'lucide-vue-next'
-import type { Project } from '~/types/database.types'
+import type { ProjectDetail } from '~/types/database.types'
 import { categoryLabel, excerpt } from '~/utils/project'
 import { serializeJsonLd } from '~/utils/structured-data'
 
@@ -11,7 +11,7 @@ const siteOrigin = String(useRuntimeConfig().public.siteUrl).replace(/\/+$/, '')
 
 const { data: project, error } = await useAsyncData(
   () => `project-${slug.value}`,
-  () => $fetch<Project & { description_html: string }>(`/api/projects/${encodeURIComponent(slug.value)}`),
+  () => $fetch<ProjectDetail>(`/api/projects/${encodeURIComponent(slug.value)}`),
 )
 
 if (error.value || !project.value) {
@@ -38,7 +38,7 @@ const previewImage = computed(() => {
 
 const url = computed(() => `${siteOrigin}/project/${slug.value}`)
 const title = computed(() => project.value?.seo_title || `${project.value?.title} — Hygione Darriyan`)
-const description = computed(() => project.value?.seo_description || excerpt(project.value?.description ?? null))
+const description = computed(() => project.value?.seo_description || excerpt(project.value?.summary ?? null))
 
 useSeoMeta({
   title,
@@ -119,7 +119,7 @@ useSiteMotion(root, ({ gsap, reduced }) => {
             {{ project.title }}
           </h1>
           <p class="p-l case-hero__lede" data-reveal>
-            {{ excerpt(project.description, 220) }}
+            {{ project.summary }}
           </p>
           <div class="case-hero__actions" data-reveal="el">
             <SiteButton label="Buka live demo" :href="project.live_url" icon="external" />

@@ -8,7 +8,7 @@ SEO mencakup konten semantik yang relevan, identitas Person, CollectionPage/Prof
 
 ## 1. Tech Stack
 - **Framework**: Nuxt 3 (SSR mode)
-- **Backend/DB**: Supabase (Postgres + Auth + Storage) via modul `@nuxtjs/supabase`
+- **Backend/DB**: Supabase (Postgres + Auth + Storage) via `@supabase/supabase-js` — `server/utils/supabase.ts` (anon, publik) dan `composables/useSupabase.ts` (admin-only); lihat `.10x/adrs/002-supabase-client-admin-only.md`
 - **Styling**: Tailwind CSS (opsional, sesuaikan preferensi)
 - **SEO**: `@nuxtjs/seo` (sitemap, robots, OG image, meta)
 - **Hosting**: Vercel atau Netlify (keduanya support Nuxt SSR native)
@@ -100,7 +100,9 @@ create policy "public read published"
 
 ## 5. Auth
 - Supabase Auth dengan email/password, hanya 1 akun (pemilik).
+- `/admin/**` dirender client-only (`ssr: false`); sesi disimpan supabase-js di localStorage.
 - Middleware Nuxt (`middleware/admin.ts`) melindungi semua route di bawah `/admin` dan memverifikasi `public.is_admin()`.
+- Halaman publik di-cache ISR 60 detik di Vercel dan tidak membawa state per-user.
 
 ## 6. SEO Setup
 - `@nuxtjs/seo` di-config di `nuxt.config.ts` dengan `site.url`, default OG image.
