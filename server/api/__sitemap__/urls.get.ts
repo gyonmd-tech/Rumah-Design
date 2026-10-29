@@ -1,9 +1,7 @@
 import { SERVICES } from '~/utils/portfolio-content'
-import type { Database } from '~/types/database.types'
-import { serverSupabaseClient } from '#supabase/server'
 
-export default defineEventHandler(async (event) => {
-  const client = await serverSupabaseClient<Database>(event)
+export default defineEventHandler(async () => {
+  const client = useServerSupabase()
   const { data, error } = await client
     .from('projects')
     .select('slug, updated_at, thumbnail_url')

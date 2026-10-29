@@ -19,13 +19,18 @@ export type ProjectSummary = Pick<
   | 'id'
   | 'title'
   | 'slug'
-  | 'description'
   | 'category'
   | 'style_tags'
   | 'tech_stack'
   | 'thumbnail_url'
   | 'preview_media_url'
 >
+
+/** Public detail payload: plain summary + sanitized HTML instead of raw markdown. */
+export type ProjectDetail = Omit<Project, 'description'> & {
+  summary: string
+  description_html: string
+}
 
 export type Project = {
   id: string

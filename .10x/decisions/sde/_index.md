@@ -8,6 +8,7 @@
 
 ## Fitur
 - `security-patch-ci` — patch dependency + CI GitHub Actions (2026-10-29).
+- `public-perf` — Supabase SDK admin-only, payload ramping, ISR (2026-10-29, ADR-002).
 
 ## Branch aktif
 - `perf/images-layanan-refinements` (1 commit di atas main).

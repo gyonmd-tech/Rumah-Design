@@ -1,10 +1,8 @@
-import { serverSupabaseClient } from '#supabase/server'
-import type { Database } from '~/types/database.types'
 import { DEFAULT_SITE_SETTINGS, mergeSiteSettings } from '~/utils/site-settings'
 
 export default defineEventHandler(async (event) => {
   try {
-    const client = await serverSupabaseClient<Database>(event)
+    const client = useServerSupabase()
     const { data, error } = await client
       .from('site_settings')
       .select('key, value')

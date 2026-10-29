@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@nuxtjs/seo": "^5.3.12",
-    "@nuxtjs/supabase": "^2.0.10",
+    "@supabase/supabase-js": "^2.112.3",
     "@tailwindcss/vite": "^4.3.3",
     "@takumi-rs/core": "^2.9.0",
     "@types/react": "^19.2.18",
