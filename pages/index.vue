@@ -29,20 +29,40 @@ useSiteMotion(root, ({ gsap, finePointer }) => {
       .filter(el => !el.closest('.alt'))
       .map(el => ({ el, set: gsap.quickTo(el, '--wght', { duration: 0.5, ease: 'power3' }) }))
   }
-  const onMove = (event: PointerEvent) => {
+  // Pointer events can fire several times per frame (high-rate mice). Handle only
+  // the latest position once per frame and read every rect before any tween
+  // writes, so layout is computed once instead of per character per event.
+  let frame = 0
+  let pointerX = 0
+  let pointerY = 0
+  const update = () => {
+    frame = 0
     if (!setters.length) collect()
     const radius = window.innerWidth * 0.22
-    for (const { el, set } of setters) {
+    const centers = setters.map(({ el }) => {
       const rect = el.getBoundingClientRect()
-      const distance = Math.hypot(event.clientX - (rect.left + rect.width / 2), event.clientY - (rect.top + rect.height / 2))
-      set(250 + Math.min(distance / radius, 1) * 600)
-    }
+      return [rect.left + rect.width / 2, rect.top + rect.height / 2]
+    })
+    setters.forEach(({ set }, index) => {
+      const [x, y] = centers[index]
+      set(250 + Math.min(Math.hypot(pointerX - x, pointerY - y) / radius, 1) * 600)
+    })
   }
-  const onLeave = () => setters.forEach(({ set }) => set(850))
+  const onMove = (event: PointerEvent) => {
+    pointerX = event.clientX
+    pointerY = event.clientY
+    if (!frame) frame = requestAnimationFrame(update)
+  }
+  const onLeave = () => {
+    cancelAnimationFrame(frame)
+    frame = 0
+    setters.forEach(({ set }) => set(850))
+  }
   hero.addEventListener('pointerenter', collect)
   hero.addEventListener('pointermove', onMove)
   hero.addEventListener('pointerleave', onLeave)
   return () => {
+    cancelAnimationFrame(frame)
     hero.removeEventListener('pointerenter', collect)
     hero.removeEventListener('pointermove', onMove)
     hero.removeEventListener('pointerleave', onLeave)

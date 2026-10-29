@@ -44,5 +44,6 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Audit dependency runtime
-        run: npm audit --omit=dev --audit-level=high
+      # Includes devDependencies: build and test tooling runs in CI and on developer machines.
+      - name: Audit dependency
+        run: npm audit --audit-level=high

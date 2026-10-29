@@ -52,7 +52,19 @@ export default defineNuxtConfig({
   },
   modules: [
     '@nuxtjs/seo',
+    '@nuxt/fonts',
   ],
+  // Public fonts are downloaded at build time and served from /_fonts (ADR-004).
+  // Studio fonts stay managed by composables/useAdminFonts.ts and the local ARQINO face.
+  fonts: {
+    defaults: { subsets: ['latin', 'latin-ext'] },
+    families: [
+      // Hero letters animate the wght axis between 250 and 850.
+      { name: 'Inter Tight', provider: 'google', weights: ['250 900'], styles: ['normal', 'italic'] },
+      { name: 'Instrument Serif', provider: 'google', weights: [400], styles: ['normal', 'italic'] },
+      ...['IBM Plex Sans', 'IBM Plex Mono', 'Clash Display', 'General Sans', 'ARQINO'].map(name => ({ name, provider: 'none' as const })),
+    ],
+  },
   css: ['~/assets/css/tailwind.css', '~/assets/css/site.css'],
   // React reference files are retained, but only Vue components enter this Nuxt app.
   components: [{ path: '~/components', extensions: ['vue'] }],
@@ -113,10 +125,6 @@ export default defineNuxtConfig({
         { rel: 'shortcut icon', href: '/favicon.ico' },
         { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
         { rel: 'manifest', href: '/site.webmanifest' },
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
-        // Public site fonts only; the admin studio loads its own (composables/useAdminFonts.ts).
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&family=Instrument+Serif:ital@0;1&display=swap' },
       ],
     },
   },

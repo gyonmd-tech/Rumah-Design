@@ -10,7 +10,8 @@
 - Hanya anon key yang dipakai; `.env*` tidak pernah ter-commit.
 
 **Gap:**
-- ~~`npm audit` critical/high~~ — ditutup 2026-10-29 (security-patch-ci). Sisa 3 moderate + 5 low menunggu Nuxt 4; CI menahan regresi ke level high.
+- ~~`npm audit` critical/high~~ — ditutup 2026-10-29 (security-patch-ci). Sisa 3 moderate + 6 low menunggu Nuxt 4; CI menahan regresi ke level high, kini termasuk devDependencies (fonts-hero).
+- Advisory moderate Nuxt: route rules (`ssr`, `headers`, `redirect`) dilewati untuk path beda huruf besar/kecil (mis. `/Admin/...`). Dampak di sini rendah (admin tetap dijaga RLS + middleware), tapi header `no-store` admin bisa terlewat — tertutup saat upgrade Nuxt 4.
 - CSP `script-src 'unsafe-inline'` → XSS mitigasi lemah; pertimbangkan nonce (mis. `nuxt-security`) — perlu uji hydration & inline script `js-motion`.
 - `img-src https:` & markdown `img` mengizinkan gambar eksternal (http juga) — risiko rendah karena hanya admin yang menulis.
 - Tidak ada HSTS eksplisit (Vercel menambahkan default di domain vercel.app; cek ulang saat custom domain).
