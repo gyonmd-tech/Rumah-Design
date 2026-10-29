@@ -1,19 +1,19 @@
 # Status
 
-**Phase:** public-perf — Implementation + verifikasi lokal selesai (2026-10-29)
-**Branch:** `perf/public-bundle-payload`
+**Phase:** deps-tests — Implementation + verifikasi lokal selesai (2026-10-29)
+**Branch:** `chore/deps-tests` (ditumpuk di atas `perf/public-bundle-payload`)
 
 ## Selesai
 - Discovery + audit: `.10x/reviews/2026-10-29-codebase-audit.md`.
-- security-patch-ci: PR gyonmd-tech/Rumah-Design#5 merged (126b939), CI hijau; PERF-4 terverifikasi (Image Transformations aktif, WebP).
-- public-perf (ADR-002): PERF-1 (SDK keluar dari JS publik), PERF-2/3 (payload), PERF-5 (ISR) — lihat `decisions/sde/public-perf.md`.
-  Initial JS `/` 235 → 174 KB gzip; payload SSR 29 → 1.7 KB.
+- security-patch-ci: PR #5 merged (126b939).
+- public-perf (ADR-002): PR #6 terbuka, CI hijau; menunggu uji admin manual di preview.
+- deps-tests (ADR-003): QUAL-4 + QUAL-2 — 6 dependency mati dihapus, 24 unit test, bug sanitasi `<style>` diperbaiki.
 
 ## Berikutnya
-- Uji login admin, simpan project, upload media di preview Vercel.
-- Setelah deploy: cek header `x-vercel-cache` (HIT/STALE) pada halaman publik.
-- PERF-9: Lighthouse/PageSpeed setelah deploy (kuota PSI anonim habis hari ini).
-- Kandidat berikut: PERF-6 (font), PERF-7 (pointermove hero), lazy GSAP, QUAL-2/QUAL-4.
+- Pemilik menguji admin di preview PR #6 → merge.
+- Rebase `chore/deps-tests` ke `main` setelah PR #6 merge, lalu PR.
+- Setelah deploy: cek `x-vercel-cache`, PageSpeed (PERF-9).
+- Kandidat berikut: PERF-6 (font), PERF-7 (hero), lazy GSAP, SEC-2 (CSP nonce), hapus komponen mati.
 
 ## Blocker
-- Tidak ada.
+- Uji admin di preview butuh login Vercel (Deployment Protection) — hanya pemilik.

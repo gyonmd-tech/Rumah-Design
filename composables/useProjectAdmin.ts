@@ -5,7 +5,7 @@ import { isValidHttpsUrl, PROJECT_CATEGORIES, PROJECT_LIMITS, validateTags } fro
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024
 
-function validateProjectPayload(payload: ProjectFormPayload) {
+export function validateProjectPayload(payload: ProjectFormPayload) {
   const errors: string[] = []
   const title = payload.title.trim()
   const description = payload.description.trim()

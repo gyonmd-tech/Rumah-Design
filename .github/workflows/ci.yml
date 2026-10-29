@@ -35,6 +35,9 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Unit test
+        run: npm test
+
       - name: Regresi SEO & util
         run: npm run test:seo
 
