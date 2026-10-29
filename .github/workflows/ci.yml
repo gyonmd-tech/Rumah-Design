@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # Placeholder publik non-rahasia; CI tidak pernah terhubung ke Supabase production.
+      NUXT_PUBLIC_SITE_URL: https://hygionedarriyan.vercel.app
+      SUPABASE_URL: https://example.supabase.co
+      SUPABASE_KEY: ci-placeholder-anon-key
+      NUXT_TELEMETRY_DISABLED: 1
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Regresi SEO & util
+        run: npm run test:seo
+
+      - name: Build
+        run: npm run build
+
+      - name: Audit dependency runtime
+        run: npm audit --omit=dev --audit-level=high
