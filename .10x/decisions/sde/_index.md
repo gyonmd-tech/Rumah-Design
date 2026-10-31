@@ -11,6 +11,7 @@
 - `public-perf` — Supabase SDK admin-only, payload ramping, ISR (2026-10-29, ADR-002).
 - `deps-tests` — hapus dependency mati + Vitest 24 test (2026-10-29, ADR-003).
 - `fonts-hero` — font publik self-host, throttle pointermove hero, Vitest 5 (2026-10-29, ADR-004).
+- `csp-motion-cleanup` — CSP hash tanpa unsafe-inline, reveal hero CSS (LCP), hapus kode mati (2026-10-31, ADR-005/006).
 
 ## Branch aktif
 - `perf/images-layanan-refinements` (1 commit di atas main).

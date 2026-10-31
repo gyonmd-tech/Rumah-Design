@@ -50,13 +50,17 @@ if (googleVerification.value) {
 }
 
 // Hide reveal targets only when JS runs and motion is allowed (see site.css).
-useHead({
-  script: [{
-    key: 'js-motion',
-    tagPosition: 'head',
-    innerHTML: "if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('js-motion')",
-  }],
-})
+// Server-rendered only: it must run before first paint, and a client-inserted
+// copy (the client-only studio) would not match the page's CSP hashes.
+if (import.meta.server) {
+  useHead({
+    script: [{
+      key: 'js-motion',
+      tagPosition: 'head',
+      innerHTML: "if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('js-motion')",
+    }],
+  })
+}
 
 const siteTransition = usePageTransition()
 const pageTransition = computed(() => route.path.startsWith('/admin')
