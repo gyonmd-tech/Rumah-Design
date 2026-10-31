@@ -15,6 +15,13 @@ const collageProject = computed(() => projects.value[0] ?? null)
 
 const stack = ['Nuxt 3', 'Vue', 'TypeScript', 'Figma', 'Supabase', 'GSAP', 'React', 'Tailwind CSS', 'PostgreSQL', 'Vercel']
 
+// The hero title is split on the server (for the hover weight effect) and
+// revealed with CSS, so the LCP paints with the HTML instead of waiting for GSAP.
+const heroLines = (() => {
+  let index = 0
+  return ['Hygione', 'Darriyan.'].map(text => [...text].map(char => ({ char, index: index++ })))
+})()
+
 const root = ref<HTMLElement | null>(null)
 
 useSiteMotion(root, ({ gsap, finePointer }) => {
@@ -80,9 +87,8 @@ useSiteMotion(root, ({ gsap, finePointer }) => {
         <p class="kicker hero__eyebrow" data-reveal>
           IT Support · UI/UX Design · Frontend · Fullstack
         </p>
-        <h1 class="title-xxl hero__title" data-reveal="chars" data-reveal-delay="0.1">
-          <span class="hero__line">Hygione</span>
-          <span class="hero__line alt">Darriyan.</span>
+        <h1 class="title-xxl hero__title" aria-label="Hygione Darriyan.">
+          <span v-for="(line, lineIndex) in heroLines" :key="lineIndex" :class="['hero__line', { alt: lineIndex === 1 }]" aria-hidden="true"><span v-for="item in line" :key="item.index" class="split-char">{{ item.char }}</span></span>
         </h1>
         <div class="hero__links" data-reveal="el" data-reveal-delay="0.6" data-cursor-block>
           <SiteArrowLink label="Jelajahi karya" to="#work" direction="down" />
@@ -250,6 +256,25 @@ useSiteMotion(root, ({ gsap, finePointer }) => {
 
 .hero__title :deep(.split-char) {
   --wght: 850;
+}
+
+/* Lines rise and fade in with CSS from first paint (ADR-006). Characters stay
+   inline and nothing is clipped: Chrome only counts a text block as the LCP
+   when its first paint has visible area, and inline-block letters would each
+   be their own tiny candidate. .js-motion is only set when motion is allowed. */
+:global(html.js-motion) .hero__line {
+  animation: hero-line-rise 1s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
+:global(html.js-motion) .hero__line.alt {
+  animation-delay: 0.22s;
+}
+
+@keyframes hero-line-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.3em);
+  }
 }
 
 .hero__title > .hero__line:first-child,

@@ -1,4 +1,5 @@
 import tailwindcss from '@tailwindcss/vite'
+import { buildContentSecurityPolicy } from './utils/csp'
 
 const siteUrl = (process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000').replace(/\/+$/, '')
 const googleSiteVerification =
@@ -7,32 +8,9 @@ const googleSiteVerification =
   process.env['google-site-verification'] ||
   ''
 
-const supabaseOrigins = (() => {
-  try {
-    const origin = new URL(process.env.SUPABASE_URL || '').origin
-    const realtimeOrigin = origin.replace(/^https:/, 'wss:')
-    return [origin, realtimeOrigin]
-  }
-  catch {
-    return []
-  }
-})()
-
-const contentSecurityPolicy = [
-  "default-src 'self'",
-  "base-uri 'self'",
-  "object-src 'none'",
-  "frame-ancestors 'none'",
-  "form-action 'self'",
-  "script-src 'self' 'unsafe-inline'",
-  "script-src-attr 'none'",
-  "style-src 'self' 'unsafe-inline' https://api.fontshare.com https://fonts.googleapis.com",
-  "font-src 'self' data: https://cdn.fontshare.com https://fonts.gstatic.com",
-  "img-src 'self' data: blob: https:",
-  "media-src 'self' blob: https:",
-  `connect-src 'self' ${supabaseOrigins.join(' ')}`,
-  ...(siteUrl.startsWith('https://') ? ['upgrade-insecure-requests'] : []),
-].join('; ')
+// Baseline for every response; rendered HTML gets its inline-script hashes
+// added by server/plugins/csp.ts (ADR-005).
+const contentSecurityPolicy = buildContentSecurityPolicy({ supabaseUrl: process.env.SUPABASE_URL, siteUrl })
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
