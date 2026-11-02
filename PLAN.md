@@ -31,7 +31,7 @@ Roadmap implementasi bertahap. Tiap fase idealnya bisa di-deploy & diuji sebelum
 - [x] Perluas taxonomy kategori, style tags, dan tech stack untuk variasi portofolio
 - [x] Hardening admin: sanitasi preview Markdown, validasi URL/data, dan batas publish
 - [x] Hardening Supabase: batas payload, public settings whitelist, dan Storage folder policy
-- [ ] Lighthouse audit — performance & SEO > 90
+- [x] Lighthouse audit — performance & SEO > 90 (PageSpeed 2 Nov 2026: mobile 96/96/100/100, desktop 97/96/100/100)
 
 ## Fase 4 — Go Live
 - [ ] Custom domain di-connect ke Vercel/Netlify
@@ -56,7 +56,7 @@ Roadmap implementasi bertahap. Tiap fase idealnya bisa di-deploy & diuji sebelum
 - [x] Typecheck, build, test SEO, HTTP smoke test, dan browser desktop/mobile lulus.
 - [x] Terapkan migration 202609110005 di Supabase production; migration 202608230004 juga diterapkan dan diverifikasi.
 - [x] Deploy perubahan dan verifikasi ulang HTTP production.
-- [ ] Lighthouse production: peluncuran Chrome gagal; skor belum tersedia.
+- [x] Lighthouse production — terukur 2 Nov 2026 via PageSpeed Insights (lihat .10x/reviews/2026-11-02-pagespeed.md).
 - [ ] Verifikasi indeks aktual dan kirim ulang sitemap di Search Console.
 
 ## Rilis konten personal & layanan — disetujui 11 September 2026
@@ -100,5 +100,5 @@ Lihat docs/PERSONAL_BRAND.md.
 - [x] Beranda, /karya (filter ganda + pencarian), /project/[slug], /about, /layanan, /layanan/[slug], /proses, /contact, halaman error.
 - [x] Sitemap memuat /karya.
 - [x] Typecheck, build produksi, smoke SEO HTTP (build produksi lokal), browser desktop 1440px dan mobile 375px.
-- [ ] Lighthouse production setelah deploy (performance & SEO > 90).
+- [x] Lighthouse production setelah deploy (performance & SEO > 90) — mobile 96 / SEO 100, desktop 97 / SEO 100.
 - [ ] Tinjau ulang copy hero/section yang diringkas untuk judul besar.
