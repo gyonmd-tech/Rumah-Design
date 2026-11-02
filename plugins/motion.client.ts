@@ -38,17 +38,13 @@ export default defineNuxtPlugin((nuxtApp) => {
   })
   gsap.ticker.lagSmoothing(0)
 
-  // Page-ready gate. Resolved on first load once fonts settle, then re-armed
-  // by the page transition while the screen is covered.
+  // Page-ready gate. Open on first load so the intro (and the hero, the LCP)
+  // starts as soon as the page is interactive; re-armed by the page transition
+  // while the screen is covered. Waiting for web fonts is unnecessary: reveals
+  // use SplitText autoSplit and return their tween, so a font swap re-splits
+  // and resumes the animation at the same progress.
   let releaseGate: () => void = () => {}
-  let gate = new Promise<void>((resolve) => {
-    releaseGate = resolve
-  })
-
-  Promise.race([
-    document.fonts?.ready ?? Promise.resolve(),
-    new Promise(resolve => setTimeout(resolve, 900)),
-  ]).then(() => releaseGate())
+  let gate = Promise.resolve()
 
   const motion = {
     gsap,
