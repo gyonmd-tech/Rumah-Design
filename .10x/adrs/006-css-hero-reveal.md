@@ -1,6 +1,6 @@
 # ADR-006: Reveal judul hero dengan CSS, bukan GSAP
 
-**Status:** Accepted
+**Status:** Superseded by ADR-007
 **Date:** 2026-10-31
 **Feature:** csp-motion-cleanup
 **Author:** 10x-Team (Architect + Staff Engineer)

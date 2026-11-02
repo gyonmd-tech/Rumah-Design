@@ -87,7 +87,7 @@ Lihat docs/DOMAIN_MIGRATION.md.
 - [x] Tambahkan schema Person dengan alternateName, homeLocation, knowsAbout, dan sameAs.
 - [x] Terapkan migration settings personal ke Supabase production.
 - [x] Typecheck, regression SEO, build, SSR identity, dan browser responsive lulus.
-- [ ] Tambahkan foto profil setelah aset diberikan.
+- [x] Tambahkan foto profil setelah aset diberikan (`public/images/hero-profile-*.webp`, dipakai di /about dan beranda).
 - [x] Deploy production dan verifikasi aset melalui domain utama (deployment dpl_8fsmy99HSVWXRYvyPWC4JnVFSx1j).
 
 Lihat docs/PERSONAL_BRAND.md.
