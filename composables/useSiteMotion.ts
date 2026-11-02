@@ -83,6 +83,16 @@ export function useSiteMotion(
   })
 }
 
+/**
+ * SplitText's default aria ("auto") puts aria-label on the split element and
+ * hides the pieces. aria-label is only allowed on elements with a nameable
+ * role such as headings, not on <p>/<span>/<div>. Elsewhere the pieces stay
+ * readable: line and word splits still read as whole words.
+ */
+function splitAria(node: HTMLElement): 'auto' | 'none' {
+  return /^H[1-6]$/.test(node.tagName) ? 'auto' : 'none'
+}
+
 function splitAndAnimate(
   node: HTMLElement,
   gsap: typeof gsapType,
@@ -100,6 +110,7 @@ function splitAndAnimate(
   let tween: gsap.core.Tween | undefined
   SplitText.create(node, {
     type: chars ? 'lines,words,chars' : 'lines',
+    aria: splitAria(node),
     mask: 'lines',
     linesClass: 'split-line',
     charsClass: 'split-char',
@@ -151,6 +162,7 @@ function fadeOnScroll(root: HTMLElement, gsap: typeof gsapType, SplitText: typeo
   gsap.utils.toArray<HTMLElement>('[data-scroll-fade]', root).forEach((node) => {
     SplitText.create(node, {
       type: 'words',
+      aria: splitAria(node),
       wordsClass: 'fade-word',
       autoSplit: true,
       onSplit(self) {
