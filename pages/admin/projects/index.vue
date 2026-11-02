@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AdminIcon from '~/components/admin/AdminIcon.vue'
 import AdminModal from '~/components/admin/AdminModal.vue'
-import type { Database, Project, ProjectCategory, ProjectStatus } from '~/types/database.types'
+import type { Database, Project, ProjectCategory, ProjectClickStats, ProjectStatus } from '~/types/database.types'
 import { PROJECT_CATEGORIES, categoryLabel } from '~/utils/project'
 import { analyzeSeoQuality } from '~/utils/seo'
 
@@ -16,7 +16,7 @@ const searchQuery = ref('')
 const selectedCategory = ref<string>('all')
 const selectedStatus = ref<string>('all')
 const selectedSeoGrade = ref<string>('all')
-const sortBy = ref<'updated_desc' | 'updated_asc' | 'title_asc' | 'seo_desc' | 'seo_asc'>('updated_desc')
+const sortBy = ref<'updated_desc' | 'updated_asc' | 'title_asc' | 'seo_desc' | 'seo_asc' | 'clicks_desc'>('updated_desc')
 const viewMode = ref<'table' | 'grid' | 'list'>('table')
 
 // Modal state for delete
@@ -31,6 +31,22 @@ const { data: projects, status, refresh } = await useAsyncData('admin-projects-l
   if (error) throw error
   return (data as Project[]) ?? []
 })
+
+// Demo/repository click counts (ADR-009). Null when unavailable (e.g. the
+// migration is not applied yet); the table then shows "–".
+const { data: clickStats } = await useAsyncData('admin-project-clicks', async () => {
+  const { data, error } = await client.rpc('project_click_stats')
+  if (error) {
+    console.error('Unable to load click statistics:', error.message)
+    return null
+  }
+  return new Map((data as ProjectClickStats[]).map(row => [row.project_id, row]))
+})
+
+function projectClicks(project: Project) {
+  if (!clickStats.value) return null
+  return clickStats.value.get(project.id) ?? { project_id: project.id, demo_total: 0, demo_30d: 0, repo_total: 0, repo_30d: 0 }
+}
 
 // Calculate Stats & SEO metrics
 const stats = computed(() => {
@@ -68,7 +84,11 @@ const stats = computed(() => {
     return s >= 80
   }).length
 
-  return { total, published, draft, avgSeo, gradeACount }
+  const clickRows = clickStats.value ? [...clickStats.value.values()] : null
+  const demoClicks30d = clickRows ? clickRows.reduce((sum, row) => sum + Number(row.demo_30d), 0) : null
+  const repoClicks30d = clickRows ? clickRows.reduce((sum, row) => sum + Number(row.repo_30d), 0) : null
+
+  return { total, published, draft, avgSeo, gradeACount, demoClicks30d, repoClicks30d }
 })
 
 // Filtered & Sorted Projects
@@ -121,6 +141,9 @@ const filteredProjects = computed(() => {
   }
   else if (sortBy.value === 'seo_asc') {
     result.sort((a, b) => getProjectSeoScore(a).score - getProjectSeoScore(b).score)
+  }
+  else if (sortBy.value === 'clicks_desc') {
+    result.sort((a, b) => Number(projectClicks(b)?.demo_total ?? 0) - Number(projectClicks(a)?.demo_total ?? 0))
   }
   else {
     result.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())
@@ -238,7 +261,7 @@ function exportJsonBackup() {
     </div>
 
     <!-- Stat Metric Cards -->
-    <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+    <div class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
       <div class="rounded-2xl bg-white/90 p-5 border border-ink/10 shadow-2xs space-y-2">
         <div class="flex items-center justify-between">
           <span class="font-mono text-[0.68rem] font-bold uppercase tracking-wider text-mute">Total Karya</span>
@@ -286,6 +309,19 @@ function exportJsonBackup() {
           <span class="font-mono text-xs text-mute">/ 100</span>
         </div>
         <p class="font-mono text-[0.65rem] text-mute">{{ stats.avgSeo >= 80 ? 'Kualitas metadata prima' : 'Perlu optimasi SEO' }}</p>
+      </div>
+
+      <div class="col-span-2 lg:col-span-1 rounded-2xl bg-white/90 p-5 border border-ink/10 shadow-2xs space-y-2">
+        <div class="flex items-center justify-between">
+          <span class="font-mono text-[0.68rem] font-bold uppercase tracking-wider text-mute">Klik Demo · 30 Hari</span>
+          <div class="size-7 rounded-lg bg-signal/10 border border-signal/20 flex items-center justify-center text-signal">
+            <AdminIcon name="external" size="14" />
+          </div>
+        </div>
+        <p class="font-display text-3xl font-bold text-ink">{{ stats.demoClicks30d ?? '–' }}</p>
+        <p class="font-mono text-[0.65rem] text-mute">
+          {{ stats.repoClicks30d === null ? 'Statistik belum tersedia' : `${stats.repoClicks30d} klik repository` }}
+        </p>
       </div>
     </div>
 
@@ -367,6 +403,7 @@ function exportJsonBackup() {
           <option value="title_asc">Judul (A–Z)</option>
           <option value="seo_desc">Skor SEO (Tertinggi)</option>
           <option value="seo_asc">Skor SEO (Terendah)</option>
+          <option value="clicks_desc">Klik Demo (Terbanyak)</option>
         </select>
       </div>
     </div>
@@ -398,12 +435,13 @@ function exportJsonBackup() {
     <!-- ========================================== -->
     <div v-else-if="viewMode === 'table'" class="overflow-hidden rounded-2xl border border-ink/10 bg-white/95 shadow-2xs">
       <div class="overflow-x-auto">
-        <table class="w-full min-w-[920px] border-collapse text-left font-sans text-sm">
+        <table class="w-full min-w-[1020px] border-collapse text-left font-sans text-sm">
           <thead>
             <tr class="border-b border-ink/10 font-mono text-[0.68rem] uppercase tracking-wider text-mute bg-ink/[0.02]">
               <th class="py-3.5 px-5">Project & Identitas</th>
               <th class="py-3.5 px-4">Kategori & Tags</th>
               <th class="py-3.5 px-4 text-center">Skor SEO</th>
+              <th class="py-3.5 px-4 text-center" title="Total klik (30 hari terakhir)">Klik Demo · Repo</th>
               <th class="py-3.5 px-4">Status</th>
               <th class="py-3.5 px-4">Diperbarui</th>
               <th class="py-3.5 px-5 text-right">Aksi</th>
@@ -478,6 +516,19 @@ function exportJsonBackup() {
                     Grade {{ getProjectSeoScore(project).grade }}
                   </span>
                 </div>
+              </td>
+
+              <!-- Demo / repository clicks: total (last 30 days) -->
+              <td class="py-4 px-4 text-center font-mono text-xs">
+                <template v-if="projectClicks(project)">
+                  <p class="font-bold text-ink" :title="`Demo: ${projectClicks(project)!.demo_total} total, ${projectClicks(project)!.demo_30d} dalam 30 hari`">
+                    {{ projectClicks(project)!.demo_total }} <span class="font-normal text-mute">({{ projectClicks(project)!.demo_30d }})</span>
+                  </p>
+                  <p class="text-[0.68rem] text-mute" :title="`Repository: ${projectClicks(project)!.repo_total} total, ${projectClicks(project)!.repo_30d} dalam 30 hari`">
+                    repo {{ project.repo_url ? `${projectClicks(project)!.repo_total} (${projectClicks(project)!.repo_30d})` : '—' }}
+                  </p>
+                </template>
+                <span v-else class="text-mute">–</span>
               </td>
 
               <!-- Status Switcher Button -->

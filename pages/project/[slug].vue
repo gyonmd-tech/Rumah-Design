@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { imageUrl, responsiveImage } from '~/utils/image'
 import { ArrowLeft } from 'lucide-vue-next'
-import type { ProjectDetail } from '~/types/database.types'
+import type { ClickTarget, ProjectDetail } from '~/types/database.types'
+import { trackOutboundClick } from '~/utils/outbound'
 import { categoryLabel, excerpt } from '~/utils/project'
 import { serializeJsonLd } from '~/utils/structured-data'
 
@@ -35,6 +36,13 @@ const previewImage = computed(() => {
   const url = project.value?.preview_media_url
   return url && !previewIsVideo.value && url !== project.value?.thumbnail_url ? url : null
 })
+
+// Counts demo/repository visits for the studio statistics (ADR-009). Primary
+// clicks, keyboard activation and middle clicks count; right clicks do not.
+function onOutbound(target: ClickTarget, event: MouseEvent) {
+  if (event.type === 'auxclick' && event.button !== 1) return
+  if (project.value) trackOutboundClick(project.value.slug, target)
+}
 
 const url = computed(() => `${siteOrigin}/project/${slug.value}`)
 const title = computed(() => project.value?.seo_title || `${project.value?.title} — Hygione Darriyan`)
@@ -122,8 +130,8 @@ useSiteMotion(root, ({ gsap, reduced }) => {
             {{ project.summary }}
           </p>
           <div class="case-hero__actions" data-reveal="el">
-            <SiteButton label="Buka live demo" :href="project.live_url" icon="external" />
-            <SiteButton v-if="project.repo_url" label="Lihat repository" :href="project.repo_url" icon="external" variant="ink" />
+            <SiteButton label="Buka live demo" :href="project.live_url" icon="external" @click="onOutbound('demo', $event)" @auxclick="onOutbound('demo', $event)" />
+            <SiteButton v-if="project.repo_url" label="Lihat repository" :href="project.repo_url" icon="external" variant="ink" @click="onOutbound('repo', $event)" @auxclick="onOutbound('repo', $event)" />
           </div>
 
           <dl class="facts" data-reveal="el">
@@ -176,7 +184,7 @@ useSiteMotion(root, ({ gsap, reduced }) => {
               Detail interaksi
             </figcaption>
           </figure>
-          <a :href="project.live_url" target="_blank" rel="noopener noreferrer" class="sticker sticker--paper case-hero__sticker" style="--sticker-rotate: 8deg">
+          <a :href="project.live_url" target="_blank" rel="noopener noreferrer" class="sticker sticker--paper case-hero__sticker" style="--sticker-rotate: 8deg" @click="onOutbound('demo', $event)" @auxclick="onOutbound('demo', $event)">
             Live demo ↗<span class="sr-only"> (tab baru)</span>
           </a>
         </div>

@@ -58,6 +58,16 @@ export type SiteSetting = {
   updated_at: string
 }
 
+export type ClickTarget = 'demo' | 'repo'
+
+export type ProjectClickStats = {
+  project_id: string
+  demo_total: number
+  demo_30d: number
+  repo_total: number
+  repo_30d: number
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -85,12 +95,26 @@ export interface Database {
         Update: { key?: string, value?: Record<string, any>, updated_at?: string }
         Relationships: []
       }
+      project_clicks: {
+        Row: { id: number, project_id: string, target: ClickTarget, clicked_at: string }
+        Insert: never
+        Update: never
+        Relationships: []
+      }
     }
     Views: Record<string, never>
     Functions: {
       is_admin: {
         Args: Record<string, never>
         Returns: boolean
+      }
+      record_project_click: {
+        Args: { p_slug: string, p_target: ClickTarget }
+        Returns: undefined
+      }
+      project_click_stats: {
+        Args: Record<string, never>
+        Returns: ProjectClickStats[]
       }
     }
     Enums: Record<string, never>
